@@ -89,11 +89,11 @@ class CfgVehicles
         
         
         model = "\Bugs_life\Ants\BasicAnt.p3d";
-        armor = 45;
+        armor = 7;
         editorPreview="";
         class Eventhandlers
         {
-            init = "_this#0 allowFleeing 0;";//[_this#0] execVM 'Bugs_life\Ants\AI\BasicAnt.sqf'
+            init = "_this#0 allowFleeing 0;_this#0 setSpeaker 'NoVoice';_this#0 disableConversation true;";//[_this#0] execVM 'Bugs_life\Ants\AI\BasicAnt.sqf'
         };
 
     
@@ -882,6 +882,8 @@ class CfgMoves_MAR_ANT: CfgMovesMaleSdr
                 "ANT_Turn_L",
                 0.01,
                 "ANT_DEATH",
+                0.01,
+                "ANT_Attack_1",
                 0.01
 				
 			};
@@ -944,14 +946,24 @@ class CfgMoves_MAR_ANT: CfgMovesMaleSdr
         {
             terminal = 1;
             speed = -1.2;
+            looped = flase;
             file = "\Bugs_life\Ants\animations\death_1.rtm";
-        }
-        class ANT_DEATH_static:ANT_DEATH
+            actions = "MAR_ANT_Death_1";
+        };
+
+        class ANT_DEATH_Static:ANT_DEATH
         {
             terminal = 1;
             file = "\Bugs_life\Ants\animations\death_static.rtm";
-        }
-		
+            actions = "MAR_ANT_Death_Static";
+        };
+
+		class ANT_Attack_1:ANT_Walk
+        {
+            looped = flase;
+            file = "\Bugs_life\Ants\animations\attack_1.rtm";
+            actions = "MAR_ANT_Attack_1";
+        };
 
 	
 
@@ -1071,7 +1083,7 @@ class Extended_PreInit_EventHandlers
 {	
     class MAR_Addons_PreInit
     {
-      //  init="call compile preprocessFileLineNumbers 'Mars_Addons\XEH_preInit.sqf'";
+        init="call compile preprocessFileLineNumbers 'Bugs_life\XEH_preInit.sqf'";
     };
 };
 
@@ -1086,14 +1098,11 @@ class Extended_PostInit_EventHandlers
 
 class Extended_InitPost_EventHandlers 
 {
-    class MAR_ChaosPortal_1 
-		{
-			class MAR_Portal_Init 
-				{
-				//	init = "_unit = _this select 0; if (local _unit) then {_unit call MAR_FNC_PortalInit;};";
-				};	
-					
-		};
-
-
+    class MAR_ANT_Basic 
+    {
+        class MAR_ANT_Basic_AI_INIT 
+        {
+            init = "_unit = _this select 0; if (local _unit) then {[_unit] execVM '\Bugs_life\Ants\AI\MAR_AI_basicAnt.sqf';};";
+        };						
+    };
 };
