@@ -174,6 +174,20 @@ _actFr = [{
 					[_mutant, "WBK_Halo_Melee",[_mutant,_en]] call BIS_fnc_callScriptedEventHandler;
 				};
 
+				case (
+					(_mutant isKindOf "MAR_ANT_Spitter") and
+					(isNil {_mutant getVariable "IsCanFire"}) and
+					(isNull objectParent _mutant) and 
+					!(animationState _mutant == "ANT_Attack_1")and
+					!(animationState _mutant == "ANT_Attack_Ranged")and  								
+					((_en distance _mutant) < 50) and ((_en distance _mutant) > 2.5) and
+					!(isNull _en) and 
+					(alive _en)): {
+					
+						[_mutant,_en] spawn BugsLife_RangedAttack_FNC;
+					
+				};
+
 		
 				
 				
@@ -187,7 +201,14 @@ _loopPathfind = [{
     _array = _this select 0;
     _unit = _array select 0;
 	_nearEnemy = _unit findNearestEnemy _unit; 
+
 	switch true do {
+		case (!(alive _unit) || (animationState _unit in [
+			"ant_attack_1",
+			"ant_death",
+			"ant_death_static",
+			"ant_inair"
+		])): {};
 		case (!(simulationEnabled _unit) || !(isNull (remoteControlled _unit)) || (isNull _nearEnemy) or !(alive _nearEnemy) or !(alive _unit) or !(isNull attachedTo _unit) or (lifeState _unit == "INCAPACITATED") or (_unit distance _nearEnemy >= 200)): {
 			switch true do {
 				case !(isNil {_unit getVariable "WBK_IsUnitLocked"}): {_unit setVariable ["WBK_IsUnitLocked",nil];};
@@ -285,6 +306,7 @@ _loopPathfind = [{
 _loopPathfindDoMove = [{
     _array = _this select 0;
     _unit = _array select 0;
+	if (!(alive _unit) || (animationState _unit in ["ant_attack_1","ant_death","ant_death_static","ant_inair"]))exitWith {};
 	if (!(_unit checkAIFeature "MOVE") or !(_unit checkAIFeature "PATH") or !(animationState _unit in ["ant_idle","ant_run"])) exitWith {};
 	_nearEnemy = _unit call MAR_Bugslife_FindTarget; 
     if ((isNull _nearEnemy) or !(alive _nearEnemy) or !(alive _unit) or ((_unit distance _nearEnemy) >= 200)) exitWith {

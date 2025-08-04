@@ -2,7 +2,7 @@ class CfgPatches
 {
 	class Marbys_Bugs_Life
 	{
-		units[] = {"MAR_ANT_Basic","MAR_antHill"};
+		units[] = {"MAR_ANT_Basic","MAR_ANT_Ice","MAR_ANT_Spitter","MAR_antHill"};
 		weapons[] = {};
 		magazines[]={};
 		ammo[]={};
@@ -11,6 +11,7 @@ class CfgPatches
 		author = "Marbearis";
 	};
 };
+#include "Projectiles\Ammo.hpp"
 
 /// editor/curator category creation!
 
@@ -76,14 +77,15 @@ class CfgVehicles
 		editorSubcategory = "MAR_Bugs_Ants";
         hiddenSelections[] = {"camo","eyes"};
 		hiddenSelectionsTextures[] = {"\Bugs_life\Ants\textures\Basic\ANT_CO.paa","\Bugs_life\Ants\textures\Basic\ANT_CO.paa"};
+        uniformClass = "ANT_Uniform";
+        nakedUniform = "ANT_Uniform";
         _generalMacro = "MAR_ANT_1";
         gestures = "CfgGestures_MAR_ANT";
         moves = "CfgMoves_MAR_ANT";
         items[] = {};
         linkedItems[] = {};
         RespawnlinkedItems[]={};
-        uniformClass = "ANT_Uniform";
-        nakedUniform = "ANT_Uniform";
+       
         vehicleclass = "Men";
         displayName = "ANT_BASE";
         
@@ -103,17 +105,20 @@ class CfgVehicles
         attendant = 1;
             class SoundEnvironExt {		
                 generic[] = {
-                {"run", {"\Mars_Addons\Units\ANT\Sounds\Golem_StompSlam_Impact.ogg", 1, 1, 60}},
-                            
-                {"walk", {"\Mars_Addons\Units\ANT\Sounds\Golem_StompSlam_Impact.ogg", 1, 1, 25}}
-            
+                    {"run", {"\Bugs_life\data\AntSounds\antRun.ogg", 1, 1, 40}},
+                    {"idle", {"\Bugs_life\data\AntSounds\idleChitter.ogg", 1, 1, 25}},                    
+                    {"walk", {"\Bugs_life\data\AntSounds\AntWalk.ogg", 1, 1, 25}},  
+                    {"meleeAttack", {"\Bugs_life\data\AntSounds\antBite.ogg", 1, 1, 25}}, 
+                    {"rangedAttack", {"\Bugs_life\data\AntSounds\antSpit.ogg", 1, 1, 100}}          
                 };
             };
             class SoundEquipment {	
                 soldier[] = {
-                {"run", {"\Mars_Addons\Units\ANT\Sounds\Golem_StompSlam_Impact.ogg", 1, 1, 60}},
-                            
-                {"walk", {"\Mars_Addons\Units\ANT\Sounds\Golem_StompSlam_Impact.ogg", 1, 1, 25}}
+                    {"run", {"\Bugs_life\data\AntSounds\antRun.ogg", 1, 1, 40}},
+                    {"idle", {"\Bugs_life\data\AntSounds\idleChitter.ogg", 1, 1, 25}},                    
+                    {"walk", {"\Bugs_life\data\AntSounds\AntWalk.ogg", 1, 1, 25}},  
+                    {"meleeAttack", {"\Bugs_life\data\AntSounds\antBite.ogg", 1, 1, 25}}, 
+                    {"rangedAttack", {"\Bugs_life\data\AntSounds\antSpit.ogg", 1, 1, 100}} 
                 };
             };
                 class SoundBreath
@@ -510,6 +515,28 @@ class CfgVehicles
 		scopeCurator = 2;
         displayName = "Worker Ant";
     };
+    class MAR_ANT_Spitter:MAR_ANT_BASE
+    {
+        side = 0;
+		scope = 2;			
+		scopeCurator = 2;
+        displayName = "Spitter Ant";
+        hiddenSelections[] = {"camo","eyes"};
+		hiddenSelectionsTextures[] = {"\Bugs_life\Ants\textures\SpitterAnt\ANT_CO.paa","\Bugs_life\Ants\textures\SpitterAnt\ANT_CO.paa"};
+        uniformClass = "ANT_Uniform_spitter";
+        nakedUniform = "ANT_Uniform_spitter";
+    };
+    class MAR_ANT_Ice:MAR_ANT_BASE
+    {
+        side = 0;
+		scope = 2;			
+		scopeCurator = 2;
+        displayName = "Ice Ant";
+        hiddenSelections[] = {"camo","eyes"};
+		hiddenSelectionsTextures[] = {"\Bugs_life\Ants\textures\IceAnt\ANT_CO.paa","\Bugs_life\Ants\textures\IceAnt\ANT_CO.paa"};
+        uniformClass = "ANT_Uniform_ICE";
+        nakedUniform = "ANT_Uniform_ICE";
+    };
 };
 
 class WeaponFireGun;
@@ -548,6 +575,38 @@ class cfgWeapons
 				containerclass="Supply200";
 				mass=30;
 				uniformclass="ANT_Uniform";
+				uniformmodel="-";
+			};
+		};
+    class ANT_Uniform_spitter: Uniform_Base
+		{
+			displayname="ANT_Basic";
+			model = "\Bugs_life\Ants\BasicAnt.p3d";
+			scope=1;
+			picture="";
+			hiddenSelections[] = {"camo","eyes"};
+			hiddenSelectionsTextures[] = {"\Bugs_life\Ants\textures\SpitterAnt\ANT_CO.paa","\Bugs_life\Ants\textures\SpitterAnt\ANT_CO.paa"};
+			class ItemInfo: UniformItem
+			{
+				containerclass="Supply200";
+				mass=30;
+				uniformclass="ANT_Uniform_spitter";
+				uniformmodel="-";
+			};
+		};
+    class ANT_Uniform_ICE: Uniform_Base
+		{
+			displayname="ANT_Basic";
+			model = "\Bugs_life\Ants\BasicAnt.p3d";
+			scope=1;
+			picture="";
+			hiddenSelections[] = {"camo","eyes"};
+			hiddenSelectionsTextures[] = {"\Bugs_life\Ants\textures\IceAnt\ANT_CO.paa","\Bugs_life\Ants\textures\IceAnt\ANT_CO.paa"};
+			class ItemInfo: UniformItem
+			{
+				containerclass="Supply200";
+				mass=30;
+				uniformclass="ANT_Uniform_ICE";
 				uniformmodel="-";
 			};
 		};
@@ -646,9 +705,9 @@ class CfgMovesBasic
 				PlayerTactLB="ANT_Walk_B";
 				PlayerTactRB="ANT_Walk_B";
 				PlayerTactB="ANT_Walk_B";
-				Die="ANT_DEATH";
-				StartFreefall="ANT_InAir";
-				Unconscious = "ANT_DEATH";
+				Die="ANT_Death";
+				StartFreefall="ANT_inAir";
+				Unconscious = "ANT_Death";
 			};
 		//movement
 			class MAR_ANT_Walk: MAR_ANT_Moves
@@ -699,7 +758,24 @@ class CfgMovesBasic
 				AdjustB="";
 				Stand="ANT_Idle";
 			};
-
+            class MAR_ANT_inAir:MAR_ANT_Moves
+            {
+                turnSpeed=4.5;
+				PlayerCrouch="ANT_inAir";
+				Up="ANT_inAir";
+				Crouch="ANT_inAir";
+				AdjustB="";
+				Stand="ANT_inAir";
+            };
+            class MAR_ANT_Landing:MAR_ANT_Moves
+            {
+                turnSpeed=4.5;
+				PlayerCrouch="ANT_Landing";
+				Up="ANT_Landing";
+				Crouch="ANT_Landing";
+				AdjustB="";
+				Stand="ANT_Landing";
+            };
             class MAR_ANT_Turn_R:MAR_ANT_Moves
             {
                 turnSpeed=4.5;
@@ -738,9 +814,6 @@ class CfgMovesBasic
 				AdjustB="";
 				Stand="ANT_Death_Static";
             };
-
-            
-		
 	
 			//hit reactions
 	
@@ -755,6 +828,17 @@ class CfgMovesBasic
 				AdjustB="";
 				Stand="ANT_Attack_1";
             };
+
+            class MAR_ANT_Attack_Ranged:MAR_ANT_Moves
+            {
+                turnSpeed=4.5;
+				PlayerCrouch="ANT_Attack_Ranged";
+				Up="ANT_Attack_Ranged";
+				Crouch="ANT_Attack_Ranged";
+				AdjustB="";
+				Stand="ANT_Attack_Ranged";
+            };
+        
 		//ANT moveset end
 	};
 	
@@ -859,9 +943,10 @@ class CfgMoves_MAR_ANT: CfgMovesMaleSdr
             enableMissile = 1;
             enableOptics = 1;
 			leaning="empty";
-			aiming="empty";
-		    aimingBody="empty";
-			head = "empty";
+            soundOverride="idle";
+			aiming="HeadDefault_MAR_ANT";
+		    aimingBody="HeadDefault_MAR_ANT";
+			head = "HeadDefault_MAR_ANT";
 			legs="legsDefault_MAR_ANT";
 			InterpolateTo[]=
 			{
@@ -881,12 +966,18 @@ class CfgMoves_MAR_ANT: CfgMovesMaleSdr
                 0.01,
                 "ANT_Turn_L",
                 0.01,
-                "ANT_DEATH",
-                0.01,
                 "ANT_Attack_1",
-                0.01
-				
+                0.01,
+                "ANT_Attack_Ranged",
+                0.01,
+                "ANT_inAir",
+                0.01,
+                "ANT_Landing",
+                0.01				
 			};
+            interpolateFrom[]={
+       	
+            };
 			
 			preload = 1;
 		};
@@ -898,6 +989,7 @@ class CfgMoves_MAR_ANT: CfgMovesMaleSdr
 			file = "\Bugs_life\Ants\animations\walk_f.rtm";
 			speed = -1.2;
             actions = "MAR_ANT_Walk";
+            soundOverride="walk";
 		};
 
         class ANT_Walk_B:ANT_Walk
@@ -906,6 +998,22 @@ class CfgMoves_MAR_ANT: CfgMovesMaleSdr
 			speed = -1.2;
             actions = "MAR_ANT_Walk_B";
 		};
+        
+        class ANT_inAir:ANT_Idle
+        {
+            speed = -2;
+            file = "\Bugs_life\Ants\animations\inair.rtm";
+            actions = "MAR_ANT_inAir";
+        };
+
+        class ANT_Landing:ANT_Idle
+        {
+            looped = false;
+            speed = -1.2;
+            file = "\Bugs_life\Ants\animations\Landing.rtm";
+            actions = "MAR_ANT_Landing";
+            soundOverride="fallbody";
+        };
 
         class ANT_Walk_R:ANT_Walk
 		{
@@ -926,44 +1034,66 @@ class CfgMoves_MAR_ANT: CfgMovesMaleSdr
 			speed = -1;
             file = "\Bugs_life\Ants\animations\run_F.rtm";
             actions = "MAR_ANT_Run";
+            soundOverride="run";
 		};
 
-        class ANT_Turn_R:ANT_Walk
+        class ANT_Turn_R:ANT_Idle
 		{
 			speed = -1.2;
+            looped = false;
             file = "\Bugs_life\Ants\animations\turnr.rtm";
             actions = "MAR_ANT_Turn_R";
 		};
 
-        class ANT_Turn_L:ANT_Walk
+        class ANT_Turn_L:ANT_Idle
 		{
 			speed = -1.2;
+            looped = false;
             file = "\Bugs_life\Ants\animations\turnl.rtm";
             actions = "MAR_ANT_Turn_L";
 		};
 
-        class ANT_DEATH:ANT_Idle
+        class ANT_Death:ANT_Idle
         {
             terminal = 1;
             speed = -1.2;
-            looped = flase;
+            looped = false;
             file = "\Bugs_life\Ants\animations\death_1.rtm";
             actions = "MAR_ANT_Death_1";
         };
 
-        class ANT_DEATH_Static:ANT_DEATH
+        class ANT_DEATH_Static:ANT_Death
         {
             terminal = 1;
             file = "\Bugs_life\Ants\animations\death_static.rtm";
             actions = "MAR_ANT_Death_Static";
         };
 
-		class ANT_Attack_1:ANT_Walk
+		class ANT_Attack_1:ANT_Idle
         {
-            looped = flase;
+            leaning="empty";
+			aiming="empty";
+		    aimingBody="empty";
+			head = "empty";		
+            looped = false;
+            speed = -1;
             file = "\Bugs_life\Ants\animations\attack_1.rtm";
             actions = "MAR_ANT_Attack_1";
+            soundOverride="meleeAttack";
         };
+        class ANT_Attack_Ranged:ANT_Idle
+        {
+            leaning="empty";
+			aiming="empty";
+		    aimingBody="empty";
+			head = "empty";
+            looped = false;
+            speed = -1;
+            file = "\Bugs_life\Ants\animations\attackRanged.rtm";
+            actions = "MAR_ANT_Attack_Ranged";
+            soundOverride="rangedAttack";
+        };
+       
 
 	
 
@@ -975,56 +1105,90 @@ class CfgMoves_MAR_ANT: CfgMovesMaleSdr
 	{
 		legsDefault_MAR_ANT[]=
 		{
+            "a_thorax",
+            1,
             "a_foreleg.r",
-            0.6800000,
+            0.9,
 			"a_foreleg.r.001",
-            0.6800000,
+            0.8,
             "a_foreleg.r.002",
             0.6800000,
             "a_foreleg.r.003",
             0.6800000,
             "a_midleg.r",
-            0.6800000,
+            0.9,
             "a_midleg.r.001",
-            0.6800000,
+            0.8,
             "a_midleg.r.002",
             0.6800000,
             "a_midleg.r.003",
             0.6800000,
             "a_rearleg.r",
-            0.6800000,
+            0.9,
             "a_rearleg.r.001",
-            0.6800000,
+            0.8,
             "a_rearleg.r.002",
             0.6800000,
             "a_rearleg.r.003",
             0.6800000,
             "a_foreleg.l",
-            0.6800000,
+            0.9,
             "a_foreleg.l.001",
-            0.6800000,
+            0.8,
             "a_foreleg.l.002",
             0.6800000,
             "a_foreleg.l.003",
             0.6800000,
             "a_midleg.l",
-            0.6800000,
+            0.9,
             "a_midleg.l.001",
-            0.6800000,
+            0.8,
             "a_midleg.l.002",
             0.6800000,
             "a_midleg.l.003",
             0.6800000,
             "a_rearleg.l",
-            0.6800000,
+            0.9,
             "a_rearleg.l.001",
-            0.6800000,
+            0.8,
             "a_rearleg.l.002",
             0.6800000,
             "a_rearleg.l.003",
             0.6800000
 					
 		};
+        HeadDefault_MAR_ANT[]={
+            "a_head",
+            0.6,
+            "a_mandible.l",
+            0.5,
+            "a_mandible.r",
+            0.5,
+            "a_antenne_r",
+            0.5,
+            "a_antenne_r.001",	
+            0.5,
+            "a_antenne_l",
+            0.5,
+            "a_antenne_l.001",	
+            0.5,
+            "a_thorax",
+            0.2,
+            "a_mid",
+            0.1,
+            "a_foreleg.r",
+            0.2,
+            "a_midleg.r",
+            0.2,
+            "a_rearleg.r",
+            0.2,
+            "a_foreleg.l",
+            0.2,
+            "a_midleg.l",
+            0.2,
+            "a_rearleg.l",
+            0.2
+        };
 		
 	};
 };
@@ -1034,12 +1198,40 @@ class CfgMoves_MAR_ANT: CfgMovesMaleSdr
 class CfgCloudlets {
     class BloodMist;
     class Blood;
+    class LaptopSparks;
+    class SmokeTrailEffect1;
+    class ImpactEffectsWater1Med;
     class MAR_BugGut_Mist:BloodMist {
         color[]=
         {
             {0.3,1,0,0.12},
             {0.3,1,0,0.050000001}
         };
+        size[] = {
+			2, 2
+		};
+        emissiveColor[] = {{ 0.25, 0.9, 0.25, 1 }};
+    };
+    class MAR_BugAcid_Mist: SmokeTrailEffect1 {
+        size[] = {
+			4, 4
+		};
+        color[]=
+        {
+            {0.3,1,0,0.12},
+            {0.3,1,0,0.050000001}
+        };
+        emissiveColor[] = {{ 0.25, 0.9, 0.25, 1 }};
+       
+    };
+    class MAR_BugAcid_Mist_Impact:ImpactEffectsWater1Med
+    {
+        color[]=
+        {
+            {0.3,1,0,0.12},
+            {0.3,1,0,0.050000001}
+        };
+        emissiveColor[] = {{ 0.25, 0.9, 0.25, 1 }};
     };
     class MAR_BugGuts:Blood{
         color[]=
@@ -1047,10 +1239,33 @@ class CfgCloudlets {
             {0.3,1,0,0.12},
             {0.3,1,0,0.050000001}
         };
+        emissiveColor[] = {{ 0.25, 0.9, 0.25, 1 }};
     };
 };
 
-
+class MAR_ImpactEffects_Acid 
+{
+    class MAR_BugAcid_Mist01
+	{
+		simulation="particles";
+		type="MAR_BugAcid_Mist";
+		position[]={0,0,0};
+		intensity=1;
+		interval=1;
+		lifeTime=0.1;
+		qualityLevel=2;
+	};
+	class MAR_BugAcid_Mist_Impact01
+	{
+		simulation="particles";
+		type="MAR_BugAcid_Mist_Impact";
+		position[]={0,0,0};
+		intensity=1;
+		interval=1;
+		lifeTime=0.1;
+		qualityLevel=1;
+	};
+};
 class MAR_ImpactEffectsBugGuts
 {
 	class BloodMist
@@ -1075,6 +1290,28 @@ class MAR_ImpactEffectsBugGuts
 	
 };
 
+class BugsLife_AcidSpit
+{
+    class BloodMist
+	{
+		simulation="particles";
+		type="MAR_BugAcid_Mist";
+		position[]={0,0,0};
+		intensity=1;
+		interval=1;
+		lifeTime=1;
+		MoveVelocityVar[]={0,0,0};
+	};
+	class Blood
+	{
+		simulation="particles";
+		type="MAR_BugGuts";
+		position[]={0,0,0};
+		intensity=1;
+		interval=1;
+		lifeTime=1;
+	};
+};
 
 
 
@@ -1102,7 +1339,301 @@ class Extended_InitPost_EventHandlers
     {
         class MAR_ANT_Basic_AI_INIT 
         {
-            init = "_unit = _this select 0; if (local _unit) then {[_unit] execVM '\Bugs_life\Ants\AI\MAR_AI_basicAnt.sqf';};";
+           // init = "_unit = _this select 0; if (local _unit) then {[_unit] execVM '\Bugs_life\Ants\AI\MAR_AI_basicAnt.sqf';};";
         };						
     };
+};
+
+class CfgGroups
+{
+	class East
+	{
+		class Mar_ANTs_OPF
+		{
+			name = "ants";
+			class Ant_groups_OPF
+			{
+				name = "Ant Groups";
+				class Worker_Patrol_OP
+				{
+					name = "Patrol";
+					side = 0;					
+					rarityGroup = 0.30000001;
+					
+					class Unit0
+					{
+						side = 0;
+						vehicle = "MAR_ANT_Basic";
+						rank = "CORPORAL";
+						position[] = { 0,0,0 };
+					};
+					class Unit1
+					{
+						side = 0;
+						vehicle = "MAR_ANT_Basic";
+						rank = "PRIVATE";
+						position[] = { 5,-5,0 };
+					};
+					class Unit2
+					{
+						side = 0;
+						vehicle = "MAR_ANT_Basic";
+						rank = "PRIVATE";
+						position[] = { 10,-10,0 };
+					};
+                    class Unit3
+					{
+						side = 0;
+						vehicle = "MAR_ANT_Basic";
+						rank = "PRIVATE";
+						position[] = { 15,-15,0 };
+					};
+                    class Unit4
+					{
+						side = 0;
+						vehicle = "MAR_ANT_Basic";
+						rank = "PRIVATE";
+						position[] = { 15,-15,0 };
+					};
+                    class Unit5
+					{
+						side = 0;
+						vehicle = "MAR_ANT_Basic";
+						rank = "PRIVATE";
+						position[] = { 15,-15,0 };
+					};
+				};
+
+                class Spitter_Patrol_OP
+				{
+					name = "Spitter Patrol";
+					side = 0;					
+					rarityGroup = 0.30000001;
+					
+					class Unit0
+					{
+						side = 0;
+						vehicle = "MAR_ANT_Spitter";
+						rank = "CORPORAL";
+						position[] = { 0,0,0 };
+					};
+					class Unit1
+					{
+						side = 0;
+						vehicle = "MAR_ANT_Spitter";
+						rank = "PRIVATE";
+						position[] = { 5,-5,0 };
+					};
+					class Unit2
+					{
+						side = 0;
+						vehicle = "MAR_ANT_Spitter";
+						rank = "PRIVATE";
+						position[] = { 10,-10,0 };
+					};
+                    class Unit3
+					{
+						side = 0;
+						vehicle = "MAR_ANT_Spitter";
+						rank = "PRIVATE";
+						position[] = { 15,-15,0 };
+					};
+                    class Unit4
+					{
+						side = 0;
+						vehicle = "MAR_ANT_Spitter";
+						rank = "PRIVATE";
+						position[] = { 15,-15,0 };
+					};
+                    class Unit5
+					{
+						side = 0;
+						vehicle = "MAR_ANT_Spitter";
+						rank = "PRIVATE";
+						position[] = { 15,-15,0 };
+					};
+				};
+
+                class ICE_Patrol_OP
+				{
+					name = "Ice ant Patrol";
+					side = 0;					
+					rarityGroup = 0.30000001;
+					
+					class Unit0
+					{
+						side = 0;
+						vehicle = "MAR_ANT_Ice";
+						rank = "CORPORAL";
+						position[] = { 0,0,0 };
+					};
+					class Unit1
+					{
+						side = 0;
+						vehicle = "MAR_ANT_Ice";
+						rank = "PRIVATE";
+						position[] = { 5,-5,0 };
+					};
+					class Unit2
+					{
+						side = 0;
+						vehicle = "MAR_ANT_Ice";
+						rank = "PRIVATE";
+						position[] = { 10,-10,0 };
+					};
+                    class Unit3
+					{
+						side = 0;
+						vehicle = "MAR_ANT_Ice";
+						rank = "PRIVATE";
+						position[] = { 15,-15,0 };
+					};
+                    class Unit4
+					{
+						side = 0;
+						vehicle = "MAR_ANT_Ice";
+						rank = "PRIVATE";
+						position[] = { 15,-15,0 };
+					};
+                    class Unit5
+					{
+						side = 0;
+						vehicle = "MAR_ANT_Ice";
+						rank = "PRIVATE";
+						position[] = { 15,-15,0 };
+					};
+				};
+
+                class WorkerSpitter_Patrol_OP
+				{
+					name = "Scout section";
+					side = 0;					
+					rarityGroup = 0.30000001;
+					
+					class Unit0
+					{
+						side = 0;
+						vehicle = "MAR_ANT_Basic";
+						rank = "CORPORAL";
+						position[] = { 0,0,0 };
+					};
+					class Unit1
+					{
+						side = 0;
+						vehicle = "MAR_ANT_Basic";
+						rank = "PRIVATE";
+						position[] = { 5,-5,0 };
+					};
+					class Unit2
+					{
+						side = 0;
+						vehicle = "MAR_ANT_Spitter";
+						rank = "PRIVATE";
+						position[] = { 10,-10,0 };
+					};
+                    class Unit3
+					{
+						side = 0;
+						vehicle = "MAR_ANT_Spitter";
+						rank = "PRIVATE";
+						position[] = { 15,-15,0 };
+					};
+                    class Unit4
+					{
+						side = 0;
+						vehicle = "MAR_ANT_Basic";
+						rank = "CORPORAL";
+						position[] = { 5,5,0 };
+					};
+					class Unit5
+					{
+						side = 0;
+						vehicle = "MAR_ANT_Basic";
+						rank = "PRIVATE";
+						position[] = { 10,10,0 };
+					};
+					class Unit6
+					{
+						side = 0;
+						vehicle = "MAR_ANT_Spitter";
+						rank = "PRIVATE";
+						position[] = { 15,15,0 };
+					};
+                    class Unit7
+					{
+						side = 0;
+						vehicle = "MAR_ANT_Spitter";
+						rank = "PRIVATE";
+						position[] = { 18,18,0 };
+					};
+				};
+
+                class WorkerICESpitter_Patrol_OP
+				{
+					name = "Hill defense section";
+					side = 0;					
+					rarityGroup = 0.30000001;
+					
+					class Unit0
+					{
+						side = 0;
+						vehicle = "MAR_ANT_Basic";
+						rank = "CORPORAL";
+						position[] = { 0,0,0 };
+					};
+					class Unit1
+					{
+						side = 0;
+						vehicle = "MAR_ANT_Basic";
+						rank = "PRIVATE";
+						position[] = { 5,-5,0 };
+					};
+					class Unit2
+					{
+						side = 0;
+						vehicle = "MAR_ANT_Spitter";
+						rank = "PRIVATE";
+						position[] = { 10,-10,0 };
+					};
+                    class Unit3
+					{
+						side = 0;
+						vehicle = "MAR_ANT_Ice";
+						rank = "PRIVATE";
+						position[] = { 15,-15,0 };
+					};
+                    class Unit4
+					{
+						side = 0;
+						vehicle = "MAR_ANT_Basic";
+						rank = "CORPORAL";
+						position[] = { 5,5,0 };
+					};
+					class Unit5
+					{
+						side = 0;
+						vehicle = "MAR_ANT_Basic";
+						rank = "PRIVATE";
+						position[] = { 10,10,0 };
+					};
+					class Unit6
+					{
+						side = 0;
+						vehicle = "MAR_ANT_Ice";
+						rank = "PRIVATE";
+						position[] = { 15,15,0 };
+					};
+                    class Unit7
+					{
+						side = 0;
+						vehicle = "MAR_ANT_Spitter";
+						rank = "PRIVATE";
+						position[] = { 18,18,0 };
+					};
+				};
+
+			};
+            
+		};
+	};
 };
