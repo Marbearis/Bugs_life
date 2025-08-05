@@ -116,10 +116,6 @@ Bugzlife_MARAntHill_SpawnHill = {
 		_DroidPodCrater animateSource ['Anthill_Raised',0,5];
         
     
-
-        // _projectile setposATL ([getPosATL _projectile # 0, getPosATL _projectile # 1, 0]);
-        // _projectile setVectorUp surfaceNormal position _projectile;
-
         _projectile setVariable ['CraterOBJ', _DroidPodCrater, true];
 
         _position = _CraterPos;
@@ -148,8 +144,6 @@ Bugzlife_MARAntHill_SpawnHill = {
 
 				sleep 6;
 			};
-			
-
             _FloodGroup deleteGroupWhenEmpty true;
         };
 
@@ -534,7 +528,7 @@ BugsLife_RangedAttack_FNC= {
 				_mantis setVariable ["WBK_OPTRE_AfterContact",1];
 				_mantis spawn {uisleep selectRandom [1,2,3,4]; _this setVariable ["IsCanFire",nil];};																				
 				uiSleep 0.3;				
-				[_mantis,_mantis modelToWorldVisual [(_mantis selectionPosition ["a_spitPoint","Memory"])select 0,((_mantis selectionPosition ["a_spitPoint","Memory"]) select 1)+0,((_mantis selectionPosition ["a_spitPoint","Memory"])select 2)+0],"Smasher_AcidGrenade", _en, selectRandom [[(aimPos _en select 0) - 1,aimPos _en select 1,aimPos _en select 2],[(aimPos _en select 0) + 1,aimPos _en select 1,aimPos _en select 2],[(aimPos _en select 0) - 2,aimPos _en select 1,aimPos _en select 2],[(aimPos _en select 0) + 2,aimPos _en select 1,aimPos _en select 2],[eyePos _en select 0, eyePos _en select 1,(eyePos _en select 2) + 2],[eyePos _en select 0, eyePos _en select 1,(eyePos _en select 2) + 2],[eyePos _en select 0, eyePos _en select 1,(eyePos _en select 2) + 1]], (selectRandom [40,50,55]), false, [0,0,0]] spawn Bugzz_fnc_ProjectileCreate;						
+				[_mantis,_mantis modelToWorldVisual [(_mantis selectionPosition ["a_spitPoint","Memory"])select 0,((_mantis selectionPosition ["a_spitPoint","Memory"]) select 1)+0,((_mantis selectionPosition ["a_spitPoint","Memory"])select 2)+0],"B_BugsLife_Acid_Spit", _en, selectRandom [[(aimPos _en select 0) - 1,aimPos _en select 1,aimPos _en select 2],[(aimPos _en select 0) + 1,aimPos _en select 1,aimPos _en select 2],[(aimPos _en select 0) - 2,aimPos _en select 1,aimPos _en select 2],[(aimPos _en select 0) + 2,aimPos _en select 1,aimPos _en select 2],[eyePos _en select 0, eyePos _en select 1,(eyePos _en select 2) + 2],[eyePos _en select 0, eyePos _en select 1,(eyePos _en select 2) + 2],[eyePos _en select 0, eyePos _en select 1,(eyePos _en select 2) + 1]], (selectRandom [40,50,55]), false, [0,0,0]] spawn Bugzz_fnc_ProjectileCreate;						
 			};
 
 			case (_mantis isKindOf "MAR_ANT_Ice"): {
@@ -575,7 +569,7 @@ Bugzz_fnc_ProjectileCreate = {
 	private _rocket = createVehicle [_class,_startPos, [], 0, "CAN_COLLIDE"];
 	_rocket setDir (getDir _shooter);
 
-	if (_rocket isKindOf "Smasher_AcidGrenade") then {
+	if (_rocket isKindOf "B_BugsLife_Acid_Spit") then {
 		[_rocket, {
 			if (isDedicated) exitWith {};
 			_fulgi  = "#particlesource" createVehiclelocal getposaTL _this; 

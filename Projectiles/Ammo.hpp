@@ -11,7 +11,7 @@
 	    
     
         
-        class Smasher_AcidGrenade: SmokeShell
+        class B_BugsLife_Acid_Spit: SmokeShell
         {
             explosionSoundEffect = "DefaultExplosion";
             timeToLive = 900;
@@ -36,21 +36,7 @@
         };
    
 	
-		class B_BugsLife_Acid_Spit:Smasher_AcidGrenade
-		{
-			hit = 7;
-			indirectHit = 4;
-			timeToLive = 15;
-			explosive = 0;
-			effectFly="BugsLife_AcidSpit";				
-			cartridge = "";
-			model = "Bugs_Life\Projectiles\spiker_round.p3d";
-			fuseDistance = 0.1;
-			thrustTime = 200;
-			triggerDistance = 0.1;
-			triggerSpeedCoef[] = {0.5,1};
-			submunitionConeAngle = 15;				
-		};
+		
 		
 		class B_BugsLife_Acid_Spit_Sub:SmokeShell
 		{
