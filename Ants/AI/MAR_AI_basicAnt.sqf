@@ -7,7 +7,25 @@ sleep (selectRandom [0.1,0.5,0.3,0.9]);
 _gruntBoy setSpeaker "NoVoice";
 (group _gruntBoy) setFormation "LINE";
 _gruntBoy disableConversation true;
-_gruntBoy setVariable ["WBK_HaloCustomHp",MAR_BL_ANTWORKERHLTTH,true];
+switch typeOf _gruntBoy do {
+	case ("MAR_ANT_Basic"):{
+		_gruntBoy setVariable ["WBK_HaloCustomHp",MAR_BL_ANTWORKERHLTTH,true];
+		_gruntBoy setVariable ["WBK_HaloCustomHpMax",MAR_BL_ANTWORKERHLTTH,true];
+	};
+	case ("MAR_ANT_Spitter"):{
+		_gruntBoy setVariable ["WBK_HaloCustomHp",MAR_BL_ANTSPITTERHLTTH,true];
+		_gruntBoy setVariable ["WBK_HaloCustomHpMax",MAR_BL_ANTSPITTERHLTTH,true];
+	};
+	case ("MAR_ANT_Ice"):{
+		_gruntBoy setVariable ["WBK_HaloCustomHp",MAR_BL_ANTICEHLTTH,true];
+		_gruntBoy setVariable ["WBK_HaloCustomHpMax",MAR_BL_ANTICEHLTTH,true];
+	};
+	default {
+		_gruntBoy setVariable ["WBK_HaloCustomHp",MAR_BL_ANTWORKERHLTTH,true];
+		_gruntBoy setVariable ["WBK_HaloCustomHpMax",MAR_BL_ANTWORKERHLTTH,true];
+	};
+};
+
 _gruntBoy setVariable ["lambs_danger_disableAI", true];
 _gruntBoy setVariable ["WBK_CovieAI", 1];
 _gruntBoy allowFleeing 0;
@@ -59,7 +77,8 @@ _gruntBoy addEventHandler ["Killed", {
 		_ifDelete = [_x] call CBA_fnc_removePerFrameHandler;
 	} forEach ((_this select 0) getVariable "WBK_AI_AttachedHandlers");
 	(_this select 0) spawn {
-		uisleep 0.1;
+		uisleep 0.1;	
+		_this remoteExec ["Bugzlife_AntDeathContainer",_this];
 	};
 }];
 
@@ -69,11 +88,11 @@ _gruntBoy setVariable ["IMS_EventHandler_Hit",{
 	_victim = _this select 0;
 	_attacker = _this select 1;
 	_weapon = _this select 2;
-	[_victim,selectRandom ["grunt_pain_1","grunt_pain_2","grunt_pain_3","grunt_pain_4","grunt_pain_5","grunt_pain_6","grunt_pain_7"],200] call CBA_fnc_GlobalSay3d;
+	//[_victim,selectRandom ["grunt_pain_1","grunt_pain_2","grunt_pain_3","grunt_pain_4","grunt_pain_5","grunt_pain_6","grunt_pain_7"],200] call CBA_fnc_GlobalSay3d;
 	if (((_victim worldToModel (_attacker modelToWorld [0, 0, 0])) select 1) < 0) exitWith {
-		[_victim,["ANT_HIT_BACK", 0, 0.7, false]] remoteExec ["switchMove",0];
+		[_victim,["ANT_Hit_B", 0, 0.7, false]] remoteExec ["switchMove",0];
 	};
-	[_victim,["ANT_HIT_FRONT", 0, 0.7, false]] remoteExec ["switchMove",0];
+	[_victim,["ANT_Hit_F", 0, 0.7, false]] remoteExec ["switchMove",0];
 },true];
 
 
@@ -88,28 +107,26 @@ _this addEventHandler [
 		_isExplosive = _ammo select 3;
 		_isEnoughDamage = _ammo select 0;
 		_vv = _target getVariable "WBK_HaloCustomHp";
+		_vvMAX = _target getVariable "WBK_HaloCustomHpMax";
 		_new_vv = _vv - _isEnoughDamage;
 		if (_new_vv <= 0) exitWith {
 			_target removeAllEventHandlers "HitPart"; 
 			[_target, [1, false, _shooter]] remoteExec ["setDamage",2];
-			if (_isExplosive >= 0.6) exitWith {
-				if (((_target worldToModel (_shooter modelToWorld [0, 0, 0])) select 1) < 0) then {
-					[_target,[0,12,6]] remoteExec ["setVelocityModelSpace",_target];
-				}else{
-					[_target,[0,-12,6]] remoteExec ["setVelocityModelSpace",_target];
-				};
-				[[_target,_shooter],{uisleep 0.3; [_this select 0,_this select 1] spawn WBK_GruntDeathContainer;}] remoteExec ["spawn",_target];
-			};
-			[_target,_shooter] remoteExec ["WBK_GruntDeathContainer",_target];
 		};
 		[_target, "WBK_Halo_Hit",[_target,_shooter]] call BIS_fnc_callScriptedEventHandler;
 		_target setVariable ["WBK_HaloCustomHp",_new_vv,true];
-		if (!(isNull objectParent _target) or !(isTouchingGround _target) or (animationState _target == "Grunt_Kamikadze_Loop") or (animationState _target == "Grunt_Kamikadze_IN") or (animationState _target == "Grunt_Scared_Run") or (animationState _target == "Grunt_Scared_Idle") or (animationState _target == "Grunt_Hit_Front") or (animationState _target == "Grunt_Hit_Back")) exitWith {};
-        [_target,selectRandom ["grunt_pain_1","grunt_pain_2","grunt_pain_3","grunt_pain_4","grunt_pain_5","grunt_pain_6","grunt_pain_7"],200] call CBA_fnc_GlobalSay3d;
-		if (((_target worldToModel (_shooter modelToWorld [0, 0, 0])) select 1) < 0) exitWith {
-			[_target,["Grunt_Melee_Hit_Back", 0, 0.7, false]] remoteExec ["switchMove",0];
+		if (!(isNull objectParent _target) or !(isTouchingGround _target) or (animationState _target == "ANT_Hit_B") or (animationState _target == "ANT_Hit_F") or (animationState _target == "ANT_Death")) exitWith {};
+       // [_target,selectRandom ["grunt_pain_1","grunt_pain_2","grunt_pain_3","grunt_pain_4","grunt_pain_5","grunt_pain_6","grunt_pain_7"],200] call CBA_fnc_GlobalSay3d;
+		if ((isNil{_target getVariable "canBeStunned"}) && (_isEnoughDamage > 12))then
+		{
+			_target setVariable ["canBeStunned",false,true];
+			_target spawn {sleep 6; _this setVariable ["canBeStunned",nil,true];};
+
+			if (((_target worldToModel (_shooter modelToWorld [0, 0, 0])) select 1) < 0) exitWith {
+				[_target,["ANT_Hit_B", 0, 0.7, false]] remoteExec ["switchMove",0];
+			};
+			[_target,["ANT_Hit_F", 0, 0.7, false]] remoteExec ["switchMove",0];
 		};
-		[_target,["Grunt_Melee_Hit_Front", 0, 0.7, false]] remoteExec ["switchMove",0];
 	}
 ];
 }] remoteExec ["spawn", [0,-2] select isDedicated,true];
@@ -138,10 +155,13 @@ _actFr = [{
 		};
 		
 		case (!(alive _mutant) || (animationState _mutant in [
-			"ant_attack_1",
-			"ant_death",
-			"ant_death_static",
-			"ant_inair"
+				"ant_attack_1",
+				"ant_attack_ranged",
+				"ant_death",
+				"ant_death_static",
+				"ant_inair",
+				"ant_hit_f",
+				"ant_hit_b"
 			])): {};
 		default {
 			_mutant action ["SwitchWeapon", _mutant, _mutant, 100]; 
@@ -163,14 +183,15 @@ _actFr = [{
 				case (
 					(isNull objectParent _mutant) and 
 					((vehicle _en) isKindOf "MAN") and 
-					!(animationState _mutant == "ANT_Attack_1")and 								
+					!(animationState _mutant == "ANT_Attack_1")and
+					!(animationState _mutant == "ANT_Attack_Ranged")and  								
 					((_en distance _mutant) < 2.5) and ((_en distance _mutant) > 0) and
 					!(isNull _en) and 
 					(alive _en) and 
 					!((vehicle _en) isKindOf "Tank") and 
 					!((vehicle _en) isKindOf "Air")): {
 					
-					[_mutant,_en] spawn BEXP_FNC_GruntMelee;
+					[_mutant,_en] spawn Bugslife_ANTMelee;
 					[_mutant, "WBK_Halo_Melee",[_mutant,_en]] call BIS_fnc_callScriptedEventHandler;
 				};
 
@@ -180,7 +201,7 @@ _actFr = [{
 					(isNull objectParent _mutant) and 
 					!(animationState _mutant == "ANT_Attack_1")and
 					!(animationState _mutant == "ANT_Attack_Ranged")and  								
-					((_en distance _mutant) < 50) and ((_en distance _mutant) > 2.5) and
+					((_en distance _mutant) < 90) and ((_en distance _mutant) > 2.5) and
 					!(isNull _en) and 
 					(alive _en)): {
 					
@@ -203,12 +224,7 @@ _loopPathfind = [{
 	_nearEnemy = _unit findNearestEnemy _unit; 
 
 	switch true do {
-		case (!(alive _unit) || (animationState _unit in [
-			"ant_attack_1",
-			"ant_death",
-			"ant_death_static",
-			"ant_inair"
-		])): {};
+		
 		case (!(simulationEnabled _unit) || !(isNull (remoteControlled _unit)) || (isNull _nearEnemy) or !(alive _nearEnemy) or !(alive _unit) or !(isNull attachedTo _unit) or (lifeState _unit == "INCAPACITATED") or (_unit distance _nearEnemy >= 200)): {
 			switch true do {
 				case !(isNil {_unit getVariable "WBK_IsUnitLocked"}): {_unit setVariable ["WBK_IsUnitLocked",nil];};
@@ -306,12 +322,11 @@ _loopPathfind = [{
 _loopPathfindDoMove = [{
     _array = _this select 0;
     _unit = _array select 0;
-	if (!(alive _unit) || (animationState _unit in ["ant_attack_1","ant_death","ant_death_static","ant_inair"]))exitWith {};
+	
 	if (!(_unit checkAIFeature "MOVE") or !(_unit checkAIFeature "PATH") or !(animationState _unit in ["ant_idle","ant_run"])) exitWith {};
 	_nearEnemy = _unit call MAR_Bugslife_FindTarget; 
-    if ((isNull _nearEnemy) or !(alive _nearEnemy) or !(alive _unit) or ((_unit distance _nearEnemy) >= 200)) exitWith {
-		_unit doFollow (leader group _unit);
-		[_unit,selectRandom ["ANT_Run"],[0,0,0]] spawn ANTZ_MoveAi;
+    if ((isNull _nearEnemy) or !(alive _nearEnemy) or !(alive _unit) or (((_unit distance _nearEnemy) >= 200) and !((_unit distance _nearEnemy) < 2.5))) exitWith {
+		_unit doFollow (leader group _unit);		
 	};
 		{_unit reveal [_x, 4]} forEach units group _nearEnemy;
 		_unit setVariable ["WBK_OPTRE_AfterContact",1];

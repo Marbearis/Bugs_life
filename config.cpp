@@ -12,7 +12,7 @@ class CfgPatches
 	};
 };
 #include "Projectiles\Ammo.hpp"
-
+#include "data\CfgCloudlets.hpp"
 /// editor/curator category creation!
 
 class CfgEditorCategories
@@ -58,21 +58,118 @@ class CfgVehicles
         editorCategory = "MAR_Bugs";
         model = "\Bugs_life\Ants\Anthill.p3d";
         displayName = "Ant hill";
+        class AnimationSources
+        {
+            class Anthill_Raised
+            {
+                source="user";
+                animPeriod=3;
+                initPhase=1;
+                sound="";
+                soundPosition="";
+            };
+        };
+
+    };
+    
+    class MAR_Ant_Part_Head:Land_Basketball_01_F
+    {
+        scope = 2;			
+		scopeCurator = 2;
+        editorSubcategory = "MAR_Bugs_Ants";
+        editorCategory = "MAR_Bugs";
+        model = "\Bugs_life\Ants\parts\Head.p3d";
+        displayName = "Ant head";
+        hiddenSelections[] = {"camo","eyes"};
+		hiddenSelectionsTextures[] = {"\Bugs_life\Ants\textures\SpitterAnt\ANT_CO.paa","\Bugs_life\Ants\textures\SpitterAnt\ANT_CO.paa"};
+    };
+
+    class MAR_Ant_Part_Thorax:Land_Basketball_01_F
+    {
+        scope = 2;			
+		scopeCurator = 2;
+        editorSubcategory = "MAR_Bugs_Ants";
+        editorCategory = "MAR_Bugs";
+        model = "\Bugs_life\Ants\parts\Thorax.p3d";
+        displayName = "Ant Thorax";
+        hiddenSelections[] = {"camo","eyes"};
+		hiddenSelectionsTextures[] = {"\Bugs_life\Ants\textures\SpitterAnt\ANT_CO.paa","\Bugs_life\Ants\textures\SpitterAnt\ANT_CO.paa"};
+    };
+
+    class MAR_Ant_Part_Abdomen:Land_Basketball_01_F
+    {
+        scope = 2;			
+		scopeCurator = 2;
+        editorSubcategory = "MAR_Bugs_Ants";
+        editorCategory = "MAR_Bugs";
+        model = "\Bugs_life\Ants\parts\Abdomen.p3d";
+        displayName = "Ant Abdomen";
+        hiddenSelections[] = {"camo","eyes"};
+		hiddenSelectionsTextures[] = {"\Bugs_life\Ants\textures\SpitterAnt\ANT_CO.paa","\Bugs_life\Ants\textures\SpitterAnt\ANT_CO.paa"};
+    };
+
+    class MAR_Ant_Part_Leg:Land_Basketball_01_F
+    {
+        scope = 2;			
+		scopeCurator = 2;
+        editorSubcategory = "MAR_Bugs_Ants";
+        editorCategory = "MAR_Bugs";
+        model = "\Bugs_life\Ants\parts\Leg.p3d";
+        displayName = "Ant Leg";
+        hiddenSelections[] = {"camo","eyes"};
+		hiddenSelectionsTextures[] = {"\Bugs_life\Ants\textures\SpitterAnt\ANT_CO.paa","\Bugs_life\Ants\textures\SpitterAnt\ANT_CO.paa"};
+    };
+
+    class MAR_Ant_Part_Antenne:Land_Basketball_01_F
+    {
+        scope = 2;			
+		scopeCurator = 2;
+        editorSubcategory = "MAR_Bugs_Ants";
+        editorCategory = "MAR_Bugs";
+        model = "\Bugs_life\Ants\parts\antenne.p3d";
+        displayName = "Ant antenne";
+        hiddenSelections[] = {"camo","eyes"};
+		hiddenSelectionsTextures[] = {"\Bugs_life\Ants\textures\SpitterAnt\ANT_CO.paa","\Bugs_life\Ants\textures\SpitterAnt\ANT_CO.paa"};
+    };
+
+    class MAR_Ant_Part_Mandible:Land_Basketball_01_F
+    {
+        scope = 2;			
+		scopeCurator = 2;
+        editorSubcategory = "MAR_Bugs_Ants";
+        editorCategory = "MAR_Bugs";
+        model = "\Bugs_life\Ants\parts\Mandible.p3d";
+        displayName = "Ant Mandible";
+        hiddenSelections[] = {"camo","eyes"};
+		hiddenSelectionsTextures[] = {"\Bugs_life\Ants\textures\SpitterAnt\ANT_CO.paa","\Bugs_life\Ants\textures\SpitterAnt\ANT_CO.paa"};
+    };
+
+    class MAR_acidCrater: House_F
+    {
+        scope = 2;			
+		scopeCurator = 2;
+        editorSubcategory = "MAR_Bugs_Ants";
+        editorCategory = "MAR_Bugs";
+        model = "\Bugs_life\data\bloodpools\acidPool.p3d";
+        displayName = "acid crater";
+        hiddenSelections[]={"camo"};
+        hiddenSelectionsTextures[]={"\Bugs_life\data\bloodpools\DefaultMaterial_CA.paa"};
+        hiddenSelectionsMaterials[]={"\Bugs_life\data\bloodpools\bloodPoolGreen.rvmat"};
 
     };
 	//units
 	class B_Soldier_base_F;	// External class reference
-	class WBK_C_ExportClass : B_Soldier_base_F {
+	class Marby_C_ExportClass : B_Soldier_base_F {
 		identityTypes[] = {"empty_Face"};
 	};
 
-	class MAR_ANT_BASE : WBK_C_ExportClass 
+	class MAR_ANT_BASE : Marby_C_ExportClass 
     {
         side = 0;
         scope = 0;			
         scopeCurator = 0;
-        impactEffectsBlood = "MAR_ImpactEffectsBugGuts";
-        impactEffectsNoBlood = "MAR_ImpactEffectsBugGuts";
+        impactEffectsBlood = "MAR_ImpactEffectsBugGuts_Green";
+        impactEffectsNoBlood = "MAR_ImpactEffectsBugGuts_Green";
         faction = "MAR_Bug_Faction";
 		editorSubcategory = "MAR_Bugs_Ants";
         hiddenSelections[] = {"camo","eyes"};
@@ -514,12 +611,16 @@ class CfgVehicles
 		scope = 2;			
 		scopeCurator = 2;
         displayName = "Worker Ant";
+        impactEffectsBlood = "MAR_ImpactEffectsBugGuts_Orange";
+        impactEffectsNoBlood = "MAR_ImpactEffectsBugGuts_Orange";
     };
     class MAR_ANT_Spitter:MAR_ANT_BASE
     {
         side = 0;
 		scope = 2;			
 		scopeCurator = 2;
+        impactEffectsBlood = "MAR_ImpactEffectsBugGuts_Green";
+        impactEffectsNoBlood = "MAR_ImpactEffectsBugGuts_Green";
         displayName = "Spitter Ant";
         hiddenSelections[] = {"camo","eyes"};
 		hiddenSelectionsTextures[] = {"\Bugs_life\Ants\textures\SpitterAnt\ANT_CO.paa","\Bugs_life\Ants\textures\SpitterAnt\ANT_CO.paa"};
@@ -531,6 +632,8 @@ class CfgVehicles
         side = 0;
 		scope = 2;			
 		scopeCurator = 2;
+        impactEffectsBlood = "MAR_ImpactEffectsBugGuts_Blue";
+        impactEffectsNoBlood = "MAR_ImpactEffectsBugGuts_Blue";
         displayName = "Ice Ant";
         hiddenSelections[] = {"camo","eyes"};
 		hiddenSelectionsTextures[] = {"\Bugs_life\Ants\textures\IceAnt\ANT_CO.paa","\Bugs_life\Ants\textures\IceAnt\ANT_CO.paa"};
@@ -612,7 +715,242 @@ class cfgWeapons
 		};
 };
 
+/*
+    class CfgRagDollSkeletons
+    {
+            class BaseRagdoll;
+            class AntRagdoll: BaseRagdoll
+        {
+            networkBonePrimary="a_thorax";
+            networkBoneSecondary="a_mid";
+            
+            
+            class BaseRagdollBone
+            {
+                childrenUseIdleAnim=0;
+                material="Ragdoll";
+                childrenUseStartTrans=1;
+            };
 
+            class Bones
+            {
+                class Pelvis: BaseRagdollBone
+                {
+                    radius=0.12;
+                    networkType="root";
+                    name="pelvis";
+                    type="box";
+                    size[]={0.11,0.12,0.20999999};
+                    startBone="a_mid";
+                    endBone="a_thorax";
+                    mass=36;
+                };
+                class Chest: BaseRagdollBone
+                {
+                    radius=0.16;
+                    name="chest";
+                    startBone="a_thorax";
+                    endBone="a_head";
+                    type="box";
+                    size[]={0.11,0.14,0.19};
+                    mass=20;
+                };
+                class Head: BaseRagdollBone
+                {
+                    name="head";
+                    type="sphere";
+                    startBone="a_head";
+                    offset[]={0,-0.1,0};
+                    mass=9.75;
+                    radius=0.12;
+                };
+                //right
+                    class r_foreleg: BaseRagdollBone
+                    {
+                        name="r_foreleg";
+                        type="capsule";
+                        startBone="a_foreleg.r";
+                        endBone="a_foreleg.r.001";
+                        mass=9.75;
+                    };
+                    class r_foreleg_1: BaseRagdollBone
+                    {
+                        name="r_foreleg_1";
+                        type="capsule";
+                        startBone="a_foreleg.r.001";
+                        endBone="a_foreleg.r.002";
+                        mass=12;
+                    };
+                    class r_foreleg_2: BaseRagdollBone
+                    {
+                        childrenUseIdleAnim=1;
+                        networkType="rightHand";
+                        name="r_foreleg_2";
+                        type="sphere";
+                        startBone="a_foreleg.r.002";
+                        endBone =   "a_foreleg.r.003";
+                        mass=6;
+                        radius=0.079999998;
+                        childrenUseStartTrans=0;
+                    };
+                    class r_midLeg: r_foreleg
+                    {
+                        name="r_midLeg";
+                        type="capsule";
+                        startBone="a_midleg.r";
+                        endBone="a_midleg.r.001";
+                        mass=9.75;
+                    };
+                    class r_midLeg_1: r_foreleg_1
+                    {
+                        name="r_midLeg_1";
+                        type="capsule";
+                        startBone="a_midleg.r.001";
+                        endBone="a_midleg.r.002";
+                        mass=12;
+                    };
+                    class r_midLeg_2: r_foreleg_2
+                    {
+                        childrenUseIdleAnim=1;
+                        networkType="rightHand";
+                        name="r_midLeg_2";
+                        type="sphere";
+                        startBone="a_midleg.r.002";
+                        endBone =   "a_midleg.r.003";
+                        mass=6;
+                        radius=0.079999998;
+                        childrenUseStartTrans=0;
+                    };
+                    class r_rearLeg: r_foreleg
+                    {
+                        name="r_rearLeg";
+                        type="capsule";
+                        startBone="a_rearleg.r";
+                        endBone="a_rearleg.r.001";
+                        mass=9.75;
+                    };
+                    class r_rearLeg_1: r_foreleg_1
+                    {
+                        name="r_rearLeg_1";
+                        type="capsule";
+                        startBone="a_rearleg.r.001";
+                        endBone="a_rearleg.r.002";
+                        mass=12;
+                    };
+                    class r_rearLeg_2: r_foreleg_2
+                    {
+                        childrenUseIdleAnim=1;
+                        networkType="rightHand";
+                        name="r_rearLeg_2";
+                        type="sphere";
+                        startBone="a_rearleg.r.002";
+                        endBone =   "a_rearleg.r.003";
+                        mass=6;
+                        radius=0.079999998;
+                        childrenUseStartTrans=0;
+                    };
+                //left
+                    class l_foreleg: BaseRagdollBone
+                    {
+                        name="l_foreleg";
+                        type="capsule";
+                        startBone="a_foreleg.l";
+                        endBone="a_foreleg.l.001";
+                        mass=9.75;
+                    };
+                    class l_foreleg_1: BaseRagdollBone
+                    {
+                        name="l_foreleg_1";
+                        type="capsule";
+                        startBone="a_foreleg.l.001";
+                        endBone="a_foreleg.l.002";
+                        mass=12;
+                    };
+                    class l_foreleg_2: BaseRagdollBone
+                    {
+                        childrenUseIdleAnim=1;
+                        networkType="rightHand";
+                        name="l_foreleg_2";
+                        type="sphere";
+                        startBone="a_foreleg.l.002";
+                        endBone =   "a_foreleg.l.003";
+                        mass=6;
+                        radius=0.079999998;
+                        childrenUseStartTrans=0;
+                    };
+                    class l_midLeg: r_foreleg
+                    {
+                        name="l_midLeg";
+                        type="capsule";
+                        startBone="a_midleg.l";
+                        endBone="a_midleg.l.001";
+                        mass=9.75;
+                    };
+                    class l_midLeg_1: r_foreleg_1
+                    {
+                        name="l_midLeg_1";
+                        type="capsule";
+                        startBone="a_midleg.l.001";
+                        endBone="a_midleg.l.002";
+                        mass=12;
+                    };
+                    class l_midLeg_2: r_foreleg_2
+                    {
+                        childrenUseIdleAnim=1;
+                        networkType="leftHand";
+                        name="l_midLeg_2";
+                        type="sphere";
+                        startBone="a_midleg.l.002";
+                        endBone =   "a_midleg.l.003";
+                        mass=6;
+                        radius=0.079999998;
+                        childrenUseStartTrans=0;
+                    };
+                    class l_rearLeg: r_foreleg
+                    {
+                        name="l_rearLeg";
+                        type="capsule";
+                        startBone="a_rearleg.l";
+                        endBone="a_rearleg.l.001";
+                        mass=9.75;
+                    };
+                    class l_rearLeg_1: r_foreleg_1
+                    {
+                        name="l_rearLeg_1";
+                        type="capsule";
+                        startBone="a_rearleg.l.001";
+                        endBone="a_rearleg.l.002";
+                        mass=12;
+                    };
+                    class l_rearLeg_2: r_foreleg_2
+                    {
+                        childrenUseIdleAnim=1;
+                        networkType="leftHand";
+                        name="l_rearLeg_2";
+                        type="sphere";
+                        startBone="a_rearleg.l.002";
+                        endBone =   "a_rearleg.l.003";
+                        mass=6;
+                        radius=0.079999998;
+                        childrenUseStartTrans=0;
+                    };
+            };
+        
+
+        };
+        
+    };
+
+    class CfgSkeletonParameters
+    {
+        class ant_Armature
+        {
+            pivotsModel = "Bugs_life\Ants\BasicAnt_pivots.p3d";
+            ragdoll = "AntRagdoll";
+            weaponBone = "";
+        };
+    };
+*/
 
 class CfgMovesBasic
 {
@@ -838,6 +1176,37 @@ class CfgMovesBasic
 				AdjustB="";
 				Stand="ANT_Attack_Ranged";
             };
+
+            class MAR_ANT_Hit_F:MAR_ANT_Moves
+            {
+                turnSpeed=4.5;
+				PlayerCrouch="ANT_Hit_F";
+				Up="ANT_Hit_F";
+				Crouch="ANT_Hit_F";
+				AdjustB="";
+				Stand="ANT_Hit_F";
+            };
+
+            class MAR_ANT_Hit_B:MAR_ANT_Moves
+            {
+                turnSpeed=4.5;
+				PlayerCrouch="ANT_Hit_B";
+				Up="ANT_Hit_B";
+				Crouch="ANT_Hit_B";
+				AdjustB="";
+				Stand="ANT_Hit_B";
+            };
+
+            class MAR_ANT_Climb_Out:MAR_ANT_Moves
+            {
+                turnSpeed=4.5;
+				PlayerCrouch="ANT_Climb_Out";
+				Up="ANT_Climb_Out";
+				Crouch="ANT_Climb_Out";
+				AdjustB="";
+				Stand="ANT_Climb_Out";
+            };
+        
         
 		//ANT moveset end
 	};
@@ -901,6 +1270,7 @@ class CfgMoves_MAR_ANT: CfgMovesMaleSdr
 	class StandBase: StandBase
     {
         actions = "MAR_ANT_Moves";
+        //ragdoll=0;
 		file = "\Bugs_life\Ants\animations\idle_1.rtm";
 		collisionShape = "A3\anims_f\Data\Geom\Sdr\Perc_Wrfl.p3d";
 		collisionShapeSafe = "A3\anims_f\Data\Geom\Sdr\Perc_Wrfl.p3d";
@@ -910,7 +1280,9 @@ class CfgMoves_MAR_ANT: CfgMovesMaleSdr
 		aiming="aimingNo";
 		legs="legsNo";
 		head="headNo";
+        file = "\Bugs_life\Ants\animations\death_static.rtm";
 		disableWeapons=1;
+        //ragdoll=1;
 		interpolationRestart=1;
 		soundOverride="fallbody";
 		soundEdge[]={0.44999999};
@@ -962,6 +1334,8 @@ class CfgMoves_MAR_ANT: CfgMovesMaleSdr
 				0.01,
 				"ANT_Run",
 				0.01,	
+                "ANT_Death",
+                0.01,
                 "ANT_Turn_R",
                 0.01,
                 "ANT_Turn_L",
@@ -1058,15 +1432,25 @@ class CfgMoves_MAR_ANT: CfgMovesMaleSdr
             terminal = 1;
             speed = -1.2;
             looped = false;
+          //  ragdoll=1;
             file = "\Bugs_life\Ants\animations\death_1.rtm";
             actions = "MAR_ANT_Death_1";
+            leaning="empty";
+			aiming="empty";
+		    aimingBody="empty";
+			head = "empty";
         };
 
         class ANT_DEATH_Static:ANT_Death
         {
             terminal = 1;
+            //ragdoll=1;
             file = "\Bugs_life\Ants\animations\death_static.rtm";
             actions = "MAR_ANT_Death_Static";
+            leaning="empty";
+			aiming="empty";
+		    aimingBody="empty";
+			head = "empty";
         };
 
 		class ANT_Attack_1:ANT_Idle
@@ -1093,6 +1477,44 @@ class CfgMoves_MAR_ANT: CfgMovesMaleSdr
             actions = "MAR_ANT_Attack_Ranged";
             soundOverride="rangedAttack";
         };
+         
+        class ANT_Climb_Out:ANT_Idle
+        {
+            leaning="empty";
+			aiming="empty";
+		    aimingBody="empty";
+			head = "empty";
+            looped = false;
+            speed = -1.2;
+            file = "\Bugs_life\Ants\animations\climb_Out.rtm";
+            actions = "MAR_ANT_Climb_Out";
+            soundOverride="rangedAttack";
+        };
+
+        class ANT_Hit_F:ANT_Idle
+        {
+            leaning="empty";
+			aiming="empty";
+		    aimingBody="empty";
+			head = "empty";
+            looped = false;
+            speed = -1;
+            file = "\Bugs_life\Ants\animations\Hit_F.rtm";
+            actions = "MAR_ANT_Hit_F";
+           // soundOverride="rangedAttack";
+        };
+        class ANT_Hit_B:ANT_Idle
+        {
+            leaning="empty";
+			aiming="empty";
+		    aimingBody="empty";
+			head = "empty";
+            looped = false;
+            speed = -1;
+            file = "\Bugs_life\Ants\animations\Hit_B.rtm";
+            actions = "MAR_ANT_Hit_B";
+           // soundOverride="rangedAttack";
+        };
        
 
 	
@@ -1105,8 +1527,24 @@ class CfgMoves_MAR_ANT: CfgMovesMaleSdr
 	{
 		legsDefault_MAR_ANT[]=
 		{
+            "a_head",
+            0.8,
+            "a_mandible.l",
+            0.7,
+            "a_mandible.r",
+            0.7,
+            "a_antenne_r",
+            0.7,
+            "a_antenne_r.001",	
+            0.5,
+            "a_antenne_l",
+            0.7,
+            "a_antenne_l.001",	
+            0.5,   
             "a_thorax",
-            1,
+            0.9,
+            "a_mid",
+            0.8,  
             "a_foreleg.r",
             0.9,
 			"a_foreleg.r.001",
@@ -1195,130 +1633,14 @@ class CfgMoves_MAR_ANT: CfgMovesMaleSdr
 
 
 
-class CfgCloudlets {
-    class BloodMist;
-    class Blood;
-    class LaptopSparks;
-    class SmokeTrailEffect1;
-    class ImpactEffectsWater1Med;
-    class MAR_BugGut_Mist:BloodMist {
-        color[]=
-        {
-            {0.3,1,0,0.12},
-            {0.3,1,0,0.050000001}
-        };
-        size[] = {
-			2, 2
-		};
-        emissiveColor[] = {{ 0.25, 0.9, 0.25, 1 }};
-    };
-    class MAR_BugAcid_Mist: SmokeTrailEffect1 {
-        size[] = {
-			4, 4
-		};
-        color[]=
-        {
-            {0.3,1,0,0.12},
-            {0.3,1,0,0.050000001}
-        };
-        emissiveColor[] = {{ 0.25, 0.9, 0.25, 1 }};
-       
-    };
-    class MAR_BugAcid_Mist_Impact:ImpactEffectsWater1Med
-    {
-        color[]=
-        {
-            {0.3,1,0,0.12},
-            {0.3,1,0,0.050000001}
-        };
-        emissiveColor[] = {{ 0.25, 0.9, 0.25, 1 }};
-    };
-    class MAR_BugGuts:Blood{
-        color[]=
-        {
-            {0.3,1,0,0.12},
-            {0.3,1,0,0.050000001}
-        };
-        emissiveColor[] = {{ 0.25, 0.9, 0.25, 1 }};
-    };
-};
 
-class MAR_ImpactEffects_Acid 
-{
-    class MAR_BugAcid_Mist01
-	{
-		simulation="particles";
-		type="MAR_BugAcid_Mist";
-		position[]={0,0,0};
-		intensity=1;
-		interval=1;
-		lifeTime=0.1;
-		qualityLevel=2;
-	};
-	class MAR_BugAcid_Mist_Impact01
-	{
-		simulation="particles";
-		type="MAR_BugAcid_Mist_Impact";
-		position[]={0,0,0};
-		intensity=1;
-		interval=1;
-		lifeTime=0.1;
-		qualityLevel=1;
-	};
-};
-class MAR_ImpactEffectsBugGuts
-{
-	class BloodMist
-	{
-		simulation="particles";
-		type="MAR_BugGut_Mist";
-		position[]={0,0,0};
-		intensity=1;
-		interval=1;
-		lifeTime=1;
-		MoveVelocityVar[]={0,0,0};
-	};
-	class Blood
-	{
-		simulation="particles";
-		type="MAR_BugGuts";
-		position[]={0,0,0};
-		intensity=1;
-		interval=1;
-		lifeTime=0.2;
-	};
-	
-};
-
-class BugsLife_AcidSpit
-{
-    class BloodMist
-	{
-		simulation="particles";
-		type="MAR_BugAcid_Mist";
-		position[]={0,0,0};
-		intensity=1;
-		interval=1;
-		lifeTime=1;
-		MoveVelocityVar[]={0,0,0};
-	};
-	class Blood
-	{
-		simulation="particles";
-		type="MAR_BugGuts";
-		position[]={0,0,0};
-		intensity=1;
-		interval=1;
-		lifeTime=1;
-	};
-};
 
 
 
 
 class Extended_PreInit_EventHandlers
 {	
-    class MAR_Addons_PreInit
+    class MAR_BugsLife_PreInit
     {
         init="call compile preprocessFileLineNumbers 'Bugs_life\XEH_preInit.sqf'";
     };
@@ -1327,19 +1649,19 @@ class Extended_PreInit_EventHandlers
 
 class Extended_PostInit_EventHandlers 
 {
-    class MAR_Addons_PostInit 
+    class MAR_BugsLife_PostInit 
 	{
-     //   init="call compile preprocessFileLineNumbers 'Mars_Addons\XEH_postInit.sqf'";
+        init="call compile preprocessFileLineNumbers 'Bugs_life\XEH_postInit.sqf'";
     };
 };
 
 class Extended_InitPost_EventHandlers 
 {
-    class MAR_ANT_Basic 
+    class MAR_ANT_BASE 
     {
         class MAR_ANT_Basic_AI_INIT 
         {
-           // init = "_unit = _this select 0; if (local _unit) then {[_unit] execVM '\Bugs_life\Ants\AI\MAR_AI_basicAnt.sqf';};";
+           init = "_unit = _this select 0; if (local _unit) then {[_unit] execVM '\Bugs_life\Ants\AI\MAR_AI_basicAnt.sqf';};";
         };						
     };
 };
