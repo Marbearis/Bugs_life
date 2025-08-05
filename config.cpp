@@ -1043,7 +1043,7 @@ class CfgMovesBasic
 				PlayerTactLB="ANT_Walk_B";
 				PlayerTactRB="ANT_Walk_B";
 				PlayerTactB="ANT_Walk_B";
-				Die="ANT_Death";
+				Die="ANT_Death_Static";
 				StartFreefall="ANT_inAir";
 				Unconscious = "ANT_Death";
 			};
@@ -1136,16 +1136,34 @@ class CfgMovesBasic
             };
             class  MAR_ANT_Death_1:MAR_ANT_Moves
             {
-                turnSpeed=4.5;
+                turnSpeed=0;
 				PlayerCrouch="ANT_Death";
 				Up="ANT_Death";
 				Crouch="ANT_Death";
 				AdjustB="";
 				Stand="ANT_Death";
             };
+            class  MAR_ANT_Death_2:MAR_ANT_Moves
+            {
+                turnSpeed=0;
+				PlayerCrouch="ANT_Death_2";
+				Up="ANT_Death_2";
+				Crouch="ANT_Death_2";
+				AdjustB="";
+				Stand="ANT_Death_2";
+            };
+             class  MAR_ANT_Death_3:MAR_ANT_Moves
+            {
+                turnSpeed=0;
+				PlayerCrouch="ANT_Death_3";
+				Up="ANT_Death_3";
+				Crouch="ANT_Death_3";
+				AdjustB="";
+				Stand="ANT_Death_3";
+            };
             class  MAR_ANT_Death_Static:MAR_ANT_Moves
             {
-                turnSpeed=4.5;
+                turnSpeed=0;
 				PlayerCrouch="ANT_Death_Static";
 				Up="ANT_Death_Static";
 				Crouch="ANT_Death_Static";
@@ -1154,7 +1172,25 @@ class CfgMovesBasic
             };
 	
 			//hit reactions
-	
+            class MAR_ANT_Hit_F:MAR_ANT_Moves
+            {
+                turnSpeed=0;
+				PlayerCrouch="ANT_Hit_F";
+				Up="ANT_Hit_F";
+				Crouch="ANT_Hit_F";
+				AdjustB="";
+				Stand="ANT_Hit_F";
+            };
+
+            class MAR_ANT_Hit_B:MAR_ANT_Moves
+            {
+                turnSpeed=0;
+				PlayerCrouch="ANT_Hit_B";
+				Up="ANT_Hit_B";
+				Crouch="ANT_Hit_B";
+				AdjustB="";
+				Stand="ANT_Hit_B";
+            };
 			
 			//Combat actions
 			class  MAR_ANT_Attack_1:MAR_ANT_Moves
@@ -1177,29 +1213,11 @@ class CfgMovesBasic
 				Stand="ANT_Attack_Ranged";
             };
 
-            class MAR_ANT_Hit_F:MAR_ANT_Moves
-            {
-                turnSpeed=4.5;
-				PlayerCrouch="ANT_Hit_F";
-				Up="ANT_Hit_F";
-				Crouch="ANT_Hit_F";
-				AdjustB="";
-				Stand="ANT_Hit_F";
-            };
-
-            class MAR_ANT_Hit_B:MAR_ANT_Moves
-            {
-                turnSpeed=4.5;
-				PlayerCrouch="ANT_Hit_B";
-				Up="ANT_Hit_B";
-				Crouch="ANT_Hit_B";
-				AdjustB="";
-				Stand="ANT_Hit_B";
-            };
+            
 
             class MAR_ANT_Climb_Out:MAR_ANT_Moves
             {
-                turnSpeed=4.5;
+                turnSpeed=0;
 				PlayerCrouch="ANT_Climb_Out";
 				Up="ANT_Climb_Out";
 				Crouch="ANT_Climb_Out";
@@ -1336,6 +1354,10 @@ class CfgMoves_MAR_ANT: CfgMovesMaleSdr
 				0.01,	
                 "ANT_Death",
                 0.01,
+                "ANT_Death_2",
+                0.01,
+                "ANT_Death_3",
+                0.01,
                 "ANT_Turn_R",
                 0.01,
                 "ANT_Turn_L",
@@ -1429,12 +1451,41 @@ class CfgMoves_MAR_ANT: CfgMovesMaleSdr
 
         class ANT_Death:ANT_Idle
         {
+            interpolationSpeed = 10;
+            terminal = 1;
+            speed = -1.2;
+            looped = false;
+            soundOverride="death";
+            file = "\Bugs_life\Ants\animations\death_1.rtm";
+            actions = "MAR_ANT_Death_1";
+            leaning="empty";
+			aiming="empty";
+		    aimingBody="empty";
+			head = "empty";
+        };
+
+        class ANT_Death_2:ANT_Death
+        {
             terminal = 1;
             speed = -1.2;
             looped = false;
           //  ragdoll=1;
-            file = "\Bugs_life\Ants\animations\death_1.rtm";
-            actions = "MAR_ANT_Death_1";
+            file = "\Bugs_life\Ants\animations\death_2.rtm";
+            actions = "MAR_ANT_Death_2";
+            leaning="empty";
+			aiming="empty";
+		    aimingBody="empty";
+			head = "empty";
+        };
+
+        class ANT_Death_3:ANT_Death
+        {
+            terminal = 1;
+            speed = -1.2;
+            looped = false;
+          //  ragdoll=1;
+            file = "\Bugs_life\Ants\animations\death_3.rtm";
+            actions = "MAR_ANT_Death_3";
             leaning="empty";
 			aiming="empty";
 		    aimingBody="empty";

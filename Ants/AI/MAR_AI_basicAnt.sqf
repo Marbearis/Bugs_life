@@ -3,7 +3,7 @@ _gruntBoy = _this select 0;
 
 
 if ((isPlayer _gruntBoy) or !(alive _gruntBoy) or !(isNil {_gruntBoy getVariable "WBK_HaloCustomHp"})) exitWith {};
-sleep (selectRandom [0.1,0.5,0.3,0.9]);
+
 _gruntBoy setSpeaker "NoVoice";
 (group _gruntBoy) setFormation "LINE";
 _gruntBoy disableConversation true;
@@ -19,6 +19,7 @@ switch typeOf _gruntBoy do {
 	case ("MAR_ANT_Ice"):{
 		_gruntBoy setVariable ["WBK_HaloCustomHp",MAR_BL_ANTICEHLTTH,true];
 		_gruntBoy setVariable ["WBK_HaloCustomHpMax",MAR_BL_ANTICEHLTTH,true];
+		[_gruntBoy,1.5]remoteExec ["setAnimSpeedCoef",0];
 	};
 	default {
 		_gruntBoy setVariable ["WBK_HaloCustomHp",MAR_BL_ANTWORKERHLTTH,true];
@@ -29,7 +30,7 @@ switch typeOf _gruntBoy do {
 _gruntBoy setVariable ["lambs_danger_disableAI", true];
 _gruntBoy setVariable ["WBK_CovieAI", 1];
 _gruntBoy allowFleeing 0;
-
+sleep (selectRandom [0.1,0.5,0.3,0.9]);
 if !(isNil "WBK_IsPresent_PIR") then {
 	_gruntBoy setVariable ["dam_ignore_hit0",true,true];
 	_gruntBoy setVariable ["dam_ignore_effect0",true,true];
@@ -225,7 +226,7 @@ _loopPathfind = [{
 
 	switch true do {
 		
-		case (!(simulationEnabled _unit) || !(isNull (remoteControlled _unit)) || (isNull _nearEnemy) or !(alive _nearEnemy) or !(alive _unit) or !(isNull attachedTo _unit) or (lifeState _unit == "INCAPACITATED") or (_unit distance _nearEnemy >= 200)): {
+		case (!(simulationEnabled _unit) || !(isNull (remoteControlled _unit)) || (isNull _nearEnemy) or !(alive _nearEnemy) or !(alive _unit) or !(isNull attachedTo _unit) or (lifeState _unit == "INCAPACITATED") or (_unit distance _nearEnemy >= 400)): {
 			switch true do {
 				case !(isNil {_unit getVariable "WBK_IsUnitLocked"}): {_unit setVariable ["WBK_IsUnitLocked",nil];};
 				default {};
@@ -325,7 +326,7 @@ _loopPathfindDoMove = [{
 	
 	if (!(_unit checkAIFeature "MOVE") or !(_unit checkAIFeature "PATH") or !(animationState _unit in ["ant_idle","ant_run"])) exitWith {};
 	_nearEnemy = _unit call MAR_Bugslife_FindTarget; 
-    if ((isNull _nearEnemy) or !(alive _nearEnemy) or !(alive _unit) or (((_unit distance _nearEnemy) >= 200) and !((_unit distance _nearEnemy) < 2.5))) exitWith {
+    if ((isNull _nearEnemy) or !(alive _nearEnemy) or !(alive _unit) or (((_unit distance _nearEnemy) >= 400) and !((_unit distance _nearEnemy) < 2.5))) exitWith {
 		_unit doFollow (leader group _unit);		
 	};
 		{_unit reveal [_x, 4]} forEach units group _nearEnemy;
