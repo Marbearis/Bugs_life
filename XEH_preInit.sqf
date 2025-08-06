@@ -19,6 +19,48 @@
 ] call CBA_fnc_addSetting;
 
 [ 
+    "MAR_BL_BUGEXPLODECHANCE", 
+    "SLIDER", 
+    ["bug explode chance"],
+    ["Marbearis' Bugs & critters","General Settings"],
+    [0, 100, 5, 0],
+    1,
+    {   
+        params ["_value"];  
+        
+		MAR_BL_BUGEXPLODECHANCE = _value;
+    }
+] call CBA_fnc_addSetting;
+
+[ 
+    "MAR_BL_CANBUGSEXPLODE", 
+    "CHECKBOX", 
+    ["can bugs explode"],
+    ["Marbearis' Bugs & critters","General Settings"],
+    true,
+    1,
+    {   
+        params ["_value"];  
+		MAR_BL_CANBUGSEXPLODE = _value;
+		
+    }
+] call CBA_fnc_addSetting;
+
+[ 
+    "MAR_BL_CANEGGSSPAWNUNITS", 
+    "CHECKBOX", 
+    ["can eggs spawn units"],
+    ["Marbearis' Bugs & critters","General Settings"],
+    true,
+    1,
+    {   
+        params ["_value"];  
+		MAR_BL_CANEGGSSPAWNUNITS = _value;
+		
+    }
+] call CBA_fnc_addSetting;
+
+[ 
     "MAR_BL_ANTSPITTERHLTTH", 
     "EDITBOX", 
     ["Spitter Health"],
@@ -49,14 +91,14 @@
 
 
 
-Bugzlife_MARAntHill_SpawnHill = {
+Bugzlife_SpawnAntHill = {
 
-    params ["_position",["_dropside",[east]],["_linger", false]];
+    params ["_position",["_dropside",[east]],["_linger", false],"_AntHillHP","_spawnAmount"];
 
     _position= (ASLtoATL _position);
                     
-    [_position, _dropside, _linger] spawn {
-        params ["_position", "_dropside", "_linger"];
+    [_position, _dropside, _linger,_AntHillHP,_spawnAmount] spawn {
+        params ["_position", "_dropside", "_linger","_AntHillHP","_spawnAmount"];
         
         _positionATL=_position;
         [_position,{ 
@@ -99,7 +141,9 @@ Bugzlife_MARAntHill_SpawnHill = {
 
         _craterpos = _positionATL;
         _craterpos set [2, 0.3];
-        _DroidPodCrater = createvehicle ["MAR_antHill", _craterpos, [], 0, "CAN_COLLIDE"];
+        _DroidPodCrater = createvehicle ["MAR_antHill", _craterpos, [], 0, "CAN_COLLIDE"]; 
+		_groundTexture = surfaceTexture getPosATL _DroidPodCrater;
+		_DroidPodCrater setObjectTextureGlobal [0,_groundTexture];
 		_soundArray = ["A3\sounds_f\sfx\explosion1.wss","A3\sounds_f\sfx\explosion2.wss","A3\sounds_f\sfx\explosion3.wss"];
 		_soundArray_wonk = ["\Bugs_life\data\AntSounds\ANT_Erupt_1.ogg","\Bugs_life\data\AntSounds\ANT_Erupt_2.ogg","\Bugs_life\data\AntSounds\ANT_Erupt_3.ogg"];
 		[[_DroidPodCrater,_soundArray] ,{ params ["_player","_soundArray"];playSound3D [selectRandom _soundArray, _player];}] remoteExec ["spawn", [0,-2] select isDedicated];
@@ -126,8 +170,8 @@ Bugzlife_MARAntHill_SpawnHill = {
         
        
         
-        [_position, _side, _list, _DroidPodCrater, _projectile] spawn {
-            params ["_spawn", "_side", "_list", "_DroidPodCrater", "_projectile"];
+        [_position, _side, _list, _DroidPodCrater, _projectile,_spawnAmount,_linger] spawn {
+            params ["_spawn", "_side", "_list", "_DroidPodCrater", "_projectile","_spawnAmount","_linger"];
 			_spawnAmount = 6;
             sleep 0.5;
 			_FloodGroup = createGroup east;
@@ -144,16 +188,41 @@ Bugzlife_MARAntHill_SpawnHill = {
 
 				sleep 6;
 			};
+			if (_linger) then {
+				sleep 1;
+				_projectile allowdamage true;
+				while {alive _projectile} do {
+
+					_time = time;
+
+					waitUntil {
+						(time - _time) > (random [15,30,60]) or !(alive _projectile)
+					};
+					if (alive _projectile) then {
+						for "_i" from 1 to 2 do {
+							if !(alive _DroidPodCrater) exitWith {};
+							_unit = _FloodGroup createUnit [(selectRandom _list), _spawn, [], 0, "CAN_COLLIDE"];
+							_unit setPosATL [_spawn#0,_spawn#1,(_spawn#2)+3];
+
+							_unit setDir (random 360);
+
+							[_unit,["ANT_Climb_Out", 0, 0.2, false]] remoteExec ["switchMove",0];
+
+							sleep 6;
+						};
+					};
+				};
+       		};
             _FloodGroup deleteGroupWhenEmpty true;
         };
 
 
-        [_projectile,{ 
+        [[_projectile,_AntHillHP],{ 
 
-			params ["_projectile"];
+			params ["_projectile","_AntHillHP"];
 
 			_projectile allowDamage false;
-			_projectile setVariable ["gooberHealth",500,true];
+			_projectile setVariable ["gooberHealth",_AntHillHP,true];
 			_projectile removeAllEventHandlers "HitPart";
 			_projectile addEventHandler ["HitPart", {
 			
@@ -162,10 +231,10 @@ Bugzlife_MARAntHill_SpawnHill = {
 			if ( ((str (side _shooter) == "CIV") and (((currentWeapon _shooter) == ""))) or (captive _shooter)) exitWith {};
 			if ( ( !([(side _shooter), (side _target)] call BIS_fnc_sideIsEnemy) and (str (side _target) != "CIV")) or (captive _target)) exitWith {};
 
-			private _currentHealth = _target getVariable ["gooberHealth", 500]; 
+			private _currentHealth = _target getVariable ["gooberHealth", _AntHillHP]; 
 		
-			private _ProjSpeed = _ammo#0;
-			private _newHealth = [_currentHealth - _ProjSpeed, 0, 500] call BIS_fnc_clamp;
+			private _ProjHit = _ammo#0;
+			private _newHealth = [_currentHealth - _ProjHit, 0, 500] call BIS_fnc_clamp;
 
 			_target setVariable ["gooberHealth", _newHealth, true];
 
@@ -175,42 +244,158 @@ Bugzlife_MARAntHill_SpawnHill = {
 
         }] remoteExec ['spawn', ([0, -2] select isDedicated)];
 
-        if (_linger) then {
-            sleep 1;
-            _projectile allowdamage true;
-            while {alive _projectile} do {
-
-                _time = time;
-
-                waitUntil {
-                    (time - _time) > (random [15,30,60]) or !(alive _projectile)
-                };
-                if (alive _projectile) then {
-                    _spawn = getPosATL _projectile;
-                    _DroidgroupLinger = [_spawn, _side, [selectRandom _listout]] call BIS_fnc_spawngroup;
-                    _DroidgroupLinger deleteGroupWhenEmpty true;
-                };
-            };
-        };
+        
 
     };
 };
 
+Bugzlife_TrapDoor = {
+    params ["_position"];
+	_position= (ASLtoATL _position);
+	_trapDoor = createvehicle ["MAR_TrapDoor", _position, [], 0, "CAN_COLLIDE"];
+	_groundTexture = surfaceTexture getPosATL _trapDoor;
+	_trapDoor setObjectTextureGlobal [0,_groundTexture];
+	_trapDoor setVectorUp surfaceNormal position _trapDoor;
+	_group = createGroup east;
+	_spawn = (_trapDoor modelToWorldVisual (_trapDoor selectionPosition ["spider","Memory"]));
+	_unit = _group createUnit ["MAR_Spider_Burrower", _spawn, [], 0, "CAN_COLLIDE"];
+	[_unit,["Spider_Burrowed_Idle", 0, 0.2, false]] remoteExec ["switchMove",0];
+	_unit hideObjectGlobal true;
+	_unit hideObject true;
+	_group deleteGroupWhenEmpty true;
+	_unit setVariable ["trapDoor",_trapDoor,true];	
+};
+
+Bugslife_TrapDoorAttack = {
+
+	params ["_spider","_poorChuddie"];
+	if !(isNil {_spider getVariable "s_Food"}) exitWith {};
+	_home = (_spider getVariable "trapDoor");
+	_dir = [_spider,_poorChuddie]call BIS_fnc_dirTo;
+	_spider setDir _dir;
+	_home setDir ((getDir _spider));
+	_soundArray = ["A3\sounds_f\sfx\explosion1.wss","A3\sounds_f\sfx\explosion2.wss","A3\sounds_f\sfx\explosion3.wss"];
+	
+	[[_home,_soundArray] ,{ params ["_player","_soundArray"];playSound3D [selectRandom _soundArray, _player];}] remoteExec ["spawn", [0,-2] select isDedicated];
+	
+	_home animateSource ["Spider_Open_Source",1,10];
+	_spider hideObjectGlobal false;
+	_spider hideObject false;
+	_home spawn {sleep 0.5; _this animatesource ["Spider_Open_Source",0,20];};
+	[_spider,["Spider_Burrowed_Attack", 0, 0.2, false]] remoteExec ["switchMove",0];
+	[(getPosASL _home),{ 
+			
+            if (isDedicated) exitWith {}; 
+
+                _dustEffect = "#particlesource" createVehicleLocal _this; 
+                _dustEffect setParticleClass "HDustVTOL1"; 
+
+                _rocks1 = "#particlesource" createVehicleLocal _this; 
+                _rocks1 setposasl _this; 
+                _rocks1 setParticleParams[["\A3\data_f\ParticleEffects\Universal\Mud.p3d", 1, 0, 1], "", "SpaceObject", 1, 12.5, [0, 0, 0], [0, 0, 5], 5, 100, 7.9, 1, [.15, .15], [ 
+                    [0.1, 0.1, 0.1, 1], 
+                    [0.25, 0.25, 0.25, 0.5], 
+                    [0.5, 0.5, 0.5, 0] 
+                ], [0.08], 1, 0, "", "", _this, 0, false, 0.3]; 
+                _rocks1 setParticleRandom[0, [0, 0, 0], [2, 2, 0.2], 1, 0.25, [0, 0, 0, 0.1], 0, 0]; 
+                _rocks1 setDropInterval 0.01; 
+                _rocks1 setParticleCircle[0, [0, 0, 0]]; 
+
+                _dust = "#particlesource" createVehicleLocal _this;       
+                _dust setParticleClass "DeminingExplosiveDirt";
+
+                _dust2 = "#particlesource" createVehicleLocal _this;        
+                _dust2 setParticleClass "DeminingExplosiveCircleDust";  
+
+                
+
+                uisleep 0.4;  
+                deleteVehicle _rocks1; 
+               
+                deleteVehicle _dustEffect; 
+                
+                deleteVehicle _dust;  
+              
+                deleteVehicle _dust2;     
+
+        }] remoteExec["spawn", 0, false];
+	uiSleep 0.1;
+	
+	
+	{	
+		
+		_meleeSounds = [
+			"\MAR_Banished_EXP\data\Sounds\grunt\punchkick_sgt_01.ogg",
+			"\MAR_Banished_EXP\data\Sounds\grunt\punchkick_sgt_02.ogg",
+			"\MAR_Banished_EXP\data\Sounds\grunt\punchkick_sgt_03.ogg",
+			"\MAR_Banished_EXP\data\Sounds\grunt\punchkick_sgt_04.ogg"
+			];
+
+	
+		//	[[_x,_meleeSounds] ,{ params ["_player","_soundArray"];playSound3D [selectRandom _soundArray, _player];}] remoteExec ["spawn", [0,-2] select isDedicated];
+		
+		
+
+		
+		
+		if (
+			(_x != _spider) and  						
+			(alive _x) and 
+			!(animationState _x == "IMS_ButtStock_Evade_F") and 
+			!(animationState _x == "IMS_ButtStock_Evade_R") and 
+			!(animationState _x == "IMS_ButtStock_Evade_L") and 
+			!(animationState _x == "IMS_ButtStock_Evade_B") and 
+			!(animationState _x == "starWars_landRoll_b") and 
+			!(animationState _x == "starWars_landRoll") and 
+			!(animationState _x == "STAR_WARS_FIGHT_DODGE_RIGHT") and 
+			!(animationState _x == "STAR_WARS_FIGHT_DODGE_LEFT") and 
+			(isNil {_x getVariable "IMS_IsUnitInvicibleScripted"})
+			) 
+		then {
+				if (isNil {_spider getVariable "s_Food"}) then {
+					//[_x, [_spider vectorModelToWorld [0,1,-1], _x selectionPosition "head",false]] remoteExec ["addForce", _x];
+					_soundArray_wonk = ["\Bugs_life\data\humanSounds\human_scream_1.ogg","\Bugs_life\data\humanSounds\human_scream_2.ogg","\Bugs_life\data\humanSounds\human_scream_3.ogg"];
+					[[_x,_soundArray_wonk] ,{ params ["_player","_soundArray"];playSound3D [selectRandom _soundArray, _player];}] remoteExec ["spawn", [0,-2] select isDedicated];						
+					_dir = getDir _spider;
+					_x setDir (_dir);
+					[_x,["Armaman_getEaten", 0, 0.2, false]] remoteExec ["switchMove",0];
+					_spider setVariable ["s_Food",_x,true];
+					_soundArray_wonk = ["\Bugs_life\data\humanSounds\human_scream_1.ogg","\Bugs_life\data\humanSounds\human_scream_2.ogg","\Bugs_life\data\humanSounds\human_scream_3.ogg"];
+					[[_x,_soundArray_wonk] ,{ params ["_player","_soundArray"];playSound3D [selectRandom _soundArray, _player];}] remoteExec ["spawn", [0,-2] select isDedicated];	
+					sleep 0.8;
+					_x setDamage 1;
+					_x hideObjectGlobal true;
+					_x hideObject true;
+					_spider hideObjectGlobal true;
+					_spider hideObject true;
+					_spider spawn {sleep 8; _this setVariable ["s_Food",nil,true];};																		
+				};
+			};
+		
+	}forEach nearestObjects [_spider modelToWorldVisual(_spider selectionPosition ["bitezone","Memory"]),["MAN"],8];
+};
 
 Bugzlife_AntDeathContainer = {
 	params ["_bug","_killer"]; 
 	//if (animationState _bug != "ANT_Death") exitWith {};
 	switch true do  {
 		case ((_bug isKindOf "MAR_ANT_Spitter")||(_bug isKindOf "MAR_ANT_Ice")):{
+			
+				_bug spawn BugzLife_fnc_explodeAnt;
 		
-			_bug spawn BugzLife_fnc_explodeAnt;
+		};
 
+		case ((_bug isKindOf "MAR_Ant_Egg")||(_bug isKindOf "MAR_Ant_Egg_Clutch")): {
+				_bug spawn BugzLife_fnc_explodeAnt;
 		};
 
 		case (_bug isKindOf "MAR_ANT_BASE"): {
 			
 			
-			if ((random 100) > 70 ) then {_bug spawn BugzLife_fnc_explodeAnt;}else {
+
+			if ((MAR_BL_BUGEXPLODECHANCE >= floor (random 100))||MAR_BL_BUGEXPLODECHANCE == 100) then {_bug spawn BugzLife_fnc_explodeAnt;}else {
+				[_bug,[(selectRandom ["ANT_Death_3","ANT_Death_2"]), 0, 0.2, false]] remoteExec ["switchMove",0];
+				uiSleep 1.1;
 				[_bug,["ANT_Death", 0, 0.2, false]] remoteExec ["switchMove",0];
 			};
 
@@ -220,99 +405,125 @@ Bugzlife_AntDeathContainer = {
 };
 
 BugzLife_fnc_explodeAnt = {
-	
-			[_this,[(selectRandom ["ANT_Death_3","ANT_Death_2"]), 0, 0.2, false]] remoteExec ["switchMove",0];
-			_meleeSounds = [
-				"\Bugs_life\data\AntSounds\antDeath.ogg"
-			];
-			[[_this,_meleeSounds] ,{ params ["_player","_soundArray"];playSound3D [selectRandom _soundArray, _player,false,_player,5];}] remoteExec ["spawn", [0,-2] select isDedicated];
-			uiSleep 1.1;
-			_this hideObjectGlobal true;
-			_this hideObject true;
-			
-			_textures = getObjectTextures _this;	
-	
-			_boomSounds = [
-				"\a3\sounds_f\arsenal\explosives\grenades\grenadelight_closeexp_01.wss",
-				"\a3\sounds_f\arsenal\explosives\grenades\grenadelight_closeexp_02.wss", 
-				"\a3\sounds_f\arsenal\explosives\grenades\grenadelight_closeexp_03.wss", 
-				"\a3\sounds_f\arsenal\explosives\grenades\grenadelight_closeexp_04.wss"  
+	if (isDedicated) exitWith {};			
+	if (!(MAR_BL_CANBUGSEXPLODE)and!((_this isKindOf "MAR_Ant_Egg")||(_this isKindOf "MAR_Ant_Egg_Clutch"))) exitWith {
+		[_this,[(selectRandom ["ANT_Death_3","ANT_Death_2"]), 0, 0.2, false]] remoteExec ["switchMove",0];
+		uiSleep 1.1;
+		[_this,["ANT_Death", 0, 0.2, false]] remoteExec ["switchMove",0];
+	};
 
-			];
-			[[_this,_boomSounds] ,{ params ["_player","_soundArray"];playSound3D [selectRandom _soundArray, _player];}] remoteExec ["spawn", [0,-2] select isDedicated];
-			_meleeSounds = [
-				"\Bugs_life\data\AntSounds\ant_explode.ogg",
-				"\Bugs_life\data\AntSounds\ant_explode_1.ogg",
-				"\Bugs_life\data\AntSounds\ant_explode_2.ogg"
-			];
-			[[_this,_meleeSounds] ,{ params ["_player","_soundArray"];playSound3D [selectRandom _soundArray, _player];}] remoteExec ["spawn", [0,-2] select isDedicated];
-			
-			private _lamd = createVehicle ["MAR_acidCrater",position _this, [], 0, "CAN_COLLIDE"];
-			_lamd setDir (random 360);
-			_lamd setObjectScale (selectRandom [0.8,0.9,0.6,0.7,0.5]);
-			
-			_case = ((configFile >> "CfgVehicles" >> typeOf _this >> "impactEffectsBlood") call BIS_fnc_getCfgData);
-			switch _case do {
-					case ("MAR_ImpactEffectsBugGuts_Orange"): {bloodpoolTexture = ["\Bugs_life\data\bloodpools\bloodpoolOrange_CA.paa","\Bugs_life\data\bloodpools\bloodPoolOrange.rvmat",[1,0.5,0,0.12]]};
-					case ("MAR_ImpactEffectsBugGuts_Green"): {bloodpoolTexture = ["\Bugs_life\data\bloodpools\bloodpoolGreen_CA.paa","\Bugs_life\data\bloodpools\bloodPoolGreen.rvmat",[0,1,0,0.12]]};
-					case ("MAR_ImpactEffectsBugGuts_Blue"): {bloodpoolTexture = ["\Bugs_life\data\bloodpools\bloodpoolBlue_CA.paa","\Bugs_life\data\bloodpools\bloodPoolBlue.rvmat",[0,0.4,1,0.12]]};
+	[_this,[(selectRandom ["ANT_Death_3","ANT_Death_2"]), 0, 0.2, false]] remoteExec ["switchMove",0];
+
+	_meleeSounds = [
+		"\Bugs_life\data\AntSounds\antDeath.ogg"
+	];
+	[[_this,_meleeSounds] ,{ params ["_player","_soundArray"];playSound3D [selectRandom _soundArray, _player,false,_player,5];}] remoteExec ["spawn", [0,-2] select isDedicated];
+	if !((_this isKindOf "MAR_Ant_Egg")||(_this isKindOf "MAR_Ant_Egg_Clutch"))then {uiSleep 1.1;};
+	
+
+	_this hideObjectGlobal true;
+	_this hideObject true;
+	
+	_textures = getObjectTextures _this;	
+
+	_boomSounds = [
+		"\a3\sounds_f\arsenal\explosives\grenades\grenadelight_closeexp_01.wss",
+		"\a3\sounds_f\arsenal\explosives\grenades\grenadelight_closeexp_02.wss", 
+		"\a3\sounds_f\arsenal\explosives\grenades\grenadelight_closeexp_03.wss", 
+		"\a3\sounds_f\arsenal\explosives\grenades\grenadelight_closeexp_04.wss"  
+	];
+
+	[[_this,_boomSounds] ,{ params ["_player","_soundArray"];playSound3D [selectRandom _soundArray, _player];}] remoteExec ["spawn", [0,-2] select isDedicated];
+
+	_meleeSounds = [
+		"\Bugs_life\data\AntSounds\ant_explode.ogg",
+		"\Bugs_life\data\AntSounds\ant_explode_1.ogg",
+		"\Bugs_life\data\AntSounds\ant_explode_2.ogg"
+	];
+
+	[[_this,_meleeSounds] ,{ params ["_player","_soundArray"];playSound3D [selectRandom _soundArray, _player];}] remoteExec ["spawn", [0,-2] select isDedicated];
+	
+	private _lamd = createVehicle ["MAR_acidCrater",position _this, [], 0, "CAN_COLLIDE"];
+	_lamd setDir (random 360);
+	_lamd setObjectScale (selectRandom [0.8,0.9,0.6,0.7,0.5]);
+	
+	_case = ((configFile >> "CfgVehicles" >> typeOf _this >> "impactEffectsBlood") call BIS_fnc_getCfgData);
+	if (isNil "_case") then {_case = "MAR_ImpactEffectsBugGuts_Orange"};
+	switch _case do {
+			case ("MAR_ImpactEffectsBugGuts_Orange"): {bloodpoolTexture = ["\Bugs_life\data\bloodpools\bloodpoolOrange_CA.paa","\Bugs_life\data\bloodpools\bloodPoolOrange.rvmat",[1,0.5,0,0.12]]};
+			case ("MAR_ImpactEffectsBugGuts_Green"): {bloodpoolTexture = ["\Bugs_life\data\bloodpools\bloodpoolGreen_CA.paa","\Bugs_life\data\bloodpools\bloodPoolGreen.rvmat",[0,1,0,0.12]]};
+			case ("MAR_ImpactEffectsBugGuts_Blue"): {bloodpoolTexture = ["\Bugs_life\data\bloodpools\bloodpoolBlue_CA.paa","\Bugs_life\data\bloodpools\bloodPoolBlue.rvmat",[0,0.4,1,0.12]]};
+			default {bloodpoolTexture = ["\Bugs_life\data\bloodpools\bloodpoolOrange_CA.paa","\Bugs_life\data\bloodpools\bloodPoolOrange.rvmat",[1,0.5,0,0.12]] };
+	};
+	[[_lamd,_this],{
+		params ["_lamd","_unit"];
+			if (isDedicated) exitWith {};
+
+			if ((player distance _lamd) <= 12) then {
+				enableCamShake true; 
+				addCamShake [1, 0.7, 1];
 			};
-			[[_lamd,_this],{
-				params ["_lamd","_unit"];
-					if (isDedicated) exitWith {};
-					if ((player distance _lamd) <= 12) then {
-						enableCamShake true; 
-						addCamShake [1, 0.7, 1];
-					};
-					
-					_fulgi  = "#particlesource" createVehiclelocal getposaTL _lamd; 
-					_fulgi setParticleRandom [0, [1, 1, 0], [8, 8, 5], 3, 0.25, [0, 0, 0, 0.1], 0, 0];
-					_fulgi setDropInterval 0.001;
-					_fulgi setParticleCircle [0, [0, 0, 0]];
-					_fulgi setParticleParams [["\A3\data_f\cl_exp", 1, 0, 1],"","Billboard",1,15,[0,0,0],[0,0,0],0,1.7,1,0,[0.15],[bloodpoolTexture#2, bloodpoolTexture#2, bloodpoolTexture#2],[1],0,0,"","",_lamd, 0, false, 0.4, [bloodpoolTexture#2, bloodpoolTexture#2, bloodpoolTexture#2]]; 
-					_gravi1 = "#particlesource" createVehicleLocal getpos _lamd;  
-					_gravi1 setParticleCircle [0.1, [1, 1, 0]];
-					_gravi1 setParticleParams [["\A3\data_f\ParticleEffects\Universal\Refract.p3d",1,0,1,0],"","Billboard",1,2,[0,0,0],[0,0,0.6],0,0.05,0.04,0.05,[1,2,5,8,12,17],[bloodpoolTexture#2, bloodpoolTexture#2, bloodpoolTexture#2],[1.5,0.5,0,0],0.4,0.09,"","","",0,false,0,[bloodpoolTexture#2, bloodpoolTexture#2, bloodpoolTexture#2]];
-					_gravi1 setParticleRandom [0, [0, 0, 0], [0, 0, 0], 0, 0.25, [0.01, 0.01, 0.01, 0.1], 0, 0];
-					_gravi1 setDropInterval 0.0004;
-					_smoke2 = "#particlesource" createVehicleLocal getPos _lamd;
-					_smoke2 setposasl getPosASL _lamd;
-					_smoke2 setParticleCircle [0.5, [7,7,-4]];
-					_smoke2 setParticleRandom [0, [0, 0, 0], [0, 0, 0], 0, 0.05, [0.01, 0.01, 0.01, 0.1], 0, 0];
-					_smoke2 setParticleParams [["\A3\data_f\cl_fireD", 1, 0, 1], "", "Billboard", 1, 1, [0, 0, 0.6], [0.2,0.5,0.2], 90, 10, 7.85, 0.375, [1, 2, 3],[bloodpoolTexture#2, bloodpoolTexture#2, bloodpoolTexture#2], [10], 1, 0, "", "", _lamd];
-					_smoke2 setDropInterval 0.0004;
-					if ((_unit isKindOf "MAR_ANT_Spitter")||(_unit isKindOf "MAR_ANT_Ice")) then {
-						_fog1 = "#particlesource" createVehicleLocal getposaTL _lamd; 
-						_fog1 setParticleParams [   
-							["\A3\data_f\cl_exp", 1, 0, 1], "", "Billboard", 3, 7,   
-							[0, 0, 0], [0, 0, 0], 1, 1.27, 1, 0,   
-							[0,0.5,0],[bloodpoolTexture#2, bloodpoolTexture#2, bloodpoolTexture#2 ], [1000], 1, 0, "", "", _lamd, 0, false, -1, [bloodpoolTexture#2, bloodpoolTexture#2, bloodpoolTexture#2]  
-						];   
-						_fog1 setParticleRandom [3, [1, 1, 0.3], [0, 0, -0.1], 2, 0.15, [0, 0, 0, 0.1], 0, 0];   
-						_fog1 setParticleCircle [1, [0, 0, -0.12]];   
-						_fog1 setDropInterval 1;
-						if (_unit isKindOf "MAR_ANT_Spitter") then {
-							_fog1 setParticleFire [2,2,0.1];
-						};   
-						if (_unit isKindOf "MAR_ANT_Ice")then{_unit call BugsLife_HandleMelee;};
-						_fog1 spawn {uiSleep 32; deleteVehicle _this};
-					};
-					uisleep 0.1;
-					deleteVehicle _smoke2;
-					uisleep 0.1;
-					{
-						deleteVehicle _x;
-					} forEach [_gravi1,_fulgi];
-					uisleep 0.2;
-				}] remoteExec ["spawn",0];
 
-			_lamd setObjectTextureGlobal [0,bloodpoolTexture#0];
-			_lamd setObjectMaterialGlobal [0,bloodpoolTexture#1];
-			_lamd spawn {sleep 120; deleteVehicle _this;};
-	
+			if (((_unit isKindOf "MAR_Ant_Egg")||(_unit isKindOf "MAR_Ant_Egg_Clutch")) and (MAR_BL_CANEGGSSPAWNUNITS)) then {
+				_FloodGroup = createGroup east;
+				_spawn = getPosATL _unit;
+				deleteVehicle _unit;
+				_list =  ["MAR_ANT_Basic"];
+				if ((random 100) < 50) then {
+					_bug = _FloodGroup createUnit [(selectRandom _list), _spawn, [], 0, "CAN_COLLIDE"];
+				};
+				_FloodGroup deleteGroupWhenEmpty true;
+			};
+
+			_fulgi  = "#particlesource" createVehiclelocal getposaTL _lamd; 
+			_fulgi setParticleRandom [0, [1, 1, 0], [8, 8, 5], 3, 0.25, [0, 0, 0, 0.1], 0, 0];
+			_fulgi setDropInterval 0.001;
+			_fulgi setParticleCircle [0, [0, 0, 0]];
+			_fulgi setParticleParams [["\A3\data_f\cl_exp", 1, 0, 1],"","Billboard",1,15,[0,0,0],[0,0,0],0,1.7,1,0,[0.15],[bloodpoolTexture#2, bloodpoolTexture#2, bloodpoolTexture#2],[1],0,0,"","",_lamd, 0, false, 0.4, [bloodpoolTexture#2, bloodpoolTexture#2, bloodpoolTexture#2]]; 
+			_gravi1 = "#particlesource" createVehicleLocal getpos _lamd;  
+			_gravi1 setParticleCircle [0.1, [1, 1, 0]];
+			_gravi1 setParticleParams [["\A3\data_f\ParticleEffects\Universal\Refract.p3d",1,0,1,0],"","Billboard",1,2,[0,0,0],[0,0,0.6],0,0.05,0.04,0.05,[1,2,5,8,12,17],[bloodpoolTexture#2, bloodpoolTexture#2, bloodpoolTexture#2],[1.5,0.5,0,0],0.4,0.09,"","","",0,false,0,[bloodpoolTexture#2, bloodpoolTexture#2, bloodpoolTexture#2]];
+			_gravi1 setParticleRandom [0, [0, 0, 0], [0, 0, 0], 0, 0.25, [0.01, 0.01, 0.01, 0.1], 0, 0];
+			_gravi1 setDropInterval 0.0004;
+			_smoke2 = "#particlesource" createVehicleLocal getPos _lamd;
+			_smoke2 setposasl getPosASL _lamd;
+			_smoke2 setParticleCircle [0.5, [7,7,-4]];
+			_smoke2 setParticleRandom [0, [0, 0, 0], [0, 0, 0], 0, 0.05, [0.01, 0.01, 0.01, 0.1], 0, 0];
+			_smoke2 setParticleParams [["\A3\data_f\cl_fireD", 1, 0, 1], "", "Billboard", 1, 1, [0, 0, 0.6], [0.2,0.5,0.2], 90, 10, 7.85, 0.375, [1, 2, 3],[bloodpoolTexture#2, bloodpoolTexture#2, bloodpoolTexture#2], [10], 1, 0, "", "", _lamd];
+			_smoke2 setDropInterval 0.0004;
+			if ((_unit isKindOf "MAR_ANT_Spitter")||(_unit isKindOf "MAR_ANT_Ice")) then {
+				_fog1 = "#particlesource" createVehicleLocal getposaTL _lamd; 
+				_fog1 setParticleParams [   
+					["\A3\data_f\cl_exp", 1, 0, 1], "", "Billboard", 3, 7,   
+					[0, 0, 0], [0, 0, 0], 1, 1.27, 1, 0,   
+					[0,0.5,0],[bloodpoolTexture#2, bloodpoolTexture#2, bloodpoolTexture#2 ], [1000], 1, 0, "", "", _lamd, 0, false, -1, [bloodpoolTexture#2, bloodpoolTexture#2, bloodpoolTexture#2]  
+				];   
+				_fog1 setParticleRandom [3, [1, 1, 0.3], [0, 0, -0.1], 2, 0.15, [0, 0, 0, 0.1], 0, 0];   
+				_fog1 setParticleCircle [1, [0, 0, -0.12]];   
+				_fog1 setDropInterval 1;
+				if (_unit isKindOf "MAR_ANT_Spitter") then {
+					_fog1 setParticleFire [2,2,0.1];
+				};   
+				if (_unit isKindOf "MAR_ANT_Ice")then{_unit call BugsLife_HandleMelee;};
+				_fog1 spawn {uiSleep 32; deleteVehicle _this};
+			};
+			uisleep 0.1;
+			deleteVehicle _smoke2;
+			uisleep 0.1;
+			{
+				deleteVehicle _x;
+			} forEach [_gravi1,_fulgi];
+			uisleep 0.2;
+		}] remoteExec ["spawn",0];
+
+	_lamd setObjectTextureGlobal [0,bloodpoolTexture#0];
+	_lamd setObjectMaterialGlobal [0,bloodpoolTexture#1];
+	_lamd spawn {sleep 120; deleteVehicle _this;};
 
 
-	
+	if (isDedicated) exitWith {};
+
+	if ((_this isKindOf "MAR_Ant_Egg")||(_this isKindOf "MAR_Ant_Egg_Clutch")) exitWith {};
 	_Part_1 = "MAR_Ant_Part_Thorax" createVehicle (_this modelToWorldVisual [0,0,0]);
 	{
 		_Part_1 setObjectTextureGlobal [_x,_textures#0];
@@ -428,6 +639,37 @@ ANTZ_MoveAi = {
 	units _group doFollow leader _group;
 };
 
+BugsLife_AntEgginit = {
+	params ["_egg"];
+	if (isDedicated) exitWith {};
+	_egg allowDamage false;
+	_egg addEventHandler ["HitPart", {
+			
+			(_this select 0) params ["_target", "_shooter", "_projectile", "_position", "_velocity", "_selection", "_ammo", "_vector", "_radius", "_surfaceType", "_isDirect"]; 
+	
+			if ( ((str (side _shooter) == "CIV") and (((currentWeapon _shooter) == ""))) or (captive _shooter)) exitWith {};
+			if ( ( !([(side _shooter), (side _target)] call BIS_fnc_sideIsEnemy) and (str (side _target) != "CIV")) or (captive _target)) exitWith {};
+																								 
+			private _currentHealth = _target getVariable ["gooberHealth", if ((_target isKindOf "MAR_Ant_Egg_Clutch")) then {200}else{50}]; 
+
+			private _ProjHit = _ammo#0;
+			private _newHealth = [_currentHealth - _ProjHit, 0, 500] call BIS_fnc_clamp;
+
+			_target setVariable ["gooberHealth", _newHealth, true];
+
+			if (_currentHealth == 0) then {_target allowDamage true; _target setDamage 1;};
+
+	}];
+
+	_egg addEventHandler ["Killed", {
+		(_this select 0) spawn {
+			uisleep 0.1;
+			_this remoteExec ["Bugzlife_AntDeathContainer",_this]			
+		};
+	}];
+
+};
+
 BugsLife_HandleMelee = 
 {
 	params ["_zombie"];
@@ -446,7 +688,7 @@ BugsLife_HandleMelee =
 
 		if ((side _x == side _zombie)) then {};
 									
-	//	[[_x,_meleeSounds] ,{ params ["_player","_soundArray"];playSound3D [selectRandom _soundArray, _player];}] remoteExec ["spawn", [0,-2] select isDedicated];
+		//	[[_x,_meleeSounds] ,{ params ["_player","_soundArray"];playSound3D [selectRandom _soundArray, _player];}] remoteExec ["spawn", [0,-2] select isDedicated];
 		
 		
 

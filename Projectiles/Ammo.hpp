@@ -1,4 +1,4 @@
-	class Eventhandlers;
+	
 	class CfgAmmo
 	{
 		class SmokeShell;		
@@ -85,73 +85,3 @@
 
 	};
 
-class cfgMagazines
-{
-	
-	class OPTRE_FC_Battery_Base;
-	class MAR_Spiker_Mag: OPTRE_FC_Battery_Base
-	{
-		scope = 2;
-		scopeCurator = 2;
-		scopeArsenal = 2;
-		displayName="spiker rounds";
-		displaynameshort = "Spikes";
-		ammo="B_spiker_Round";
-		descriptionshort="Ammo for the brute spiker";
-		count=32;
-		initspeed=450;
-		mass=1;
-		tracersEvery = 1;
-		lastRoundsTracer=32;
-	};
-	class 6Rnd_45ACP_Cylinder;
-	class MAR_Mangler_Mag: 6Rnd_45ACP_Cylinder
-	{
-
-		displayName="Mangler Rounds";
-		displaynameshort = "Mangler spikes";
-		ammo="B_Mangler_Round";
-		count=8;
-		tracersEvery = 1;
-		initspeed=400;
-	
-	};
-
-	class MAR_test_Mag: MAR_Mangler_Mag
-	{
-		displayName="Titanus [HPIR rounds]";
-		displaynameshort = "HPIR";
-		initSpeed=1430;
-		count=5;
-		tracersEvery = 1;
-		ammo="B_TestRound";
-	};
-
-	class MAR_Mangler_Mag_DHE: 6Rnd_45ACP_Cylinder
-	{
-
-		displayName="Mangler Rounds [DHE]";
-		displaynameshort = "DHE Mangler Rounds";
-		ammo="B_ManglerRND_Spec";
-		count=8;
-		tracersEvery = 1;
-		initspeed=400;
-	
-	};
-
-	class MAR_Disruptor_Mag: OPTRE_FC_Battery_Base
-	{
-		displayName="Disrupter bolts";
-		displaynameshort = "Bolts";
-		ammo="B_Disrupter_Round";
-		descriptionshort="Ammo for the Disruptor";
-		count=10;
-		scope = 2;
-		scopeCurator = 2;
-		scopeArsenal = 2;
-		tracersEvery = 1;
-		initspeed=700;
-	};
-
-	
-};
