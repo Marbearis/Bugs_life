@@ -286,7 +286,7 @@ _loopPathfind = [{
 				"NONE"
 			];
 			switch true do {
-				case ((count _ifInter == 0) and (((getPosATL _unit select 2) - (getPosATL _nearEnemy select 2)) < 1.45) and (((getPosATL _unit select 2) - (getPosATL _nearEnemy select 2)) > (-1.45))): {
+				case ((count _ifInter == 0) and (((getPosATL _unit select 2) - (getPosATL _nearEnemy select 2)) < 1.45) and (((getPosATL _unit select 2) - (getPosATL _nearEnemy select 2)) > (-1.45)) and !(_unit isKindOf "MAR_ANT_QUEEN")): {
 					_unit setVariable ["WBK_IsUnitLocked",0];
 					_unit disableAI "MOVE";
 					_unit disableAI "ANIM";
@@ -350,7 +350,7 @@ _loopPathfindDoMove = [{
     _array = _this select 0;
     _unit = _array select 0;
 	
-	if (!(_unit checkAIFeature "MOVE") or !(_unit checkAIFeature "PATH") or !(animationState _unit in ["ant_idle","ant_run"])) exitWith {};
+	if (!(_unit checkAIFeature "MOVE")or(_unit isKindOf "MAR_ANT_QUEEN") or !(_unit checkAIFeature "PATH") or !(animationState _unit in ["ant_idle","ant_run"])) exitWith {};
 	_nearEnemy = _unit call MAR_Bugslife_FindTarget; 
     if ((isNull _nearEnemy) or !(alive _nearEnemy) or !(alive _unit) or (((_unit distance _nearEnemy) >= 400) and !((_unit distance _nearEnemy) < 2.5))) exitWith {
 		_unit doFollow (leader group _unit);		

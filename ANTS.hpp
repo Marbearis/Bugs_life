@@ -76,7 +76,7 @@
         uniformClass = "ANT_Uniform_ICE";
         nakedUniform = "ANT_Uniform_ICE";
     };
-    class MAR_ANT_QUEEN:MAR_Critter_BASE
+    class MAR_ANT_QUEEN:MAR_ANT_BASE
     {
         side = 0;
         scope = 2;			
@@ -131,6 +131,10 @@
         side = 2;
     };
     class MAR_ANT_Ice_G:MAR_ANT_Ice
+    {
+        side = 2;
+    };
+    class MAR_ANT_QUEEN_G:MAR_ANT_QUEEN
     {
         side = 2;
     };
