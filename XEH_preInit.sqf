@@ -4,19 +4,7 @@
 
 
 
-[ 
-    "MAR_BL_ANTWORKERHLTTH", 
-    "EDITBOX", 
-    ["Worker Health"],
-    ["Marbearis' Bugs & critters","ANT Settings"],
-    "200",
-    1,
-    {   
-        params ["_value"];  
-        _number = parseNumber _value;
-		MAR_BL_ANTWORKERHLTTH = _number;
-    }
-] call CBA_fnc_addSetting;
+
 
 [ 
     "MAR_BL_BUGEXPLODECHANCE", 
@@ -47,10 +35,24 @@
 ] call CBA_fnc_addSetting;
 
 [ 
+    "MAR_BL_CANSPAWNGIBLETS", 
+    "CHECKBOX", 
+    ["spawn bug parts on explode?"],
+    ["Marbearis' Bugs & critters","General Settings"],
+    true,
+    1,
+    {   
+        params ["_value"];  
+		MAR_BL_CANSPAWNGIBLETS = _value;
+		
+    }
+] call CBA_fnc_addSetting;
+
+[ 
     "MAR_BL_CANEGGSSPAWNUNITS", 
     "CHECKBOX", 
     ["can eggs spawn units"],
-    ["Marbearis' Bugs & critters","General Settings"],
+    ["Marbearis' Bugs & critters","ANT Settings"],
     true,
     1,
     {   
@@ -61,11 +63,25 @@
 ] call CBA_fnc_addSetting;
 
 [ 
+    "MAR_BL_ANTWORKERHLTTH", 
+    "EDITBOX", 
+    ["Worker Health"],
+    ["Marbearis' Bugs & critters","ANT Settings"],
+    "100",
+    1,
+    {   
+        params ["_value"];  
+        _number = parseNumber _value;
+		MAR_BL_ANTWORKERHLTTH = _number;
+    }
+] call CBA_fnc_addSetting;
+
+[ 
     "MAR_BL_ANTSPITTERHLTTH", 
     "EDITBOX", 
     ["Spitter Health"],
     ["Marbearis' Bugs & critters","ANT Settings"],
-    "100",
+    "75",
     1,
     {   
         params ["_value"];  
@@ -77,9 +93,9 @@
 [ 
     "MAR_BL_ANTICEHLTTH", 
     "EDITBOX", 
-    ["Worker Health"],
+    ["Ice ant Health"],
     ["Marbearis' Bugs & critters","ANT Settings"],
-    "200",
+    "60",
     1,
     {   
         params ["_value"];  
@@ -164,24 +180,25 @@ Bugzlife_SpawnAntHill = {
 
         _position = _CraterPos;
 
-        _side = (_dropside select 0);
+       
 
         _list =  ["MAR_ANT_Basic","MAR_ANT_Ice","MAR_ANT_Spitter"];
         
        
         
-        [_position, _side, _list, _DroidPodCrater, _projectile,_spawnAmount,_linger] spawn {
+        [_position, _dropside#0, _list, _DroidPodCrater, _projectile,_spawnAmount,_linger] spawn {
             params ["_spawn", "_side", "_list", "_DroidPodCrater", "_projectile","_spawnAmount","_linger"];
 			_spawnAmount = 6;
+			_FloodGroup = createGroup _side;
             sleep 0.5;
-			_FloodGroup = createGroup east;
+			
             _spawn = (_DroidPodCrater modelToWorldVisual (_DroidPodCrater selectionPosition ["Body","Memory"]));
 			
 			for "_i" from 1 to _spawnAmount do {
 				if !(alive _DroidPodCrater) exitWith {};
 				_unit = _FloodGroup createUnit [(selectRandom _list), _spawn, [], 0, "CAN_COLLIDE"];
 				_unit setPosATL [_spawn#0,_spawn#1,(_spawn#2)+3];
-
+				[_unit] joinSilent _FloodGroup;
 				_unit setDir (random 360);
 
 				[_unit,["ANT_Climb_Out", 0, 0.2, false]] remoteExec ["switchMove",0];
@@ -238,7 +255,7 @@ Bugzlife_SpawnAntHill = {
 
 			_target setVariable ["gooberHealth", _newHealth, true];
 
-			if (_currentHealth == 0) then {_target setDamage 1;};
+			if (_currentHealth == 0) then {[_target, [1, false, _shooter]] remoteExec ["setDamage",2];};
 
 			}];
 
@@ -250,16 +267,21 @@ Bugzlife_SpawnAntHill = {
 };
 
 Bugzlife_TrapDoor = {
-    params ["_position"];
+    params ["_position","_side","_canDie"];
 	_position= (ASLtoATL _position);
-	_trapDoor = createvehicle ["MAR_TrapDoor", _position, [], 0, "CAN_COLLIDE"];
+	//if {surfaceIsWater _position} then {_position = [_position#0,_position#1]}
+	_trapDoor = createvehicle ["MAR_TrapDoor", [_position#0,_position#1,((_position#2)-0.2)], [], 0, "CAN_COLLIDE"];
 	_groundTexture = surfaceTexture getPosATL _trapDoor;
 	_trapDoor setObjectTextureGlobal [0,_groundTexture];
 	_trapDoor setVectorUp surfaceNormal position _trapDoor;
-	_group = createGroup east;
+	_group = createGroup _side;
+	
 	_spawn = (_trapDoor modelToWorldVisual (_trapDoor selectionPosition ["spider","Memory"]));
 	_unit = _group createUnit ["MAR_Spider_Burrower", _spawn, [], 0, "CAN_COLLIDE"];
+	[_unit] joinSilent _group;
+	_unit setVariable ["IMS_IsUnitInvicibleScripted",true,true];
 	[_unit,["Spider_Burrowed_Idle", 0, 0.2, false]] remoteExec ["switchMove",0];
+	_unit setVariable ["trapDoorCanDie",_canDie,true];
 	_unit hideObjectGlobal true;
 	_unit hideObject true;
 	_group deleteGroupWhenEmpty true;
@@ -318,7 +340,8 @@ Bugslife_TrapDoorAttack = {
               
                 deleteVehicle _dust2;     
 
-        }] remoteExec["spawn", 0, false];
+    }] remoteExec["spawn", 0, false];
+
 	uiSleep 0.1;
 	
 	
@@ -363,7 +386,7 @@ Bugslife_TrapDoorAttack = {
 					_soundArray_wonk = ["\Bugs_life\data\humanSounds\human_scream_1.ogg","\Bugs_life\data\humanSounds\human_scream_2.ogg","\Bugs_life\data\humanSounds\human_scream_3.ogg"];
 					[[_x,_soundArray_wonk] ,{ params ["_player","_soundArray"];playSound3D [selectRandom _soundArray, _player];}] remoteExec ["spawn", [0,-2] select isDedicated];	
 					sleep 0.8;
-					_x setDamage 1;
+					[_x, [1, false, _spider]] remoteExec ["setDamage",2];
 					_x hideObjectGlobal true;
 					_x hideObject true;
 					_spider hideObjectGlobal true;
@@ -373,27 +396,66 @@ Bugslife_TrapDoorAttack = {
 			};
 		
 	}forEach nearestObjects [_spider modelToWorldVisual(_spider selectionPosition ["bitezone","Memory"]),["MAN"],8];
+	if (!(_poorChuddie isKindOf "MAN")&&(_poorChuddie isKindOf "GrenadeHand"))then {
+		if (isNil {_spider getVariable "s_Food"}) then {
+								
+			_dir = getDir _spider;
+			_spider setDir (_dir);
+			_poorChuddie attachTo [_home,[0,0,0],"true"];
+			_spider setVariable ["s_Food",_poorChuddie,true];
+			
+			sleep 0.8;
+			_poorChuddie setPosATL getPosATL _spider;
+			[_poorChuddie, [1, false, _spider]] remoteExec ["setDamage",2];
+			_poorChuddie hideObjectGlobal true;
+			_poorChuddie hideObject true;
+			if (_poorChuddie isKindof "SmokeShell")then {
+				_poorChuddie spawn {
+					uiSleep 4;
+					deleteVehicle _this;
+				};				
+			};
+			_spider hideObjectGlobal true;
+			_spider hideObject true;
+			_spider spawn {sleep 8; _this setVariable ["s_Food",nil,true];};
+
+			if ((_spider getVariable ["trapDoorCanDie",true])&& !(_poorChuddie isKindOf "SmokeShell")) then {
+				waitUntil {isNull _poorChuddie};
+				_home animateSource ["Spider_Open_Source",1,15];
+				[_spider, [1, false, _poorChuddie]] remoteExec ["setDamage",2]; 
+			};																		
+		};
+	};
 };
 
-Bugzlife_AntDeathContainer = {
+Bugzlife_BugDeathContainer = {
 	params ["_bug","_killer"]; 
-	//if (animationState _bug != "ANT_Death") exitWith {};
 	switch true do  {
 		case ((_bug isKindOf "MAR_ANT_Spitter")||(_bug isKindOf "MAR_ANT_Ice")):{
 			
-				_bug spawn BugzLife_fnc_explodeAnt;
+				_bug spawn BugzLife_fnc_explodeBug;
 		
 		};
-
+		case ((_bug isKindOf "MAR_Spider_Burrower")):{
+			
+				_bug spawn BugzLife_fnc_explodeBug;
+		
+		};
 		case ((_bug isKindOf "MAR_Ant_Egg")||(_bug isKindOf "MAR_Ant_Egg_Clutch")): {
-				_bug spawn BugzLife_fnc_explodeAnt;
+				_bug spawn BugzLife_fnc_explodeBug;
+				_bug call BugsLife_HandleMelee;
+
 		};
 
 		case (_bug isKindOf "MAR_ANT_BASE"): {
 			
 			
 
-			if ((MAR_BL_BUGEXPLODECHANCE >= floor (random 100))||MAR_BL_BUGEXPLODECHANCE == 100) then {_bug spawn BugzLife_fnc_explodeAnt;}else {
+			if ((MAR_BL_BUGEXPLODECHANCE >= floor (random 100))||MAR_BL_BUGEXPLODECHANCE == 100) then {_bug spawn BugzLife_fnc_explodeBug;}else {
+				_meleeSounds = [
+					"\Bugs_life\data\AntSounds\antDeath.ogg"
+				];
+				[[_this,_meleeSounds] ,{ params ["_player","_soundArray"];playSound3D [selectRandom _soundArray, _player,false,_player,5];}] remoteExec ["spawn", [0,-2] select isDedicated];
 				[_bug,[(selectRandom ["ANT_Death_3","ANT_Death_2"]), 0, 0.2, false]] remoteExec ["switchMove",0];
 				uiSleep 1.1;
 				[_bug,["ANT_Death", 0, 0.2, false]] remoteExec ["switchMove",0];
@@ -404,9 +466,10 @@ Bugzlife_AntDeathContainer = {
 	};
 };
 
-BugzLife_fnc_explodeAnt = {
+BugzLife_fnc_explodeBug = {
+
 	if (isDedicated) exitWith {};			
-	if (!(MAR_BL_CANBUGSEXPLODE)and!((_this isKindOf "MAR_Ant_Egg")||(_this isKindOf "MAR_Ant_Egg_Clutch"))) exitWith {
+	if (!(MAR_BL_CANBUGSEXPLODE)and!((_this isKindOf "MAR_Ant_Egg")||(_this isKindOf "MAR_Ant_Egg_Clutch")||(_this isKindOf "MAR_ANT_Spitter")||(_this isKindOf "MAR_Spider_Burrower")||(_this isKindOf "MAR_ANT_Ice"))) exitWith {
 		[_this,[(selectRandom ["ANT_Death_3","ANT_Death_2"]), 0, 0.2, false]] remoteExec ["switchMove",0];
 		uiSleep 1.1;
 		[_this,["ANT_Death", 0, 0.2, false]] remoteExec ["switchMove",0];
@@ -417,8 +480,9 @@ BugzLife_fnc_explodeAnt = {
 	_meleeSounds = [
 		"\Bugs_life\data\AntSounds\antDeath.ogg"
 	];
-	[[_this,_meleeSounds] ,{ params ["_player","_soundArray"];playSound3D [selectRandom _soundArray, _player,false,_player,5];}] remoteExec ["spawn", [0,-2] select isDedicated];
-	if !((_this isKindOf "MAR_Ant_Egg")||(_this isKindOf "MAR_Ant_Egg_Clutch"))then {uiSleep 1.1;};
+	if (_this isKindOf "MAR_Spider_Base") then {GlobalBugSoundPitch = 0.5}else {GlobalBugSoundPitch = 1};
+	[[_this,_meleeSounds] ,{ params ["_player","_soundArray"];playSound3D [selectRandom _soundArray, _player,false,_player,5,GlobalBugSoundPitch];}] remoteExec ["spawn", [0,-2] select isDedicated];
+	if !((_this isKindOf "MAR_Ant_Egg")||(_this isKindOf "MAR_Ant_Egg_Clutch")||(_this isKindOf "MAR_Spider_Burrower"))then {uiSleep 1.1;};
 	
 
 	_this hideObjectGlobal true;
@@ -433,7 +497,7 @@ BugzLife_fnc_explodeAnt = {
 		"\a3\sounds_f\arsenal\explosives\grenades\grenadelight_closeexp_04.wss"  
 	];
 
-	[[_this,_boomSounds] ,{ params ["_player","_soundArray"];playSound3D [selectRandom _soundArray, _player];}] remoteExec ["spawn", [0,-2] select isDedicated];
+	[[_this,_boomSounds] ,{ params ["_player","_soundArray"];playSound3D [selectRandom _soundArray, _player,false,_player,5,GlobalBugSoundPitch];}] remoteExec ["spawn", [0,-2] select isDedicated];
 
 	_meleeSounds = [
 		"\Bugs_life\data\AntSounds\ant_explode.ogg",
@@ -441,7 +505,7 @@ BugzLife_fnc_explodeAnt = {
 		"\Bugs_life\data\AntSounds\ant_explode_2.ogg"
 	];
 
-	[[_this,_meleeSounds] ,{ params ["_player","_soundArray"];playSound3D [selectRandom _soundArray, _player];}] remoteExec ["spawn", [0,-2] select isDedicated];
+	[[_this,_meleeSounds] ,{ params ["_player","_soundArray"];playSound3D [selectRandom _soundArray, _player,false,_player,5,GlobalBugSoundPitch];}] remoteExec ["spawn", [0,-2] select isDedicated];
 	
 	private _lamd = createVehicle ["MAR_acidCrater",position _this, [], 0, "CAN_COLLIDE"];
 	_lamd setDir (random 360);
@@ -523,62 +587,69 @@ BugzLife_fnc_explodeAnt = {
 
 	if (isDedicated) exitWith {};
 
-	if ((_this isKindOf "MAR_Ant_Egg")||(_this isKindOf "MAR_Ant_Egg_Clutch")) exitWith {};
-	_Part_1 = "MAR_Ant_Part_Thorax" createVehicle (_this modelToWorldVisual [0,0,0]);
-	{
-		_Part_1 setObjectTextureGlobal [_x,_textures#0];
-	}forEach (_Part_1 selectionNames 1);
-	_Part_1 setPosATL (_this modelToWorldVisual [0,0,0]);
-	_Part_1 setDir 180;
-	_Part_1 setVelocityModelSpace [0,-6,4];
-	_Part_2 = "MAR_Ant_Part_Head" createVehicle (_this modelToWorldVisual [0,0.5,0]);
-	{
-		_Part_2 setObjectTextureGlobal [_x,_textures#0];
-	}forEach (_Part_2 selectionNames 1);
-	_Part_2 setPosATL (_this modelToWorldVisual [0,0.5,0]);
-	_Part_2 setDir 180;
-	_Part_2 setVelocityModelSpace [0,-6,4];
-	_PArt_3 = "MAR_Ant_Part_Abdomen" createVehicle (_this modelToWorldVisual [0,-0.5,0]);
-	{
-		_Part_3 setObjectTextureGlobal [_x,_textures#0];
-	}forEach (_Part_3 selectionNames 1);
-	_PArt_3 setPosATL (_this modelToWorldVisual [0,-0.5,0]);
-	_PArt_3 setDir 180;
-	_PArt_3 setVelocityModelSpace [0,6,4];
-	
-	for "_i" from 1 to 6 do {
-		legSide = 0.2;
-		legVelocity = 7;
-		if (_i > 3) then {legSide = -0.2; legVelocity = -7;}; 
-		_Part_4 = "MAR_Ant_Part_Leg" createVehicle (_this modelToWorldVisual [1,selectRandom [-0.5,0.5,0,0.3,-0.3],0.05]);
-		{
-			_Part_4 setObjectTextureGlobal [_x,_textures#0];
-		}forEach (_Part_4 selectionNames 1);
-		_Part_4 setPosATL (_this modelToWorldVisual [0,selectRandom [legSide,1,0.5],0.05]);
-		
-		_Part_4 setVelocityModelSpace [selectRandom [legVelocity,legVelocity],0,6];
-		_Part_4 spawn {sleep 35; deleteVehicle _this;};
+	if ((_this isKindOf "MAR_Ant_Egg")||(_this isKindOf "MAR_Ant_Egg_Clutch")||!(MAR_BL_CANSPAWNGIBLETS)) exitWith {};
+	switch true do {
+		case (_this isKindOf "MAR_ANT_BASE"):{
+			_Part_1 = "MAR_Ant_Part_Thorax" createVehicle (_this modelToWorldVisual [0,0,0]);
+			{
+				_Part_1 setObjectTextureGlobal [_x,_textures#0];
+			}forEach (_Part_1 selectionNames 1);
+			_Part_1 setPosATL (_this modelToWorldVisual [0,0,0]);
+			_Part_1 setDir 180;
+			_Part_1 setVelocityModelSpace [0,-6,4];
+			_Part_2 = "MAR_Ant_Part_Head" createVehicle (_this modelToWorldVisual [0,0.5,0]);
+			{
+				_Part_2 setObjectTextureGlobal [_x,_textures#0];
+			}forEach (_Part_2 selectionNames 1);
+			_Part_2 setPosATL (_this modelToWorldVisual [0,0.5,0]);
+			_Part_2 setDir 180;
+			_Part_2 setVelocityModelSpace [0,-6,4];
+			_PArt_3 = "MAR_Ant_Part_Abdomen" createVehicle (_this modelToWorldVisual [0,-0.5,0]);
+			{
+				_Part_3 setObjectTextureGlobal [_x,_textures#0];
+			}forEach (_Part_3 selectionNames 1);
+			_PArt_3 setPosATL (_this modelToWorldVisual [0,-0.5,0]);
+			_PArt_3 setDir 180;
+			_PArt_3 setVelocityModelSpace [0,6,4];
+			
+			for "_i" from 1 to 6 do {
+				legSide = 0.2;
+				legVelocity = 7;
+				if (_i > 3) then {legSide = -0.2; legVelocity = -7;}; 
+				_Part_4 = "MAR_Ant_Part_Leg" createVehicle (_this modelToWorldVisual [1,selectRandom [-0.5,0.5,0,0.3,-0.3],0.05]);
+				{
+					_Part_4 setObjectTextureGlobal [_x,_textures#0];
+				}forEach (_Part_4 selectionNames 1);
+				_Part_4 setPosATL (_this modelToWorldVisual [0,selectRandom [legSide,1,0.5],0.05]);
+				
+				_Part_4 setVelocityModelSpace [selectRandom [legVelocity,legVelocity],0,6];
+				_Part_4 spawn {sleep 35; deleteVehicle _this;};
+			};
+			
+			
+			_Part_5 = "MAR_Ant_Part_Mandible" createVehicle (_this modelToWorldVisual [-1,-0.1,0.05]);
+			{
+				_Part_5 setObjectTextureGlobal [_x,_textures#0];
+			}forEach (_Part_5 selectionNames 1);
+			_Part_5 setPosATL (_this modelToWorldVisual [-1,0,0.05]);
+			_Part_5 setDir ((getDir _this) - 180);
+			_Part_5 setVelocityModelSpace [7,0,0];
+			_Part_6 = "MAR_Ant_Part_Mandible" createVehicle (_this modelToWorldVisual [-1,-0.1,0.05]);
+			{
+				_Part_6 setObjectTextureGlobal [_x,_textures#0];
+			}forEach (_Part_6 selectionNames 1);
+			_Part_6 setPosATL (_this modelToWorldVisual [1,0,0.05]);
+			_Part_6 setDir ((getDir _this) - 180);
+			_Part_6 setVelocityModelSpace [-7,0,0];
+			deleteVehicle _this;
+			{
+				_x spawn {sleep 35; deleteVehicle _this;};
+			}forEach [_Part_1,_Part_2,_Part_3,_Part_5,_Part_6];
+		};
+
+		default {};
 	};
 	
-	
-	_Part_5 = "MAR_Ant_Part_Mandible" createVehicle (_this modelToWorldVisual [-1,-0.1,0.05]);
-	{
-		_Part_5 setObjectTextureGlobal [_x,_textures#0];
-	}forEach (_Part_5 selectionNames 1);
-	_Part_5 setPosATL (_this modelToWorldVisual [-1,0,0.05]);
-	_Part_5 setDir ((getDir _this) - 180);
-	_Part_5 setVelocityModelSpace [7,0,0];
-	_Part_6 = "MAR_Ant_Part_Mandible" createVehicle (_this modelToWorldVisual [-1,-0.1,0.05]);
-	{
-		_Part_6 setObjectTextureGlobal [_x,_textures#0];
-	}forEach (_Part_6 selectionNames 1);
-	_Part_6 setPosATL (_this modelToWorldVisual [1,0,0.05]);
-	_Part_6 setDir ((getDir _this) - 180);
-	_Part_6 setVelocityModelSpace [-7,0,0];
-	deleteVehicle _this;
-	{
-		_x spawn {sleep 35; deleteVehicle _this;};
-	}forEach [_Part_1,_Part_2,_Part_3,_Part_5,_Part_6];
 };
 
 MAR_Bugslife_FindTarget = {
@@ -620,7 +691,7 @@ Bugslife_ANTMelee = {
 		
 		if !(animationState _zombie in ["ant_attack_1"])exitWith {};
 		if (_zombie isKindOf "MAR_ANT_Ice") exitWith {
-			_zombie setDamage 2;
+			[_zombie, [1, false, _zombie]] remoteExec ["setDamage",2];
 		};
 		_zombie call BugsLife_HandleMelee;
 	};
@@ -657,15 +728,35 @@ BugsLife_AntEgginit = {
 
 			_target setVariable ["gooberHealth", _newHealth, true];
 
-			if (_currentHealth == 0) then {_target allowDamage true; _target setDamage 1;};
+			if (_currentHealth == 0) then {_target allowDamage true; [_target, [1, false, _shooter]] remoteExec ["setDamage",2];};
 
 	}];
-
+	
+	if (_egg isKindOf "MAR_Ant_Egg_Clutch") then {
+		_egg setVectorUp surfaceNormal position _egg;
+		_webs ="MAR_Ant_Webs" createvehicle getPosATL _egg;
+		_webs attachTo [_egg,[0,0,-0.5]];
+		
+		_webs setVectorUp surfaceNormal position _webs;
+	};
+	
 	_egg addEventHandler ["Killed", {
 		(_this select 0) spawn {
 			uisleep 0.1;
-			_this remoteExec ["Bugzlife_AntDeathContainer",_this]			
+			_this remoteExec ["Bugzlife_BugDeathContainer",_this];
+
+			{
+				deleteVehicle _x;
+			}forEach attachedObjects _this;			
 		};
+	}];
+
+	_egg addEventHandler ["Deleted", {
+		params ["_eggs"];
+		{
+			deleteVehicle _x;
+		}forEach attachedObjects _egg;	
+
 	}];
 
 };
@@ -673,7 +764,7 @@ BugsLife_AntEgginit = {
 BugsLife_HandleMelee = 
 {
 	params ["_zombie"];
-	MBradius = 2.5;
+	MBradius = 1.4;
 	if (_zombie isKindOf "MAR_ANT_Ice") then {
 		MBradius = 6;							
 	};
@@ -708,13 +799,15 @@ BugsLife_HandleMelee =
 			(isNil {_x getVariable "IMS_IsUnitInvicibleScripted"})
 			) 
 		then {
+
 			if (((_x != _zombie) and (alive _x)) and (_x isKindOf "MAR_ANT_BASE")) exitWith {
 									
-				private _chimp = _x getVariable ["WBK_HaloCustomHp",1];
+				private _chimp = _x getVariable ["WBK_SynthHP",1];
 				private _newHealth = _chimp - 25 ;
-				_x setVariable ["WBK_HaloCustomHp", _newHealth,true];
+				_x setVariable ["WBK_SynthHP", _newHealth,true];
+
 				if (_newHealth <= 0) exitWith {
-					[_x, [1, false, _x]] remoteExec ["setDamage",2];			
+					[_x, [1, false, _zombie]] remoteExec ["setDamage",2];			
 				};			
 				if (((_x worldToModel (_zombie modelToWorld [0, 0, 0])) select 1) < 0) then {
 					[_x,["ANT_Hit_B", 0, 0.7, false]] remoteExec ["switchMove",0];
@@ -729,26 +822,85 @@ BugsLife_HandleMelee =
 						
 						_victim enableSimulation false;
 						uiSleep 5;
-						if (_victim != player) exitWith {_victim setDamage 1;};
+						if (_victim != player) exitWith {[_victim, [1, false, _zombie]] remoteExec ["setDamage",2];};
 						_victim enableSimulation true;
 												
 					};
 									
 				};
-				if !(isNil {"ace_medical_fnc_addDamageToUnit"})then {
+				
+				switch true do {
+					case (!(isNil "ace_medical_fnc_addDamageToUnit")):{ 
+						[[_x,_zombie],{
+							params ["_target","_zombie"];
+							
+							if (!(isNil {_target getVariable "optre_suit_energy"})) then {
+								if ((_target getVariable ["optre_suit_energy",0]) <= 0) exitWith {
+									[_target, 0.5, "body", "stab"] remoteExec ["ace_medical_fnc_addDamageToUnit", _target];
+								};
+								_shieldEnergy = _target getVariable ["optre_suit_energy",0];
+								_newShieldEnergy = _shieldEnergy - 25;
+								_target setVariable ["optre_suit_energy", _newShieldEnergy, true];
+							}else {
+								[_target, 0.5, "body", "stab"] remoteExec ["ace_medical_fnc_addDamageToUnit", _target];
+							};
+						}]remoteExec ["spawn",_x];
+						
+					};
+
+					case ((local _x) && {!(isDamageAllowed _x)}):{
+						switch true do {
+							
+
+							case (WBK_Armor_System_OnlyHP):{
+								_currentHealth = _x getVariable "WBK_AS_HP";
+								_newDamage = _currentHealth -0.20;
+								_x setVariable ["WBK_AS_HP",_newDamage,true];
+							}; 
+
+							case !(WBK_Armor_System_OnlyHP):{
+									_currentArmor = _x getVariable "WBK_AdvancedHealth";
+									if (_currentArmor <= 0) then {
+										_currentHealth = _x getVariable "WBK_AS_HP";
+										_newDamage = _currentHealth -0.20;
+										_x setVariable ["WBK_AS_HP",_newDamage,true];
+									 }else {
+									_newDamage = _currentArmor - (15*WBK_Armor_System_DMG_Modifier);
+									_x setVariable ["WBK_AdvancedHealth",_newDamage,true];
+								};
+							}; 
+						};
+					};			
 					
-					[_x, 0.5, "body", "stab"] remoteExec ["ace_medical_fnc_addDamageToUnit", _x];
+					default {
+						if (!(isNil {_x getVariable "optre_suit_energy"})) then {
+								[[_x,_zombie],{
+									params ["_target","_zombie"];
+									
+										if ((_target getVariable ["optre_suit_energy",0]) <= 0) exitWith {
+											private _poop = damage _target;						
+											[_target, [(0.20 + _poop), false, _zombie]] remoteExec ["setDamage",2]; 
+										};
+										_shieldEnergy = _target getVariable ["optre_suit_energy",0];
+										_newShieldEnergy = _shieldEnergy - 25;
+										_target setVariable ["optre_suit_energy", _newShieldEnergy, true];
+								
+										
+									
+								}]remoteExec ["spawn",_x];
+							}else{		
+									private _poop = damage _x;						
+									[_x, [(0.20 + _poop), false, _zombie]] remoteExec ["setDamage",2];
+						}; 
+					};
+												
 					
-				}else{									
-					private _poop = damage _x;
-					_x setDamage 0.20 + _poop;
 				};																								
 
 			};
 		
 	} forEach nearestObjects [_zombie modelToWorldVisual(_zombie selectionPosition ["a_spitPoint","Memory"]),["MAN"],MBradius];
 };
-
 
 BugsLife_RangedAttack_FNC= {
 
@@ -791,18 +943,20 @@ BugsLife_RangedAttack_FNC= {
 Bugzz_fnc_ProjectileCreate = {
 	params   
 	[   
-	["_shooter", objNull, [objNull]],   
-	["_startPos", [0.0 , 0.0, 0.0], [[]]],   
-	["_class", "M_Titan_AT", ["", objNull]],   
-	["_target", objNull, [objNull]],   
-	["_tgtPos", [0.0 , 0.0, 0.0], [[]]],   
-	["_speed", 100.0, [0.0]],   
-	["_destroyTarget", true, [true]],   
-	["_localOffset", [0.0, 0.0, 0.0], [[]]],   
-	["_minDistanceToTarget", 8.0, [0.0]],   
-	["_function", "", [""]],   
-	["_isGlobalFunction", false, [true]]   
-	];   
+		["_shooter", objNull, [objNull]],   
+		["_startPos", [0.0 , 0.0, 0.0], [[]]],   
+		["_class", "M_Titan_AT", ["", objNull]],   
+		["_target", objNull, [objNull]],   
+		["_tgtPos", [0.0 , 0.0, 0.0], [[]]],   
+		["_speed", 100.0, [0.0]],   
+		["_destroyTarget", true, [true]],   
+		["_localOffset", [0.0, 0.0, 0.0], [[]]],   
+		["_minDistanceToTarget", 8.0, [0.0]],   
+		["_function", "", [""]],   
+		["_isGlobalFunction", false, [true]]   
+	];
+	   
+	if ((isNil "_shooter") ||(!alive _shooter)) exitWith {};
 	if (count _startPos != 3 || {{typeName _x != typeName 0} count _startPos > 0}) exitWith {"fn_guidedProjectile invalid position, not a 3D vector" call BIS_fnc_error};   
 	if (_startPos isEqualTo [0,0,0]) exitWith {"fn_guidedProjectile invalid position, at 0,0,0" call BIS_fnc_error};   
 	if (typeName _class == typeName "" && {_class == ""}) exitWith {"fn_guidedProjectile invalid class provided" call BIS_fnc_error};   

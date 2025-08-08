@@ -2,28 +2,28 @@ _gruntBoy = _this select 0;
 
 
 
-if ((isPlayer _gruntBoy) or !(alive _gruntBoy) or !(isNil {_gruntBoy getVariable "WBK_HaloCustomHp"})) exitWith {};
+if ((isPlayer _gruntBoy) or !(alive _gruntBoy) or !(isNil {_gruntBoy getVariable "WBK_SynthHP"})) exitWith {};
 
 _gruntBoy setSpeaker "NoVoice";
 (group _gruntBoy) setFormation "LINE";
 _gruntBoy disableConversation true;
 switch typeOf _gruntBoy do {
 	case ("MAR_ANT_Basic"):{
-		_gruntBoy setVariable ["WBK_HaloCustomHp",MAR_BL_ANTWORKERHLTTH,true];
-		_gruntBoy setVariable ["WBK_HaloCustomHpMax",MAR_BL_ANTWORKERHLTTH,true];
+		_gruntBoy setVariable ["WBK_SynthHP",MAR_BL_ANTWORKERHLTTH,true];
+		_gruntBoy setVariable ["WBK_SynthHPMax",MAR_BL_ANTWORKERHLTTH,true];
 	};
 	case ("MAR_ANT_Spitter"):{
-		_gruntBoy setVariable ["WBK_HaloCustomHp",MAR_BL_ANTSPITTERHLTTH,true];
-		_gruntBoy setVariable ["WBK_HaloCustomHpMax",MAR_BL_ANTSPITTERHLTTH,true];
+		_gruntBoy setVariable ["WBK_SynthHP",MAR_BL_ANTSPITTERHLTTH,true];
+		_gruntBoy setVariable ["WBK_SynthHPMax",MAR_BL_ANTSPITTERHLTTH,true];
 	};
 	case ("MAR_ANT_Ice"):{
-		_gruntBoy setVariable ["WBK_HaloCustomHp",MAR_BL_ANTICEHLTTH,true];
-		_gruntBoy setVariable ["WBK_HaloCustomHpMax",MAR_BL_ANTICEHLTTH,true];
+		_gruntBoy setVariable ["WBK_SynthHP",MAR_BL_ANTICEHLTTH,true];
+		_gruntBoy setVariable ["WBK_SynthHPMax",MAR_BL_ANTICEHLTTH,true];
 		[_gruntBoy,1.5]remoteExec ["setAnimSpeedCoef",0];
 	};
 	default {
-		_gruntBoy setVariable ["WBK_HaloCustomHp",MAR_BL_ANTWORKERHLTTH,true];
-		_gruntBoy setVariable ["WBK_HaloCustomHpMax",MAR_BL_ANTWORKERHLTTH,true];
+		_gruntBoy setVariable ["WBK_SynthHP",MAR_BL_ANTWORKERHLTTH,true];
+		_gruntBoy setVariable ["WBK_SynthHPMax",MAR_BL_ANTWORKERHLTTH,true];
 	};
 };
 
@@ -79,7 +79,7 @@ _gruntBoy addEventHandler ["Killed", {
 	} forEach ((_this select 0) getVariable "WBK_AI_AttachedHandlers");
 	(_this select 0) spawn {
 		uisleep 0.1;	
-		_this remoteExec ["Bugzlife_AntDeathContainer",_this];
+		_this remoteExec ["Bugzlife_BugDeathContainer",_this];
 	};
 }];
 
@@ -107,15 +107,15 @@ _gruntBoy setVariable ["IMS_EventHandler_Hit",{
 		if ((!(isNil {_shooter getVariable "WBK_CovieAI"}) && (side _shooter == side _target)) or (_target == _shooter) or !(alive _target) or (lifeState _target == "INCAPACITATED")) exitWith {};
 		_isExplosive = _ammo select 3;
 		_isEnoughDamage = _ammo select 0;
-		_vv = _target getVariable "WBK_HaloCustomHp";
-		_vvMAX = _target getVariable "WBK_HaloCustomHpMax";
+		_vv = _target getVariable "WBK_SynthHP";
+		_vvMAX = _target getVariable "WBK_SynthHPMax";
 		_new_vv = _vv - _isEnoughDamage;
 		if (_new_vv <= 0) exitWith {
 			_target removeAllEventHandlers "HitPart"; 
 			[_target, [1, false, _shooter]] remoteExec ["setDamage",2];
 		};
 		[_target, "WBK_Halo_Hit",[_target,_shooter]] call BIS_fnc_callScriptedEventHandler;
-		_target setVariable ["WBK_HaloCustomHp",_new_vv,true];
+		_target setVariable ["WBK_SynthHP",_new_vv,true];
 		if (!(isNull objectParent _target) or !(isTouchingGround _target) or (animationState _target == "ANT_Hit_B") or (animationState _target == "ANT_Hit_F") or (animationState _target == "ANT_Death")) exitWith {};
        // [_target,selectRandom ["grunt_pain_1","grunt_pain_2","grunt_pain_3","grunt_pain_4","grunt_pain_5","grunt_pain_6","grunt_pain_7"],200] call CBA_fnc_GlobalSay3d;
 		if ((isNil{_target getVariable "canBeStunned"}) && (_isEnoughDamage > 12))then
@@ -186,6 +186,12 @@ _actFr = [{
 					[_mutant,_en] spawn Bugslife_TrapDoorAttack;
 					[_mutant, "WBK_Halo_Melee",[_mutant,_en]] call BIS_fnc_callScriptedEventHandler;
 				};
+				case ((_mutant isKindOf "MAR_Spider_Burrower")&&!(isNil {_mutant getVariable "trapDoor"})&&((vehicle _en) isKindOf "MAN")&&(count (_mutant nearObjects ["GrenadeHand", 6])>0)):
+				{
+					_grenade = (_mutant nearObjects ["GrenadeHand", 6]);
+					[_mutant,_grenade#0] spawn Bugslife_TrapDoorAttack;
+					[_mutant, "WBK_Halo_Melee",[_mutant,_en]] call BIS_fnc_callScriptedEventHandler;
+				};
 				case (
 					(isNull objectParent _mutant) and 
 					((vehicle _en) isKindOf "MAN") and 
@@ -201,6 +207,7 @@ _actFr = [{
 					[_mutant, "WBK_Halo_Melee",[_mutant,_en]] call BIS_fnc_callScriptedEventHandler;
 				};
 
+			
 				
 
 		

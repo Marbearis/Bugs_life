@@ -3,7 +3,8 @@ class CfgPatches
 	class Marbys_Bugs_Life
 	{
 		units[] = {"MAR_ANT_Basic","MAR_ANT_Ice","MAR_ANT_Spitter","MAR_antHill","MAR_Spider_Burrower","MAR_TrapDoor","MAR_Ant_Egg","MAR_Ant_Egg_Clutch",
-        "MAR_Ant_Part_Head","MAR_Ant_Part_Thorax","MAR_Ant_Part_Abdomen","MAR_Ant_Part_Leg","MAR_Ant_Part_Mandible","MAR_Ant_Part_Antenne"
+        "MAR_Ant_Part_Head","MAR_Ant_Part_Thorax","MAR_Ant_Part_Abdomen","MAR_Ant_Part_Leg","MAR_Ant_Part_Mandible","MAR_Ant_Part_Antenne","MAR_ANT_QUEEN","MAR_Ant_Webs","MAR_Ant_Webs_2","MAR_Spider_Webs",
+        "MAR_Spider_Webs_2"
         };
 		weapons[] = {};
 		magazines[]={};
@@ -56,207 +57,27 @@ class Eventhandlers;
 
 class CfgVehicles
 { 
-	class House_F;//
-	class Items_base_F;
-	class Land_Basketball_01_F;
-    class MAR_antHill: House_F
-    {
-        scope = 2;			
-		scopeCurator = 2;
-        editorSubcategory = "MAR_Bugs_Ants";
-        editorCategory = "MAR_Bugs";
-        model = "\Bugs_life\Ants\Anthill.p3d";
-        displayName = "Ant hill";
-        hiddenSelections[] = {"camo"};
-		hiddenSelectionsTextures[] = {"\Bugs_life\Ants\textures\anthill\anthill_CO.paa"};
-        hiddenSelectionsMaterials[]={"\Bugs_life\Ants\textures\anthill\anthill.rvmat"};
-        class AnimationSources
-        {
-            class Anthill_Raised
-            {
-                source="user";
-                animPeriod=3;
-                initPhase=1;
-                sound="";
-                soundPosition="";
-            };
-        };
-
+	class House_F; // External class reference
+	class Items_base_F; // External class reference
+	class Land_Basketball_01_F; // External class reference
+    class B_Soldier_base_F;	// External class reference
+    class Marby_C_ExportClass : B_Soldier_base_F {
+        identityTypes[] = {"empty_Face"};
     };
 
-    class MAR_TrapDoor: House_F
+    class MAR_Critter_BASE : Marby_C_ExportClass 
     {
-        scope = 2;			
-		scopeCurator = 2;
-        editorSubcategory = "MAR_Bugs_Spiders";
-        editorCategory = "MAR_Bugs";
-        model = "\Bugs_life\Spiders\Spider_hole.p3d";
-        displayName = "MAR_TrapDoor";
-        hiddenSelections[] = {"earth"};
-		hiddenSelectionsTextures[] = {"\Bugs_life\Ants\textures\anthill\anthill_CO.paa"};
-        hiddenSelectionsMaterials[]={"\Bugs_life\data\genericGround\DefaultMaterial.rvmat"};
-        class AnimationSources
-        {
-            class Spider_Open_Source
-            {
-                source="user";
-                animPeriod=3;
-                initPhase=0;
-                sound="";
-                soundPosition="";
-            };
-        };
-
-    };
-    
-    class MAR_Ant_Part_Head:Land_Basketball_01_F
-    {
-        scope = 2;			
-		scopeCurator = 2;
-        armor = 1;
-        editorSubcategory = "MAR_Bugs_Ants";
-        editorCategory = "MAR_Bugs";
-        model = "\Bugs_life\Ants\parts\Head.p3d";
-        displayName = "Ant head";
-        hiddenSelections[] = {"camo","eyes"};
-		hiddenSelectionsTextures[] = {"\Bugs_life\Ants\textures\SpitterAnt\ANT_CO.paa","\Bugs_life\Ants\textures\SpitterAnt\ANT_CO.paa"};
-        class Eventhandlers
-        {
-            init = "_this#0 call BugsLife_AntEgginit";
-        };
-       
-    };
-
-    class MAR_Ant_Egg:Land_Basketball_01_F
-    {
-        scope = 2;			
-		scopeCurator = 2;
-        armor = 1;
-        editorSubcategory = "MAR_Bugs_Ants";
-        editorCategory = "MAR_Bugs";
-        model = "\Bugs_life\Ants\egg.p3d";
-        displayName = "Ant Egg (physx)";
-        hiddenSelections[] = {"egg"};
-		hiddenSelectionsTextures[] = {"\Bugs_life\Ants\textures\egg\DefaultMaterial_CO.paa"};
-        hiddenSelectionsMaterials[] = {"\Bugs_life\Ants\textures\egg\DefaultMaterial.rvmat"};
-
-        class Eventhandlers
-        {
-            init = "_this#0 call BugsLife_AntEgginit";
-        };
-   
-    };
-
-    class MAR_Ant_Egg_Clutch:House_F{
-        scope = 2;			
-		scopeCurator = 2;
-        armor = 1;
-        editorSubcategory = "MAR_Bugs_Ants";
-        editorCategory = "MAR_Bugs";
-        model = "\Bugs_life\Ants\eggclutch.p3d";
-        displayName = "Ant Egg Static";
-        hiddenSelections[] = {"egg"};
-		hiddenSelectionsTextures[] = {"\Bugs_life\Ants\textures\egg\DefaultMaterial_CO.paa"};
-        hiddenSelectionsMaterials[] = {"\Bugs_life\Ants\textures\egg\DefaultMaterial.rvmat"};
-        class Eventhandlers
-        {
-            init = "_this#0 call BugsLife_AntEgginit";
-        };
-    };
-
-    class MAR_Ant_Part_Thorax:Land_Basketball_01_F
-    {
-        scope = 2;			
-		scopeCurator = 2;
-        editorSubcategory = "MAR_Bugs_Ants";
-        editorCategory = "MAR_Bugs";
-        model = "\Bugs_life\Ants\parts\Thorax.p3d";
-        displayName = "Ant Thorax";
-        hiddenSelections[] = {"camo","eyes"};
-		hiddenSelectionsTextures[] = {"\Bugs_life\Ants\textures\SpitterAnt\ANT_CO.paa","\Bugs_life\Ants\textures\SpitterAnt\ANT_CO.paa"};
-    };
-
-    class MAR_Ant_Part_Abdomen:Land_Basketball_01_F
-    {
-        scope = 2;			
-		scopeCurator = 2;
-        editorSubcategory = "MAR_Bugs_Ants";
-        editorCategory = "MAR_Bugs";
-        model = "\Bugs_life\Ants\parts\Abdomen.p3d";
-        displayName = "Ant Abdomen";
-        hiddenSelections[] = {"camo","eyes"};
-		hiddenSelectionsTextures[] = {"\Bugs_life\Ants\textures\SpitterAnt\ANT_CO.paa","\Bugs_life\Ants\textures\SpitterAnt\ANT_CO.paa"};
-    };
-
-    class MAR_Ant_Part_Leg:Land_Basketball_01_F
-    {
-        scope = 2;			
-		scopeCurator = 2;
-        editorSubcategory = "MAR_Bugs_Ants";
-        editorCategory = "MAR_Bugs";
-        model = "\Bugs_life\Ants\parts\Leg.p3d";
-        displayName = "Ant Leg";
-        hiddenSelections[] = {"camo","eyes"};
-		hiddenSelectionsTextures[] = {"\Bugs_life\Ants\textures\SpitterAnt\ANT_CO.paa","\Bugs_life\Ants\textures\SpitterAnt\ANT_CO.paa"};
-    };
-
-    class MAR_Ant_Part_Antenne:Land_Basketball_01_F
-    {
-        scope = 2;			
-		scopeCurator = 2;
-        editorSubcategory = "MAR_Bugs_Ants";
-        editorCategory = "MAR_Bugs";
-        model = "\Bugs_life\Ants\parts\antenne.p3d";
-        displayName = "Ant antenne";
-        hiddenSelections[] = {"camo","eyes"};
-		hiddenSelectionsTextures[] = {"\Bugs_life\Ants\textures\SpitterAnt\ANT_CO.paa","\Bugs_life\Ants\textures\SpitterAnt\ANT_CO.paa"};
-    };
-
-    class MAR_Ant_Part_Mandible:Land_Basketball_01_F
-    {
-        scope = 2;			
-		scopeCurator = 2;
-        editorSubcategory = "MAR_Bugs_Ants";
-        editorCategory = "MAR_Bugs";
-        model = "\Bugs_life\Ants\parts\Mandible.p3d";
-        displayName = "Ant Mandible";
-        hiddenSelections[] = {"camo","eyes"};
-		hiddenSelectionsTextures[] = {"\Bugs_life\Ants\textures\SpitterAnt\ANT_CO.paa","\Bugs_life\Ants\textures\SpitterAnt\ANT_CO.paa"};
-    };
-
-    class MAR_acidCrater: House_F
-    {
-        scope = 2;			
-		scopeCurator = 2;
-        editorSubcategory = "MAR_Bugs_Ants";
-        editorCategory = "MAR_Bugs";
-        model = "\Bugs_life\data\bloodpools\acidPool.p3d";
-        displayName = "acid crater";
-        hiddenSelections[]={"camo"};
-        hiddenSelectionsTextures[]={"\Bugs_life\data\bloodpools\DefaultMaterial_CA.paa"};
-        hiddenSelectionsMaterials[]={"\Bugs_life\data\bloodpools\bloodPoolGreen.rvmat"};
-
-    };
-	//units
-	class B_Soldier_base_F;	// External class reference
-	class Marby_C_ExportClass : B_Soldier_base_F {
-		identityTypes[] = {"empty_Face"};
-	};
-
-	class MAR_Critter_BASE : Marby_C_ExportClass 
-    {
-        side = 0;
         scope = 0;			
         scopeCurator = 0;
         impactEffectsBlood = "MAR_ImpactEffectsBugGuts_Green";
         impactEffectsNoBlood = "MAR_ImpactEffectsBugGuts_Green";
         editorPreview="";
         faction = "MAR_Bug_Faction";
-		editorSubcategory = "MAR_Bugs_Ants";
+        editorSubcategory = "MAR_Bugs_Ants";
         displayName = "ANT_BASE";
         model = "\Bugs_life\Ants\BasicAnt.p3d";
         hiddenSelections[] = {"camo","eyes"};
-		hiddenSelectionsTextures[] = {"\Bugs_life\Ants\textures\Basic\ANT_CO.paa","\Bugs_life\Ants\textures\Basic\ANT_CO.paa"};
+        hiddenSelectionsTextures[] = {"\Bugs_life\Ants\textures\Basic\ANT_CO.paa","\Bugs_life\Ants\textures\Basic\ANT_CO.paa"};
         uniformClass = "ANT_Uniform";
         nakedUniform = "ANT_Uniform";
         _generalMacro = "MAR_ANT_1";
@@ -265,14 +86,14 @@ class CfgVehicles
         items[] = {};
         linkedItems[] = {};
         RespawnlinkedItems[]={};
-       
+    
         vehicleclass = "Men";
-       
+    
         
         
         
         armor = 7;
-      
+    
         class Eventhandlers
         {
             init = "_this#0 allowFleeing 0;_this#0 setSpeaker 'NoVoice';_this#0 disableConversation true;";//[_this#0] execVM 'Bugs_life\Ants\AI\BasicAnt.sqf'
@@ -687,132 +508,22 @@ class CfgVehicles
             {
             };
     };
-    class MAR_ANT_BASE:MAR_Critter_BASE
-    {
-        side = 0;
-        scope = 0;			
-        scopeCurator = 0;
-        impactEffectsBlood = "MAR_ImpactEffectsBugGuts_Green";
-        impactEffectsNoBlood = "MAR_ImpactEffectsBugGuts_Green";
-        editorPreview="";
-        faction = "MAR_Bug_Faction";
-		editorSubcategory = "MAR_Bugs_Ants";
-        displayName = "ANT_BASE";
-        model = "\Bugs_life\Ants\BasicAnt.p3d";
-        hiddenSelections[] = {"camo","eyes"};
-		hiddenSelectionsTextures[] = {"\Bugs_life\Ants\textures\Basic\ANT_CO.paa","\Bugs_life\Ants\textures\Basic\ANT_CO.paa"};
-        uniformClass = "ANT_Uniform";
-        nakedUniform = "ANT_Uniform";
-        _generalMacro = "MAR_ANT_1";
-        gestures = "CfgGestures_MAR_ANT";
-        moves = "CfgMoves_MAR_ANT";
-        class Eventhandlers
-        {
-            init = "_this#0 allowFleeing 0;_this#0 setSpeaker 'NoVoice';_this#0 disableConversation true;";//[_this#0] execVM 'Bugs_life\Ants\AI\BasicAnt.sqf'
-        };
-        class SoundEnvironExt {		
-            generic[] = {
-                {"run", {"\Bugs_life\data\AntSounds\antRun.ogg", 1, 1, 40}},
-                {"idle", {"\Bugs_life\data\AntSounds\idleChitter.ogg", 1, 1, 25}},                    
-                {"walk", {"\Bugs_life\data\AntSounds\AntWalk.ogg", 1, 1, 25}},  
-                {"meleeAttack", {"\Bugs_life\data\AntSounds\antBite.ogg", 1, 1, 25}}, 
-                {"rangedAttack", {"\Bugs_life\data\AntSounds\antSpit.ogg", 1, 1, 100}}          
-            };
-        };
-        class SoundEquipment {	
-            soldier[] = {
-                {"run", {"\Bugs_life\data\AntSounds\antRun.ogg", 1, 1, 40}},
-                {"idle", {"\Bugs_life\data\AntSounds\idleChitter.ogg", 1, 1, 25}},                    
-                {"walk", {"\Bugs_life\data\AntSounds\AntWalk.ogg", 1, 1, 25}},  
-                {"meleeAttack", {"\Bugs_life\data\AntSounds\antBite.ogg", 1, 1, 25}}, 
-                {"rangedAttack", {"\Bugs_life\data\AntSounds\antSpit.ogg", 1, 1, 100}} 
-            };
-        };
-    }
-    class MAR_ANT_Basic:MAR_ANT_BASE
-    {
-        side = 0;
-		scope = 2;			
-		scopeCurator = 2;
-        displayName = "Worker Ant";
-        impactEffectsBlood = "MAR_ImpactEffectsBugGuts_Orange";
-        impactEffectsNoBlood = "MAR_ImpactEffectsBugGuts_Orange";
-    };
-    class MAR_ANT_Spitter:MAR_ANT_BASE
-    {
-        side = 0;
-		scope = 2;			
-		scopeCurator = 2;
-        impactEffectsBlood = "MAR_ImpactEffectsBugGuts_Green";
-        impactEffectsNoBlood = "MAR_ImpactEffectsBugGuts_Green";
-        displayName = "Spitter Ant";
-        hiddenSelections[] = {"camo","eyes"};
-		hiddenSelectionsTextures[] = {"\Bugs_life\Ants\textures\SpitterAnt\ANT_CO.paa","\Bugs_life\Ants\textures\SpitterAnt\ANT_CO.paa"};
-        uniformClass = "ANT_Uniform_spitter";
-        nakedUniform = "ANT_Uniform_spitter";
-    };
-    class MAR_ANT_Ice:MAR_ANT_BASE
-    {
-        side = 0;
-		scope = 2;			
-		scopeCurator = 2;
-        impactEffectsBlood = "MAR_ImpactEffectsBugGuts_Blue";
-        impactEffectsNoBlood = "MAR_ImpactEffectsBugGuts_Blue";
-        displayName = "Ice Ant";
-        hiddenSelections[] = {"camo","eyes"};
-		hiddenSelectionsTextures[] = {"\Bugs_life\Ants\textures\IceAnt\ANT_CO.paa","\Bugs_life\Ants\textures\IceAnt\ANT_CO.paa"};
-        uniformClass = "ANT_Uniform_ICE";
-        nakedUniform = "ANT_Uniform_ICE";
-    };
-    class MAR_Spider_Base:MAR_Critter_BASE{
-        side = 0;
-        scope = 0;			
-        scopeCurator = 0;
-        uniformClass = "Spider_Uniform";
-        nakedUniform = "Spider_Uniform";
-        _generalMacro = "MAR_Spider_1";
-        gestures = "CfgGestures_MAR_Spider";
-        moves = "CfgMoves_MAR_Spider";
-        faction = "MAR_Bug_Faction";
-		editorSubcategory = "MAR_Bugs_Spiders";
-        class Eventhandlers
-        {
-            init = "_this#0 allowFleeing 0;_this#0 setSpeaker 'NoVoice';_this#0 disableConversation true;";//[_this#0] execVM 'Bugs_life\Ants\AI\BasicAnt.sqf'
-        };
-        class SoundEnvironExt {		
-            generic[] = {
-                {"run", {"\Bugs_life\data\AntSounds\antRun.ogg", 1, 1, 40}},
-                {"idle", {"\Bugs_life\data\AntSounds\idleChitter.ogg", 1, 1, 25}},                    
-                {"walk", {"\Bugs_life\data\AntSounds\AntWalk.ogg", 1, 1, 25}},  
-                {"meleeAttack", {"\Bugs_life\data\AntSounds\antBite.ogg", 1, 1, 25}}, 
-                {"rangedAttack", {"\Bugs_life\data\AntSounds\antSpit.ogg", 1, 1, 100}}          
-            };
-        };
-        class SoundEquipment {	
-            soldier[] = {
-                {"run", {"\Bugs_life\data\AntSounds\antRun.ogg", 1, 1, 40}},
-                {"idle", {"\Bugs_life\data\AntSounds\idleChitter.ogg", 1, 1, 25}},                    
-                {"walk", {"\Bugs_life\data\AntSounds\AntWalk.ogg", 1, 1, 25}},  
-                {"meleeAttack", {"\Bugs_life\data\AntSounds\antBite.ogg", 1, 1, 25}}, 
-                {"rangedAttack", {"\Bugs_life\data\AntSounds\antSpit.ogg", 1, 1, 100}} 
-            };
-        };
-    };
-    class MAR_Spider_Burrower:MAR_Spider_Base
-    {
-        side = 0;
-        scope = 2;			
-        scopeCurator = 2;
-        impactEffectsBlood = "MAR_ImpactEffectsBugGuts_Green";
-        impactEffectsNoBlood = "MAR_ImpactEffectsBugGuts_Green";
-        editorPreview="";       
-        displayName = "Trapdoor Spider";
-        model = "\Bugs_life\Spiders\shpida.p3d";
-        hiddenSelections[] = {"camo","eyes"};
-		hiddenSelectionsTextures[] = {"\Bugs_life\Spiders\textures\spider_1\DefaultMaterial_CO.paa","\Bugs_life\Spiders\textures\spider_1\DefaultMaterial_CO.paa"};
-   
 
-    };
+    class MAR_acidCrater: House_F
+    {
+        scope = 2;			
+		scopeCurator = 2;
+        editorSubcategory = "MAR_Bugs_Ants";
+        editorCategory = "MAR_Bugs";
+        model = "\Bugs_life\data\bloodpools\acidPool.p3d";
+        displayName = "acid crater";
+        hiddenSelections[]={"camo"};
+        hiddenSelectionsTextures[]={"\Bugs_life\data\bloodpools\DefaultMaterial_CA.paa"};
+        hiddenSelectionsMaterials[]={"\Bugs_life\data\bloodpools\bloodPoolGreen.rvmat"};
+    };    
+
+    #include "Spiders.hpp"
+    #include "ANTS.hpp"
 };
 
 class WeaponFireGun;
@@ -838,7 +549,23 @@ class cfgWeapons
 	class Vest_Camo_Base;	// External class reference
 	class VestItem;	// External class reference
 	class V_PlateCarrierSpec_blk;
-	class ANT_Uniform: Uniform_Base
+	class ANT_Queen_Uniform: Uniform_Base
+		{
+            scope = 1;
+			displayName = "Ant Queen";
+            model = "\Bugs_life\Ants\antQueen.p3d";
+            hiddenSelections[] = {"camo","eyes","camo1"};
+            hiddenSelectionsTextures[] = {"\Bugs_life\Ants\textures\queen\body_CO.paa","\Bugs_life\Ants\textures\queen\body_CO.paa","\Bugs_life\Ants\textures\queen\eggAbdomen_CO.paa"};
+            hiddenSelectionsMaterials[] = {"\Bugs_life\Ants\textures\queen\body.rvmat","\Bugs_life\Ants\textures\queen\body.rvmat","\Bugs_life\Ants\textures\queen\eggAbdomen.rvmat"};
+			class ItemInfo: UniformItem
+			{
+				containerclass="Supply200";
+				mass=30;
+				uniformclass="ANT_Queen_Uniform";
+				uniformmodel="-";
+			};
+		};
+    class ANT_Uniform: Uniform_Base
 		{
 			displayname="ANT_Basic";
 			model = "\Bugs_life\Ants\BasicAnt.p3d";
@@ -1001,7 +728,7 @@ class CfgMovesBasic
 				StartFreefall="ANT_inAir";
 				Unconscious = "ANT_Death";
 			};
-            //movement
+        //movement
                 class MAR_ANT_Walk: MAR_ANT_Moves
                 {
                     turnSpeed=4.5;
@@ -1266,90 +993,92 @@ class CfgMovesBasic
 				StartFreefall="SPIDER_inAir";
 				Unconscious = "SPIDER_Death";
 			};
+
             class MAR_SPIDER_Burrowed_Moves:MAR_SPIDER_Moves
             {
                 Disable_Gesture[]=
-				{
-					"Disable_Gesture",
-					"Gesture"
-				};
-				stance="ManStanceUndefined";
-				useFastMove = 1;
-				turnSpeed = 1;
-				LimpF="SPIDER_Burrowed_Idle";
-				LimpLF="SPIDER_Burrowed_Idle";
-				LimpRF="SPIDER_Burrowed_Idle";
-				LimpL="SPIDER_Burrowed_Idle";
-				LimpR="SPIDER_Burrowed_Idle";
-				LimpB="SPIDER_Burrowed_Idle";
-				LimpLB="SPIDER_Burrowed_Idle";
-				LimpRB="SPIDER_Burrowed_Idle";
-				stop="SPIDER_Burrowed_Idle";
-				default="SPIDER_Burrowed_Idle";
-				stopRelaxed="SPIDER_Burrowed_Idle";
-				TurnL="SPIDER_Burrowed_Idle";
-				TurnR="SPIDER_Burrowed_Idle";
-				TurnLRelaxed="SPIDER_Burrowed_Idle";
-				TurnRRelaxed="SPIDER_Burrowed_Idle";
-				WalkF="SPIDER_Burrowed_Idle";
-				PlayerWalkF="SPIDER_Burrowed_Idle";
-				WalkLF="SPIDER_Burrowed_Idle";
-				PlayerWalkLF="SPIDER_Burrowed_Idle";
-				WalkRF="SPIDER_Burrowed_Idle";
-				PlayerWalkRF="SPIDER_Burrowed_Idle";
-				WalkL="SPIDER_Burrowed_Idle";
-				PlayerWalkL="SPIDER_Burrowed_Idle";
-				WalkR="SPIDER_Burrowed_Idle";
-				PlayerWalkR="SPIDER_Burrowed_Idle";
-				WalkB="SPIDER_Burrowed_Idle";
-				PlayerWalkB="SPIDER_Burrowed_Idle";
-				WalkLB="SPIDER_Burrowed_Idle";
-				PlayerWalkLB="SPIDER_Burrowed_Idle";
-				WalkRB="SPIDER_Burrowed_Idle";
-				PlayerWalkRB="SPIDER_Burrowed_Idle";
-				SlowF="SPIDER_Burrowed_Idle";
-				PlayerSlowF="SPIDER_Burrowed_Idle";
-				SlowB="SPIDER_Burrowed_Idle";
-				PlayerSlowB="SPIDER_Burrowed_Idle";
-				PlayerFastF="SPIDER_Burrowed_Idle";
-				combat="SPIDER_Burrowed_Idle";
-				up="SPIDER_Burrowed_Idle";
-				down="SPIDER_Burrowed_Idle";
-				gear="SPIDER_Burrowed_Idle";
-				upDegree="ManPosNoWeapon";
-				PlayerSlowLF="SPIDER_Burrowed_Idle";
-				PlayerSlowRF="SPIDER_Burrowed_Idle";
-				PlayerSlowL="SPIDER_Burrowed_Idle";
-				PlayerSlowR="SPIDER_Burrowed_Idle";
-				PlayerSlowLB="SPIDER_Burrowed_Idle";
-				PlayerSlowRB="SPIDER_Burrowed_Idle";
-				FastF="SPIDER_Burrowed_Idle";
-				FastLF="SPIDER_Burrowed_Idle";
-				FastRF="SPIDER_Burrowed_Idle";
-				FastL="SPIDER_Burrowed_Idle";
-				FastR="SPIDER_Burrowed_Idle";
-				FastLB="SPIDER_Burrowed_Idle";
-				FastRB="SPIDER_Burrowed_Idle";
-				TactF="SPIDER_Burrowed_Idle";
-				TactLF="SPIDER_Burrowed_Idle";
-				TactRF="SPIDER_Burrowed_Idle";
-				TactL="SPIDER_Burrowed_Idle";
-				TactR="SPIDER_Burrowed_Idle";
-				TactLB="SPIDER_Burrowed_Idle";
-				TactRB="SPIDER_Burrowed_Idle";
-				TactB="SPIDER_Burrowed_Idle";
-				PlayerTactF="SPIDER_Burrowed_Idle";
-				PlayerTactLF="SPIDER_Burrowed_Idle";
-				PlayerTactRF="SPIDER_Burrowed_Idle";
-				PlayerTactL="SPIDER_Burrowed_Idle";
-				PlayerTactR="SPIDER_Burrowed_Idle";
-				PlayerTactLB="SPIDER_Burrowed_Idle";
-				PlayerTactRB="SPIDER_Burrowed_Idle";
-				PlayerTactB="SPIDER_Burrowed_Idle";
-				Die="SPIDER_Burrowed_Idle";
-				StartFreefall="SPIDER_Burrowed_Idle";
-				Unconscious = "SPIDER_Burrowed_Idle";
+                {
+                    "Disable_Gesture",
+                    "Gesture"
+                };
+                stance="ManStanceUndefined";
+                useFastMove = 1;
+                turnSpeed = 1;
+                LimpF="SPIDER_Burrowed_Idle";
+                LimpLF="SPIDER_Burrowed_Idle";
+                LimpRF="SPIDER_Burrowed_Idle";
+                LimpL="SPIDER_Burrowed_Idle";
+                LimpR="SPIDER_Burrowed_Idle";
+                LimpB="SPIDER_Burrowed_Idle";
+                LimpLB="SPIDER_Burrowed_Idle";
+                LimpRB="SPIDER_Burrowed_Idle";
+                stop="SPIDER_Burrowed_Idle";
+                default="SPIDER_Burrowed_Idle";
+                stopRelaxed="SPIDER_Burrowed_Idle";
+                TurnL="SPIDER_Burrowed_Idle";
+                TurnR="SPIDER_Burrowed_Idle";
+                TurnLRelaxed="SPIDER_Burrowed_Idle";
+                TurnRRelaxed="SPIDER_Burrowed_Idle";
+                WalkF="SPIDER_Burrowed_Idle";
+                PlayerWalkF="SPIDER_Burrowed_Idle";
+                WalkLF="SPIDER_Burrowed_Idle";
+                PlayerWalkLF="SPIDER_Burrowed_Idle";
+                WalkRF="SPIDER_Burrowed_Idle";
+                PlayerWalkRF="SPIDER_Burrowed_Idle";
+                WalkL="SPIDER_Burrowed_Idle";
+                PlayerWalkL="SPIDER_Burrowed_Idle";
+                WalkR="SPIDER_Burrowed_Idle";
+                PlayerWalkR="SPIDER_Burrowed_Idle";
+                WalkB="SPIDER_Burrowed_Idle";
+                PlayerWalkB="SPIDER_Burrowed_Idle";
+                WalkLB="SPIDER_Burrowed_Idle";
+                PlayerWalkLB="SPIDER_Burrowed_Idle";
+                WalkRB="SPIDER_Burrowed_Idle";
+                PlayerWalkRB="SPIDER_Burrowed_Idle";
+                SlowF="SPIDER_Burrowed_Idle";
+                PlayerSlowF="SPIDER_Burrowed_Idle";
+                SlowB="SPIDER_Burrowed_Idle";
+                PlayerSlowB="SPIDER_Burrowed_Idle";
+                PlayerFastF="SPIDER_Burrowed_Idle";
+                combat="SPIDER_Burrowed_Idle";
+                up="SPIDER_Burrowed_Idle";
+                down="SPIDER_Burrowed_Idle";
+                gear="SPIDER_Burrowed_Idle";
+                upDegree="ManPosNoWeapon";
+                PlayerSlowLF="SPIDER_Burrowed_Idle";
+                PlayerSlowRF="SPIDER_Burrowed_Idle";
+                PlayerSlowL="SPIDER_Burrowed_Idle";
+                PlayerSlowR="SPIDER_Burrowed_Idle";
+                PlayerSlowLB="SPIDER_Burrowed_Idle";
+                PlayerSlowRB="SPIDER_Burrowed_Idle";
+                FastF="SPIDER_Burrowed_Idle";
+                FastLF="SPIDER_Burrowed_Idle";
+                FastRF="SPIDER_Burrowed_Idle";
+                FastL="SPIDER_Burrowed_Idle";
+                FastR="SPIDER_Burrowed_Idle";
+                FastLB="SPIDER_Burrowed_Idle";
+                FastRB="SPIDER_Burrowed_Idle";
+                TactF="SPIDER_Burrowed_Idle";
+                TactLF="SPIDER_Burrowed_Idle";
+                TactRF="SPIDER_Burrowed_Idle";
+                TactL="SPIDER_Burrowed_Idle";
+                TactR="SPIDER_Burrowed_Idle";
+                TactLB="SPIDER_Burrowed_Idle";
+                TactRB="SPIDER_Burrowed_Idle";
+                TactB="SPIDER_Burrowed_Idle";
+                PlayerTactF="SPIDER_Burrowed_Idle";
+                PlayerTactLF="SPIDER_Burrowed_Idle";
+                PlayerTactRF="SPIDER_Burrowed_Idle";
+                PlayerTactL="SPIDER_Burrowed_Idle";
+                PlayerTactR="SPIDER_Burrowed_Idle";
+                PlayerTactLB="SPIDER_Burrowed_Idle";
+                PlayerTactRB="SPIDER_Burrowed_Idle";
+                PlayerTactB="SPIDER_Burrowed_Idle";
+                Die="SPIDER_Burrowed_Idle";
+                StartFreefall="SPIDER_Burrowed_Idle";
+                Unconscious = "SPIDER_Burrowed_Idle";
             };
+
             class MAR_SPIDER_Burrowed_Attack:MAR_SPIDER_Burrowed_Moves
             {
                 turnSpeed=0;
@@ -1358,8 +1087,104 @@ class CfgMovesBasic
                 Crouch="Spider_Burrowed_Attack";
                 AdjustB="";
                 Stand="Spider_Burrowed_Attack";
-            }
-	};
+            };  
+            
+
+        //spider moveset end
+        //antQueen
+       
+           
+            class MAR_ANTQueen_Moves:MAR_SPIDER_Moves
+            {
+                Disable_Gesture[]=
+                {
+                    "Disable_Gesture",
+                    "Gesture"
+                };
+                stance="ManStanceUndefined";
+                useFastMove = 1;
+                turnSpeed = 1;
+                LimpF="ANT_Queen_Idle";
+                LimpLF="ANT_Queen_Idle";
+                LimpRF="ANT_Queen_Idle";
+                LimpL="ANT_Queen_Idle";
+                LimpR="ANT_Queen_Idle";
+                LimpB="ANT_Queen_Idle";
+                LimpLB="ANT_Queen_Idle";
+                LimpRB="ANT_Queen_Idle";
+                stop="ANT_Queen_Idle";
+                default="ANT_Queen_Idle";
+                stopRelaxed="ANT_Queen_Idle";
+                TurnL="ANT_Queen_Idle";
+                TurnR="ANT_Queen_Idle";
+                TurnLRelaxed="ANT_Queen_Idle";
+                TurnRRelaxed="ANT_Queen_Idle";
+                WalkF="ANT_Queen_Idle";
+                PlayerWalkF="ANT_Queen_Idle";
+                WalkLF="ANT_Queen_Idle";
+                PlayerWalkLF="ANT_Queen_Idle";
+                WalkRF="ANT_Queen_Idle";
+                PlayerWalkRF="ANT_Queen_Idle";
+                WalkL="ANT_Queen_Idle";
+                PlayerWalkL="ANT_Queen_Idle";
+                WalkR="ANT_Queen_Idle";
+                PlayerWalkR="ANT_Queen_Idle";
+                WalkB="ANT_Queen_Idle";
+                PlayerWalkB="ANT_Queen_Idle";
+                WalkLB="ANT_Queen_Idle";
+                PlayerWalkLB="ANT_Queen_Idle";
+                WalkRB="ANT_Queen_Idle";
+                PlayerWalkRB="ANT_Queen_Idle";
+                SlowF="ANT_Queen_Idle";
+                PlayerSlowF="ANT_Queen_Idle";
+                SlowB="ANT_Queen_Idle";
+                PlayerSlowB="ANT_Queen_Idle";
+                PlayerFastF="ANT_Queen_Idle";
+                combat="ANT_Queen_Idle";
+                up="ANT_Queen_Idle";
+                down="ANT_Queen_Idle";
+                gear="ANT_Queen_Idle";
+                upDegree="ManPosNoWeapon";
+                PlayerSlowLF="ANT_Queen_Idle";
+                PlayerSlowRF="ANT_Queen_Idle";
+                PlayerSlowL="ANT_Queen_Idle";
+                PlayerSlowR="ANT_Queen_Idle";
+                PlayerSlowLB="ANT_Queen_Idle";
+                PlayerSlowRB="ANT_Queen_Idle";
+                FastF="ANT_Queen_Idle";
+                FastLF="ANT_Queen_Idle";
+                FastRF="ANT_Queen_Idle";
+                FastL="ANT_Queen_Idle";
+                FastR="ANT_Queen_Idle";
+                FastLB="ANT_Queen_Idle";
+                FastRB="ANT_Queen_Idle";
+                TactF="ANT_Queen_Idle";
+                TactLF="ANT_Queen_Idle";
+                TactRF="ANT_Queen_Idle";
+                TactL="ANT_Queen_Idle";
+                TactR="ANT_Queen_Idle";
+                TactLB="ANT_Queen_Idle";
+                TactRB="ANT_Queen_Idle";
+                TactB="ANT_Queen_Idle";
+                PlayerTactF="ANT_Queen_Idle";
+                PlayerTactLF="ANT_Queen_Idle";
+                PlayerTactRF="ANT_Queen_Idle";
+                PlayerTactL="ANT_Queen_Idle";
+                PlayerTactR="ANT_Queen_Idle";
+                PlayerTactLB="ANT_Queen_Idle";
+                PlayerTactRB="ANT_Queen_Idle";
+                PlayerTactB="ANT_Queen_Idle";
+                Die="ANT_Queen_Idle";
+                StartFreefall="ANT_Queen_Idle";
+                Unconscious = "ANT_Queen_Idle";
+            };
+            class MAR_ANTQueen_Walk:MAR_ANTQueen_Moves
+            {
+
+            };
+        //antQueen end  
+	
+    };      
 	
 };
 
@@ -1371,6 +1196,8 @@ class CfgMovesMaleSdr: CfgMovesBasic
 		class AinvPknlMstpSlayWrflDnon_medicOther;
 		class Armaman_getEaten:AinvPknlMstpSlayWrflDnon_medicOther
 		{
+            forceAim=1;
+            canBlendStep=0;
             file = "\Bugs_life\Spiders\animations\Human_Dragged_under.rtm";
             speed = -1.2;
             soundOverride = "hit";
@@ -1383,6 +1210,40 @@ class CfgGesturesMale;
 class CfgGestures_MAR_ANT: CfgGesturesMale
 {
 	skeletonName = "ant_Armature";
+	class ManActions
+	{
+	};
+	class Actions;
+	class Default;
+	class BlendAnims {
+		ANT_FullBody[]=
+		{
+		};
+	};
+	class States
+	{
+		class Disable_Gesture: Default
+		{
+			speed=1;
+			file = "\Bugs_life\Ants\animations\idle_1.rtm";
+			disableWeapons=0;
+			interpolationRestart=2;
+			enableOptics=1;
+			weaponIK=1;
+			looped=0;
+			leftHandIKBeg=1;
+			leftHandIKCurve[]={1};
+			leftHandIKEnd=1;
+			rightHandIKBeg=1;
+			rightHandIKCurve[]={1};
+			rightHandIKEnd=1;
+		};
+	};
+};
+
+class CfgGestures_MAR_ANT_Queen: CfgGesturesMale
+{
+	skeletonName = "ant_Queen_S";
 	class ManActions
 	{
 	};
@@ -1859,7 +1720,250 @@ class CfgMoves_MAR_ANT: CfgMovesMaleSdr
 	};
 };
 
+class CfgMoves_MAR_ANT_Queen: CfgMovesMaleSdr
+{
+	gestures="CfgGestures_MAR_ANT_Queen";
+	skeletonName = "ant_Queen_S";
+	collisionVertexPattern[] = {"1a","2a","3a","4a","5a","6a","7a","8a","9a","10a","11a","12a","13a","14a","15a","16a","17a","18a","19a","20a","21a","22a","23a","24a","25a","26a","27a","28a","29a","30a","31a","32a","33a","34a"};
+	collisionGeomCompPattern[] = {1};
+	class Default: Default
+    {
+        actions = "MAR_ANTQueen_Moves";
+		file = "\Bugs_life\Ants\animations\antQueen_idle.rtm";
+		collisionShape = "A3\anims_f\Data\Geom\Sdr\Perc_Wrfl.p3d";
+		collisionShapeSafe = "A3\anims_f\Data\Geom\Sdr\Perc_Wrfl.p3d";
+    };
+	class StandBase: StandBase
+    {
+        actions = "MAR_ANTQueen_Moves";
+        //ragdoll=0;
+		file = "\Bugs_life\Ants\animations\antQueen_idle.rtm";
+		collisionShape = "A3\anims_f\Data\Geom\Sdr\Perc_Wrfl.p3d";
+		collisionShapeSafe = "A3\anims_f\Data\Geom\Sdr\Perc_Wrfl.p3d";
+    };
+	class DefaultDie: Default
+	{
+		aiming="aimingNo";
+		legs="legsNo";
+		head="headNo";
+        file = "\Bugs_life\Ants\animations\death_static.rtm";
+		disableWeapons=1;
+        //ragdoll=1;
+		interpolationRestart=1;
+		soundOverride="fallbody";
+		soundEdge[]={0.44999999};
+		soundEnabled=0;
+	};
+	class States
+	{
+ 
+		class ANT_Queen_Idle: Default
+		{
+			collisionShape = "A3\anims_f\Data\Geom\Sdr\Perc_Wrfl.p3d";
+		    collisionShapeSafe = "A3\anims_f\Data\Geom\Sdr\Perc_Wrfl.p3d";			
+			file = "\Bugs_life\Ants\animations\antQueen_idle.rtm";
+            actions = "MAR_ANTQueen_Moves";
+			duty = 0.1;
+			boundingSphere = 4;
+			interpolationSpeed = 1.5;
+			variantAfter[]={6,6,6};
+            variantsAI[] = {};
+            variantsPlayer[] = {};			
+            speed = -3;
+            relSpeedMin = 1;
+            relSpeedMax = 1;
+            canPullTrigger = 1;
+            canReload = 1;
+            limitGunMovement = 0.5;
+            headBobStrength=0;
+            headBobMode=0;
+            disableWeapons = 0;
+            disableWeaponsLong = 0;
+            enableMissile = 1;
+            enableOptics = 1;
+            forceAim=1;
+			leaning="empty";
+            soundOverride="idle";
+			aiming="HeadDefault_MAR_ANTQueen";
+		    aimingBody="HeadDefault_MAR_ANTQueen";
+			head = "HeadDefault_MAR_ANTQueen";
+			legs="legsDefault_MAR_ANTQueen";
+         
+			InterpolateTo[]=
+			{
+				"ANT_Queen_Idle",
+				0.01,							
+				"ANT_Queen_Walk",
+				0.01,
+                "ANT_Queen_Walk_B",
+				0.01,
+                "ANT_Queen_Walk_R",
+				0.01,
+                "ANT_Queen_Walk_L",
+				0.01,
+				"ANT_Queen_Run",
+				0.01,	
+                "ANT_Queen_Death",
+                0.01,
+                "ANT_Queen_Death_2",
+                0.01,
+                "ANT_Queen_Death_3",
+                0.01,
+                "ANT_Queen_Turn_R",
+                0.01,
+                "ANT_Queen_Turn_L",
+                0.01,
+                "ANT_Queen_Attack_1",
+                0.01,
+                "ANT_Queen_Attack_Ranged",
+                0.01,
+                "ANT_Queen_inAir",
+                0.01,
+                "ANT_Queen_Landing",
+                0.01				
+			};
+            interpolateFrom[]=
+            {                
+            };
+		
+		
+			preload = 1;
+		};
+	
+		
+		//locomotion
+            class ANT_Queen_Walk:ANT_Queen_Idle
+            {
+                file = "\Bugs_life\Ants\animations\walk_f.rtm";
+                speed = -1.2;
+                actions = "MAR_ANTQueen_Walk";
+                soundOverride="walk";
+            };
+        //locomotion
+       
+	
 
+		// attacks
+		
+	};
+	
+	class BlendAnims: BlendAnims
+	{
+		legsDefault_MAR_ANTQueen[]=
+		{
+            "a_head",
+            0.8,
+            "a_mandible.l",
+            0.7,
+            "a_mandible.r",
+            0.7,
+            "a_antenne_r",
+            0.7,
+            "a_antenne_r.001",	
+            0.5,
+            "a_antenne_l",
+            0.7,
+            "a_antenne_l.001",	
+            0.5,   
+            "a_thorax",
+            0.9,
+            "a_mid",
+            0.8,  
+            "a_foreleg.r",
+            0.9,
+			"a_foreleg.r.001",
+            0.8,
+            "a_foreleg.r.002",
+            0.6800000,
+            "a_foreleg.r.003",
+            0.6800000,
+            "a_midleg.r",
+            0.9,
+            "a_midleg.r.001",
+            0.8,
+            "a_midleg.r.002",
+            0.6800000,
+            "a_midleg.r.003",
+            0.6800000,
+            "a_rearleg.r",
+            0.9,
+            "a_rearleg.r.001",
+            0.8,
+            "a_rearleg.r.002",
+            0.6800000,
+            "a_rearleg.r.003",
+            0.6800000,
+            "a_foreleg.l",
+            0.9,
+            "a_foreleg.l.001",
+            0.8,
+            "a_foreleg.l.002",
+            0.6800000,
+            "a_foreleg.l.003",
+            0.6800000,
+            "a_midleg.l",
+            0.9,
+            "a_midleg.l.001",
+            0.8,
+            "a_midleg.l.002",
+            0.6800000,
+            "a_midleg.l.003",
+            0.6800000,
+            "a_rearleg.l",
+            0.9,
+            "a_rearleg.l.001",
+            0.8,
+            "a_rearleg.l.002",
+            0.6800000,
+            "a_rearleg.l.003",
+            0.6800000
+					
+		};
+        HeadDefault_MAR_ANTQueen[]={
+            "a_head",
+            0.6,
+            "a_mandible.l",
+            0.5,
+            "a_mandible.r",
+            0.5,
+            "a_antenne_r",
+            0.5,
+            "a_antenne_r.001",	
+            0.5,
+            "a_antenne_r.002",	
+            0.5,
+            "a_antenne_l",
+            0.5,
+            "a_antenne_l.001",	
+            0.5,
+            "a_antenne_l.002",	
+            0.5,
+            "a_thorax",
+            0.2,
+            "a_mid",
+            0.1,
+            "a_abdomen",
+            0.5,
+            "a_abdomen.001",
+            0.4,
+            "a_abdomen.002",
+            0.3,
+            "a_foreleg.r",
+            0.2,
+            "a_midleg.r",
+            0.2,
+            "a_rearleg.r",
+            0.2,
+            "a_foreleg.l",
+            0.2,
+            "a_midleg.l",
+            0.2,
+            "a_rearleg.l",
+            0.2
+        };
+		
+	};
+};
 
 class CfgMoves_MAR_Spider: CfgMovesMaleSdr
 {
@@ -2338,6 +2442,297 @@ class CfgGroups
                     class Unit7
 					{
 						side = 0;
+						vehicle = "MAR_ANT_Spitter";
+						rank = "PRIVATE";
+						position[] = { 18,18,0 };
+					};
+				};
+
+			};
+            
+		};
+	};
+
+    class Indep
+	{
+		class Mar_ANTs_INDI
+		{
+			name = "ants";
+			class Ant_groups_INDI
+			{
+				name = "Ant Groups";
+				class Worker_Patrol_IND
+				{
+					name = "Patrol";
+					side = 2;					
+					rarityGroup = 0.30000001;
+					
+					class Unit0
+					{
+						side = 2;
+						vehicle = "MAR_ANT_Basic";
+						rank = "CORPORAL";
+						position[] = { 0,0,0 };
+					};
+					class Unit1
+					{
+						side = 2;
+						vehicle = "MAR_ANT_Basic";
+						rank = "PRIVATE";
+						position[] = { 5,-5,0 };
+					};
+					class Unit2
+					{
+						side = 2;
+						vehicle = "MAR_ANT_Basic";
+						rank = "PRIVATE";
+						position[] = { 10,-10,0 };
+					};
+                    class Unit3
+					{
+						side = 2;
+						vehicle = "MAR_ANT_Basic";
+						rank = "PRIVATE";
+						position[] = { 15,-15,0 };
+					};
+                    class Unit4
+					{
+						side = 2;
+						vehicle = "MAR_ANT_Basic";
+						rank = "PRIVATE";
+						position[] = { 15,-15,0 };
+					};
+                    class Unit5
+					{
+						side = 2;
+						vehicle = "MAR_ANT_Basic";
+						rank = "PRIVATE";
+						position[] = { 15,-15,0 };
+					};
+				};
+
+                class Spitter_Patrol_IND
+				{
+					name = "Spitter Patrol";
+					side = 2;					
+					rarityGroup = 0.30000001;
+					
+					class Unit0
+					{
+						side = 2;
+						vehicle = "MAR_ANT_Spitter";
+						rank = "CORPORAL";
+						position[] = { 0,0,0 };
+					};
+					class Unit1
+					{
+						side = 2;
+						vehicle = "MAR_ANT_Spitter";
+						rank = "PRIVATE";
+						position[] = { 5,-5,0 };
+					};
+					class Unit2
+					{
+						side = 2;
+						vehicle = "MAR_ANT_Spitter";
+						rank = "PRIVATE";
+						position[] = { 10,-10,0 };
+					};
+                    class Unit3
+					{
+						side = 2;
+						vehicle = "MAR_ANT_Spitter";
+						rank = "PRIVATE";
+						position[] = { 15,-15,0 };
+					};
+                    class Unit4
+					{
+						side = 2;
+						vehicle = "MAR_ANT_Spitter";
+						rank = "PRIVATE";
+						position[] = { 15,-15,0 };
+					};
+                    class Unit5
+					{
+						side = 2;
+						vehicle = "MAR_ANT_Spitter";
+						rank = "PRIVATE";
+						position[] = { 15,-15,0 };
+					};
+				};
+
+                class ICE_Patrol_IND
+				{
+					name = "Ice ant Patrol";
+					side = 2;					
+					rarityGroup = 0.30000001;
+					
+					class Unit0
+					{
+						side = 2;
+						vehicle = "MAR_ANT_Ice";
+						rank = "CORPORAL";
+						position[] = { 0,0,0 };
+					};
+					class Unit1
+					{
+						side = 2;
+						vehicle = "MAR_ANT_Ice";
+						rank = "PRIVATE";
+						position[] = { 5,-5,0 };
+					};
+					class Unit2
+					{
+						side = 2;
+						vehicle = "MAR_ANT_Ice";
+						rank = "PRIVATE";
+						position[] = { 10,-10,0 };
+					};
+                    class Unit3
+					{
+						side = 2;
+						vehicle = "MAR_ANT_Ice";
+						rank = "PRIVATE";
+						position[] = { 15,-15,0 };
+					};
+                    class Unit4
+					{
+						side = 2;
+						vehicle = "MAR_ANT_Ice";
+						rank = "PRIVATE";
+						position[] = { 15,-15,0 };
+					};
+                    class Unit5
+					{
+						side = 2;
+						vehicle = "MAR_ANT_Ice";
+						rank = "PRIVATE";
+						position[] = { 15,-15,0 };
+					};
+				};
+
+                class WorkerSpitter_Patrol_IND
+				{
+					name = "Scout section";
+					side = 2;					
+					rarityGroup = 0.30000001;
+					
+					class Unit0
+					{
+						side = 2;
+						vehicle = "MAR_ANT_Basic";
+						rank = "CORPORAL";
+						position[] = { 0,0,0 };
+					};
+					class Unit1
+					{
+						side = 2;
+						vehicle = "MAR_ANT_Basic";
+						rank = "PRIVATE";
+						position[] = { 5,-5,0 };
+					};
+					class Unit2
+					{
+						side = 2;
+						vehicle = "MAR_ANT_Spitter";
+						rank = "PRIVATE";
+						position[] = { 10,-10,0 };
+					};
+                    class Unit3
+					{
+						side = 2;
+						vehicle = "MAR_ANT_Spitter";
+						rank = "PRIVATE";
+						position[] = { 15,-15,0 };
+					};
+                    class Unit4
+					{
+						side = 2;
+						vehicle = "MAR_ANT_Basic";
+						rank = "CORPORAL";
+						position[] = { 5,5,0 };
+					};
+					class Unit5
+					{
+						side = 2;
+						vehicle = "MAR_ANT_Basic";
+						rank = "PRIVATE";
+						position[] = { 10,10,0 };
+					};
+					class Unit6
+					{
+						side = 2;
+						vehicle = "MAR_ANT_Spitter";
+						rank = "PRIVATE";
+						position[] = { 15,15,0 };
+					};
+                    class Unit7
+					{
+						side = 2;
+						vehicle = "MAR_ANT_Spitter";
+						rank = "PRIVATE";
+						position[] = { 18,18,0 };
+					};
+				};
+
+                class WorkerICESpitter_Patrol_IND
+				{
+					name = "Hill defense section";
+					side = 2;					
+					rarityGroup = 0.30000001;
+					
+					class Unit0
+					{
+						side = 2;
+						vehicle = "MAR_ANT_Basic";
+						rank = "CORPORAL";
+						position[] = { 0,0,0 };
+					};
+					class Unit1
+					{
+						side = 2;
+						vehicle = "MAR_ANT_Basic";
+						rank = "PRIVATE";
+						position[] = { 5,-5,0 };
+					};
+					class Unit2
+					{
+						side = 2;
+						vehicle = "MAR_ANT_Spitter";
+						rank = "PRIVATE";
+						position[] = { 10,-10,0 };
+					};
+                    class Unit3
+					{
+						side = 2;
+						vehicle = "MAR_ANT_Ice";
+						rank = "PRIVATE";
+						position[] = { 15,-15,0 };
+					};
+                    class Unit4
+					{
+						side = 2;
+						vehicle = "MAR_ANT_Basic";
+						rank = "CORPORAL";
+						position[] = { 5,5,0 };
+					};
+					class Unit5
+					{
+						side = 2;
+						vehicle = "MAR_ANT_Basic";
+						rank = "PRIVATE";
+						position[] = { 10,10,0 };
+					};
+					class Unit6
+					{
+						side = 2;
+						vehicle = "MAR_ANT_Ice";
+						rank = "PRIVATE";
+						position[] = { 15,15,0 };
+					};
+                    class Unit7
+					{
+						side = 2;
 						vehicle = "MAR_ANT_Spitter";
 						rank = "PRIVATE";
 						position[] = { 18,18,0 };
