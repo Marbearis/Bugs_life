@@ -84,6 +84,7 @@ _gruntBoy addEventHandler ["FiredNear", {
 	params ["_unit", "_firer", "_distance", "_weapon", "_muzzle", "_mode", "_ammo", "_gunner"];
 	if (!(alive _unit)) exitWith {};
 	_unit reveal [_firer, 4];
+	_unit setVariable ["WBK_AI_LastKnownLoc",(getPosATL _firer)];
 }];
 
 
@@ -119,7 +120,12 @@ _gruntBoy setVariable ["IMS_EventHandler_Hit",{
 	[_victim,["ANT_Hit_F", 0, 0.7, false]] remoteExec ["switchMove",0];
 },true];
 
-
+_gruntBoy addEventHandler ["Suppressed", {
+	params ["_unit", "_distance", "_shooter", "_instigator", "_ammoObject", "_ammoClassName", "_ammoConfig"];
+	if !(alive _unit) exitWith {};
+	_unit reveal [_instigator, 4];
+	_unit setVariable ["WBK_AI_LastKnownLoc",(getPosATL _shooter)];
+}];
 
 [_gruntBoy, {
 _this removeAllEventHandlers "HitPart";
@@ -128,6 +134,7 @@ _this addEventHandler [
     {
 		(_this select 0) params ["_target","_shooter","_bullet","_position","_velocity","_selection","_ammo","_direction","_radius","_surface","_direct"];
 		if ((!(isNil {_shooter getVariable "WBK_CovieAI"}) && (side _shooter == side _target)) or (_target == _shooter) or !(alive _target) or (lifeState _target == "INCAPACITATED")) exitWith {};
+		_target setVariable ["WBK_AI_LastKnownLoc",(getPosATL _shooter)];
 		_isExplosive = _ammo select 3;
 		_isEnoughDamage = _ammo select 0;
 		_vv = _target getVariable "WBK_SynthHP";
@@ -154,6 +161,7 @@ _this addEventHandler [
 	}
 ];
 }] remoteExec ["spawn", [0,-2] select isDedicated,true];
+
 
 
 
@@ -219,7 +227,7 @@ _actFr = [{
 					[_mutant, "WBK_Halo_Melee",[_mutant,_en]] call BIS_fnc_callScriptedEventHandler;
 				};
 
-				case (
+				case ((_ins >= 0.4) and
 					(_mutant isKindOf "MAR_ANT_Spitter") and
 					(isNil {_mutant getVariable "IsCanFire"}) and
 					(isNull objectParent _mutant) and 
@@ -241,22 +249,18 @@ _actFr = [{
 	};
 }, 0.1, [_gruntBoy]] call CBA_fnc_addPerFrameHandler;
 
-
 _loopPathfind = [{
     _array = _this select 0;
     _unit = _array select 0;
 	_nearEnemy = _unit findNearestEnemy _unit; 
-
 	switch true do {
-		
-		case (!(simulationEnabled _unit) || !(isNull (remoteControlled _unit)) || (isNull _nearEnemy) or !(alive _nearEnemy) or !(alive _unit) or !(isNull attachedTo _unit) or (lifeState _unit == "INCAPACITATED") or (_unit distance _nearEnemy >= 400)): {
+		case (!(simulationEnabled _unit) || !(isNull (remoteControlled _unit)) || (isNull _nearEnemy) or !(alive _nearEnemy) or !(alive _unit) or !(isNull attachedTo _unit) or (lifeState _unit == "INCAPACITATED") or (_unit distance _nearEnemy >= 500)): {
 			switch true do {
 				case !(isNil {_unit getVariable "WBK_IsUnitLocked"}): {_unit setVariable ["WBK_IsUnitLocked",nil];};
 				default {};
 			};
 		};
-		
-		case !(animationState _unit in ["ant_idle","ant_run"]): {
+		case !(animationState _unit in ["ant_idle","ant_run","ant_walk_r","ant_walk_l","ant_walk_b","ant_turn_l","ant_turn_r"]): {
 			_unit setVariable ["WBK_IsUnitLocked",0];
 			_unit enableAI "ANIM";
 			_unit disableAI "MOVE";
@@ -273,35 +277,20 @@ _loopPathfind = [{
 			  0.1
 			]; 
 		};
-
 		case (!(isNull _nearEnemy) && (alive _nearEnemy)): {
-			_ifInter = lineIntersectsSurfaces [
-				AGLToASL (_nearEnemy modelToWorld [0,0,0.5]), 
-				AGLToASL (_unit modelToWorld [0,0,0.5]), 
-				_unit,
-				_nearEnemy,
-				true,
-				1,
-				"FIRE",
-				"NONE"
-			];
+			_ifInter = [_nearEnemy, "VIEW", _unit] checkVisibility [_unit modelToWorldVisualWorld [0,0,0.7], _nearEnemy modelToWorldVisualWorld [0,0,0.7]];
 			switch true do {
-				case ((count _ifInter == 0) and (((getPosATL _unit select 2) - (getPosATL _nearEnemy select 2)) < 1.45) and (((getPosATL _unit select 2) - (getPosATL _nearEnemy select 2)) > (-1.45)) and !(_unit isKindOf "MAR_ANT_QUEEN")): {
+				case ((_ifInter >= 0.1) and (((getPosATL _unit select 2) - (getPosATL _nearEnemy select 2)) < 1.45) and (((getPosATL _unit select 2) - (getPosATL _nearEnemy select 2)) > (-1.45))): {
 					_unit setVariable ["WBK_IsUnitLocked",0];
 					_unit disableAI "MOVE";
 					_unit disableAI "ANIM";
 					doStop _unit;
-					switch true do {
-						case (lifeState _nearEnemy == "INCAPACITATED" || stance _nearEnemy == "PRONE" || gestureState _nearEnemy == "fp_dash_nostamina" || animationState _nearEnemy == "push_backwards"): {
-							[_unit,"ANT_Run",[0,0,0]] spawn ANTZ_MoveAi;	
-						};
-						case ((_unit distance _nearEnemy) > 2): {
-							[_unit,"ANT_Run",[0,0,0]] spawn ANTZ_MoveAi;	
-						};
-						default {
-							[_unit,"ANT_Run",[0,0,0]] spawn ANTZ_MoveAi;	
-						};
+					if  ((_unit distance _nearEnemy) > 2) then {
+						[_unit,"ANT_Run",[0,0,0]] spawn ANTZ_MoveAi;
+					}else{
+						[_unit,"ANT_Walk",[0,0,0]] spawn ANTZ_MoveAi;
 					};
+					_unit setVariable ["WBK_AI_LastKnownLoc",getPosATLVisual _nearEnemy];
 					_dir = [[0,1,0], -([_unit, _nearEnemy] call BIS_fnc_dirTo)] call BIS_fnc_rotateVector2D;
 					_unit setVelocityTransformation [ 
 					  getPosASL _unit,  
@@ -320,24 +309,20 @@ _loopPathfind = [{
 						case !(isNil {_unit getVariable "WBK_IsUnitLocked"}): {
 							_unit setVariable ["WBK_IsUnitLocked",nil];
 							_unit enableAI "ANIM";
-							_unit enableAI "MOVE";
-							_unit doMove (getPosATLVisual _nearEnemy);
-							_unit setVariable ["WBK_AI_LastKnownLoc",getPosATLVisual _nearEnemy];
+							_unit enableAI "MOVE";							
+							
 						};
 						default {};
 					};
 				};
 			};
 		};
-
 		default {
 			switch true do {
 				case !(isNil {_unit getVariable "WBK_IsUnitLocked"}): {
 					_unit setVariable ["WBK_IsUnitLocked",nil];
 					_unit enableAI "ANIM";
 					_unit enableAI "MOVE";
-					_unit doMove (getPosATLVisual _nearEnemy);
-					_unit setVariable ["WBK_AI_LastKnownLoc",getPosATLVisual _nearEnemy];
 				};
 				default {};
 			};
@@ -345,24 +330,37 @@ _loopPathfind = [{
 	};
 }, 0.1, [_gruntBoy]] call CBA_fnc_addPerFrameHandler;
 
-
 _loopPathfindDoMove = [{
     _array = _this select 0;
     _unit = _array select 0;
-	
-	if (!(_unit checkAIFeature "MOVE")or(_unit isKindOf "MAR_ANT_QUEEN") or !(_unit checkAIFeature "PATH") or !(animationState _unit in ["ant_idle","ant_run"])) exitWith {};
-	_nearEnemy = _unit call MAR_Bugslife_FindTarget; 
-    if ((isNull _nearEnemy) or !(alive _nearEnemy) or !(alive _unit) or (((_unit distance _nearEnemy) >= 400) and !((_unit distance _nearEnemy) < 2.5))) exitWith {
-		_unit doFollow (leader group _unit);		
-	};
-		{_unit reveal [_x, 4]} forEach units group _nearEnemy;
-		_unit setVariable ["WBK_OPTRE_AfterContact",1];
-		if ((alive leader group _unit) and !(_unit == leader group _unit) and ((_unit distance (leader group _unit)) <= 40)) then {
-			_unit doMove (_nearEnemy modelToWorldVisual [15,5,0]);
-		}else{
-			_unit doMove (getPosATLVisual _nearEnemy);
+	switch true do {
+		default {
+			_nearEnemy = _unit findNearestEnemy _unit; 
+			_unit enableAI "MOVE";
+			_unit enableAI "ANIM";
+			switch true do {
+				case (!(simulationEnabled _unit) || !(alive _unit) || !(isNull attachedTo _unit) || (lifeState _unit == "INCAPACITATED")): {};
+				
+				case !(isNil {_unit getVariable "WBK_AI_LastKnownLoc"}): {
+					switch true do {
+						case ((_nearEnemy distance (_unit getVariable "WBK_AI_LastKnownLoc")) <= 200): {
+							_unit doMove position _nearEnemy;
+							_unit setVariable ["WBK_AI_LastKnownLoc",getPosATLVisual _nearEnemy];
+							
+						};
+						default {};
+					};
+					
+				};
+				case (!(isNull _nearEnemy) && (alive _nearEnemy)): {
+					_unit doMove (getPosATLVisual _nearEnemy);
+					_unit setVariable ["WBK_AI_LastKnownLoc",getPosATLVisual _nearEnemy];
+				};
+				default {};
+			};
 		};
-}, 4, [_gruntBoy]] call CBA_fnc_addPerFrameHandler;
+	};
+}, selectRandom [4,5,6,7], [_gruntBoy]] call CBA_fnc_addPerFrameHandler;
 
 
 

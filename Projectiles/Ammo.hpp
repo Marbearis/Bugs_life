@@ -20,9 +20,9 @@
             model = "\A3\Weapons_F_EPB\Ammo\B_IRstrobe_F.p3d";
             simulation = "shotGrenade";
 			effectFly="BugsLife_AcidSpit";	
-            hit = 9;
-            indirectHit = 4;
-            indirectHitRange = 5;
+            hit = 6;
+            indirectHit = 0;
+            indirectHitRange = 0;
             deflecting = 0;
             airFriction = -0.001;
             whistleDist = 16;
@@ -33,6 +33,7 @@
             deflectionSlowDown = 0;
             simulationStep = 0.05;
             SoundSetExplosion[] = {"Explosion_Debris_SoundSet"};
+		  
         };
    
 	
