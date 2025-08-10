@@ -20,7 +20,7 @@
             model = "\A3\Weapons_F_EPB\Ammo\B_IRstrobe_F.p3d";
             simulation = "shotGrenade";
 			effectFly="BugsLife_AcidSpit";	
-            hit = 6;
+            hit = 9;
             indirectHit = 0;
             indirectHitRange = 0;
             deflecting = 0;
