@@ -4,7 +4,7 @@ class CfgPatches
 	{
 		units[] = {"MAR_ANT_Basic","MAR_ANT_Ice","MAR_ANT_Spitter","MAR_antHill","MAR_Spider_Burrower","MAR_TrapDoor","MAR_Ant_Egg","MAR_Ant_Egg_Clutch",
         "MAR_Ant_Part_Head","MAR_Ant_Part_Thorax","MAR_Ant_Part_Abdomen","MAR_Ant_Part_Leg","MAR_Ant_Part_Mandible","MAR_Ant_Part_Antenne","MAR_ANT_QUEEN","MAR_Ant_Webs","MAR_Ant_Webs_2","MAR_Spider_Webs",
-        "MAR_Spider_Webs_2"
+        "MAR_Spider_Webs_2","MAR_AntIce"
         };
 		weapons[] = {};
 		magazines[]={};
@@ -521,6 +521,13 @@ class CfgVehicles
         hiddenSelectionsTextures[]={"\Bugs_life\data\bloodpools\DefaultMaterial_CA.paa"};
         hiddenSelectionsMaterials[]={"\Bugs_life\data\bloodpools\bloodPoolGreen.rvmat"};
     };    
+    class MAR_AntIce:MAR_acidCrater
+    {
+        scope = 2;			
+		scopeCurator = 2;
+        model = "\Bugs_life\Ants\antIce.p3d";
+        displayName = "ice spike";
+    };
 
     #include "Spiders.hpp"
     #include "ANTS.hpp"
@@ -581,6 +588,7 @@ class cfgWeapons
 				uniformmodel="-";
 			};
 		};
+ 
     class Spider_Uniform: Uniform_Base
 		{
 			displayname="ANT_Basic";
@@ -599,13 +607,14 @@ class cfgWeapons
 		};
     class ANT_Uniform_spitter: Uniform_Base
 		{
-			displayname="ANT_Basic";
-			model = "\Bugs_life\Ants\BasicAnt.p3d";
+			displayname="ANT_ACID";
+			model = "\Bugs_life\Ants\ACID_Ant.p3d";
 			scope=1;
 			picture="";
 			hiddenSelections[] = {"camo","eyes"};
-			hiddenSelectionsTextures[] = {"\Bugs_life\Ants\textures\SpitterAnt\ANT_CO.paa","\Bugs_life\Ants\textures\SpitterAnt\ANT_CO.paa"};
-			class ItemInfo: UniformItem
+			hiddenSelectionsTextures[]={"\Bugs_life\Ants\textures\SpitterAnt\ANT_CO.paa","\Bugs_life\Ants\textures\SpitterAnt\ANT_CO.paa"};
+			hiddenSelectionsMaterials[]={"\Bugs_life\Ants\textures\SpitterAnt\ANT.rvmat","\Bugs_life\Ants\textures\SpitterAnt\ANT.rvmat"};
+            class ItemInfo: UniformItem
 			{
 				containerclass="Supply200";
 				mass=30;
@@ -615,13 +624,14 @@ class cfgWeapons
 		};
     class ANT_Uniform_ICE: Uniform_Base
 		{
-			displayname="ANT_Basic";
-			model = "\Bugs_life\Ants\BasicAnt.p3d";
+			displayname="ANT_ICE";
+			model = "\Bugs_life\Ants\ICE_Ant.p3d";
 			scope=1;
 			picture="";
 			hiddenSelections[] = {"camo","eyes"};
-			hiddenSelectionsTextures[] = {"\Bugs_life\Ants\textures\IceAnt\ANT_CO.paa","\Bugs_life\Ants\textures\IceAnt\ANT_CO.paa"};
-			class ItemInfo: UniformItem
+			hiddenSelectionsTextures[] = {"\Bugs_life\Ants\textures\IceAnt\ANT_CA.paa","\Bugs_life\Ants\textures\IceAnt\ANT_CA.paa"};
+			hiddenSelectionsMaterials[]={"\Bugs_life\Ants\textures\IceAnt\ANT.rvmat","\Bugs_life\Ants\textures\IceAnt\ANT.rvmat"};
+            class ItemInfo: UniformItem
 			{
 				containerclass="Supply200";
 				mass=30;

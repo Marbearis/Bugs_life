@@ -32,8 +32,7 @@
             directionalExplosion = 0;
             deflectionSlowDown = 0;
             simulationStep = 0.05;
-            SoundSetExplosion[] = {"Explosion_Debris_SoundSet"};
-		  
+            SoundSetExplosion[] = {"Explosion_Debris_SoundSet"};		  
         };
    
 	

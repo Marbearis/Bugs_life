@@ -227,7 +227,7 @@ _actFr = [{
 					[_mutant, "WBK_Halo_Melee",[_mutant,_en]] call BIS_fnc_callScriptedEventHandler;
 				};
 
-				case ((_ins >= 0.4) and
+				case ((_ins >= 0.8) and
 					(_mutant isKindOf "MAR_ANT_Spitter") and
 					(isNil {_mutant getVariable "IsCanFire"}) and
 					(isNull objectParent _mutant) and 
@@ -235,6 +235,7 @@ _actFr = [{
 					!(animationState _mutant == "ANT_Attack_Ranged")and  								
 					((_en distance _mutant) < 90) and ((_en distance _mutant) > 2.5) and
 					!(isNull _en) and 
+					(((_mutant worldToModel (_en modelToWorld [0, 0, 0])) select 0) < 7) and
 					(alive _en)): {
 					
 						[_mutant,_en] spawn BugsLife_RangedAttack_FNC;
@@ -278,7 +279,7 @@ _loopPathfind = [{
 			]; 
 		};
 		case (!(isNull _nearEnemy) && (alive _nearEnemy)): {
-			_ifInter = [_nearEnemy, "VIEW", _unit] checkVisibility [_unit modelToWorldVisualWorld [0,0,0.7], _nearEnemy modelToWorldVisualWorld [0,0,0.7]];
+			_ifInter = [_nearEnemy, "FIRE", _unit] checkVisibility [_unit modelToWorldVisualWorld [0,0,0.7], _nearEnemy modelToWorldVisualWorld [0,0,0.7]];
 			switch true do {
 				case ((_ifInter >= 0.1) and (((getPosATL _unit select 2) - (getPosATL _nearEnemy select 2)) < 1.45) and (((getPosATL _unit select 2) - (getPosATL _nearEnemy select 2)) > (-1.45))): {
 					_unit setVariable ["WBK_IsUnitLocked",0];

@@ -5,23 +5,24 @@ if (!(hasInterface) or (isDedicated)) exitWith {};
 	["Marbearis' Bugs & critters", "Spawn AntHill",
     {
         params ["_modulePosASL", "_attachedobject"];
-       
+        _options = ["All","Worker Ants","Spitter Ants","Ice Ants"];
 		["Anthill settings", [
             ["SIDES", ["Side select (ONLY ONE!)", "The side the spawned ants will be on."], [east]],
             ["SLIDER",["ant amount","how many ants will spawn initially?"],[1,20,5,0]],
             ["CHECKBOX", ["is spawner?", "Spawns Ants Every ~60 seconds unless destroyed."], [false]],
-            ["SLIDER",["Hill health","Amount of HP the Anthill has before it's destroyed"],[1,400,100,0]]       
+            ["SLIDER",["Hill health","Amount of HP the Anthill has before it's destroyed"],[1,400,100,0]],    
+            ["toOLBOX", ["Type select", "What type of Ants to spawn."], [3, 4, 3, _options, nil]] 
         ], {
             params["_values", "_arguments"];
             _dropside=_values select 0;
             _spawnAmmount = _values select 1;
             _linger=_values select 2;
             _AntHillHP=_values select 3;
-            
+            _antType = _values select 4;
             
             _position=_arguments select 0;
 
-            [_position,_dropside,_linger,_AntHillHP,_spawnAmmount] call Bugzlife_SpawnAntHill;
+            [_position,_dropside,_linger,_AntHillHP,_spawnAmmount,_antType] call Bugzlife_SpawnAntHill;
             
         }, {}, [_modulePosASL]] call zen_dialog_fnc_create;
         deletevehicle _logic;

@@ -55,11 +55,13 @@
         side = 0;
         scope = 2;			
         scopeCurator = 2;
+        model = "\Bugs_life\Ants\ACID_Ant.p3d";
         impactEffectsBlood = "MAR_ImpactEffectsBugGuts_Green";
         impactEffectsNoBlood = "MAR_ImpactEffectsBugGuts_Green";
         displayName = "Spitter Ant";
         hiddenSelections[] = {"camo","eyes"};
         hiddenSelectionsTextures[] = {"\Bugs_life\Ants\textures\SpitterAnt\ANT_CO.paa","\Bugs_life\Ants\textures\SpitterAnt\ANT_CO.paa"};
+        hiddenSelectionsMaterials[] = {"\Bugs_life\Ants\textures\SpitterAnt\ANT.rvmat","\Bugs_life\Ants\textures\SpitterAnt\ANT.rvmat"};
         uniformClass = "ANT_Uniform_spitter";
         nakedUniform = "ANT_Uniform_spitter";
     };
@@ -68,11 +70,13 @@
         side = 0;
         scope = 2;			
         scopeCurator = 2;
+        model = "\Bugs_life\Ants\ICE_Ant.p3d";
         impactEffectsBlood = "MAR_ImpactEffectsBugGuts_Blue";
         impactEffectsNoBlood = "MAR_ImpactEffectsBugGuts_Blue";
         displayName = "Ice Ant";
         hiddenSelections[] = {"camo","eyes"};
-        hiddenSelectionsTextures[] = {"\Bugs_life\Ants\textures\IceAnt\ANT_CO.paa","\Bugs_life\Ants\textures\IceAnt\ANT_CO.paa"};
+        hiddenSelectionsTextures[] = {"\Bugs_life\Ants\textures\IceAnt\ANT_CA.paa","\Bugs_life\Ants\textures\IceAnt\ANT_CA.paa"};
+	    hiddenSelectionsMaterials[]={"\Bugs_life\Ants\textures\IceAnt\ANT.rvmat","\Bugs_life\Ants\textures\IceAnt\ANT.rvmat"};
         uniformClass = "ANT_Uniform_ICE";
         nakedUniform = "ANT_Uniform_ICE";
     };

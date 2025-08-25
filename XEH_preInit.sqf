@@ -21,6 +21,20 @@
 ] call CBA_fnc_addSetting;
 
 [ 
+    "MAR_BL_BUGPRT_DSPAWN", 
+    "SLIDER", 
+    ["Bug part despawn timer"],
+    ["Marbearis' Bugs & critters","General Settings"],
+    [0, 100, 15, 0],
+    1,
+    {   
+        params ["_value"];  
+        
+		MAR_BL_BUGPRT_DSPAWN = _value;
+    }
+] call CBA_fnc_addSetting;
+
+[ 
     "MAR_BL_CANBUGSEXPLODE", 
     "CHECKBOX", 
     ["can bugs explode"],
@@ -109,12 +123,12 @@
 
 Bugzlife_SpawnAntHill = {
 
-    params ["_position",["_dropside",[east]],["_linger", false],"_AntHillHP","_spawnAmount"];
+    params ["_position",["_dropside",[east]],["_linger", false],"_AntHillHP","_spawnAmount","_antType"];
 
     _position= (ASLtoATL _position);
                     
-    [_position, _dropside, _linger,_AntHillHP,_spawnAmount] spawn {
-        params ["_position", "_dropside", "_linger","_AntHillHP","_spawnAmount"];
+    [_position, _dropside, _linger,_AntHillHP,_spawnAmount,_antType] spawn {
+        params ["_position", "_dropside", "_linger","_AntHillHP","_spawnAmount","_antType"];
         
         _positionATL=_position;
         [_position,{ 
@@ -182,9 +196,15 @@ Bugzlife_SpawnAntHill = {
         _position = _CraterPos;
 
        
-
-        _list =  ["MAR_ANT_Basic","MAR_ANT_Ice","MAR_ANT_Spitter"];
-        
+		switch (_antType) do {
+			case 0:{Antlist =  ["MAR_ANT_Basic","MAR_ANT_Ice","MAR_ANT_Spitter"];};
+			case 1:{Antlist =  ["MAR_ANT_Basic"];};
+			case 2:{Antlist =  ["MAR_ANT_Spitter"];};
+			case 3:{Antlist =  ["MAR_ANT_Ice"];};
+			default {Antlist =  ["MAR_ANT_Basic","MAR_ANT_Ice","MAR_ANT_Spitter"];};
+		};
+        private _list = AntList;
+        systemChat str _antType;
        
         
         [_position, _dropside#0, _list, _DroidPodCrater, _projectile,_spawnAmount,_linger] spawn {
@@ -441,8 +461,7 @@ Bugzlife_BugDeathContainer = {
 		};
 
 		case (_bug isKindOf "MAR_ANT_BASE"): {
-			systemChat "workiong";
-			
+					
 
 			if ((MAR_BL_BUGEXPLODECHANCE >= floor (random 100))||MAR_BL_BUGEXPLODECHANCE == 100) then {_bug spawn BugzLife_fnc_explodeBug;}else {
 				_meleeSounds = [
@@ -486,7 +505,7 @@ BugzLife_fnc_explodeBug = {
 	_this hideObject true;
 	
 	_textures = getObjectTextures _this;	
-
+	_materials = getObjectMaterials _this;
 	_boomSounds = [
 		"\a3\sounds_f\arsenal\explosives\grenades\grenadelight_closeexp_01.wss",
 		"\a3\sounds_f\arsenal\explosives\grenades\grenadelight_closeexp_02.wss", 
@@ -505,6 +524,10 @@ BugzLife_fnc_explodeBug = {
 
 	playSound3D [selectRandom _meleeSounds, _this,false,_this,5,GlobalBugSoundPitch];
 	private _lamd = createVehicle ["MAR_acidCrater",position _this, [], 0, "CAN_COLLIDE"];
+	if (_this isKindOf "MAR_ANT_Ice") then {
+		_IceSpike = createVehicle ["MAR_AntIce",position _this, [], 0, "CAN_COLLIDE"];
+		[_IceSpike] spawn {sleep 120; deleteVehicle _this;};
+	};
 	_lamd setDir (random 360);
 	_lamd setObjectScale (selectRandom [0.8,0.9,0.6,0.7,0.5]);
 	
@@ -516,8 +539,9 @@ BugzLife_fnc_explodeBug = {
 			case ("MAR_ImpactEffectsBugGuts_Blue"): {bloodpoolTexture = ["\Bugs_life\data\bloodpools\bloodpoolBlue_CA.paa","\Bugs_life\data\bloodpools\bloodPoolBlue.rvmat",[0,0.4,1,0.12]]};
 			default {bloodpoolTexture = ["\Bugs_life\data\bloodpools\bloodpoolOrange_CA.paa","\Bugs_life\data\bloodpools\bloodPoolOrange.rvmat",[1,0.5,0,0.12]] };
 	};
+
 	[[_lamd,_this],{
-		params ["_lamd","_unit"];
+		params ["_lamd","_unit","_IceSpike"];
 			if (isDedicated) exitWith {};
 
 			if ((player distance _lamd) <= 12) then {
@@ -579,7 +603,7 @@ BugzLife_fnc_explodeBug = {
 
 	_lamd setObjectTextureGlobal [0,bloodpoolTexture#0];
 	_lamd setObjectMaterialGlobal [0,bloodpoolTexture#1];
-	_lamd spawn {sleep 120; deleteVehicle _this;};
+	[_lamd] spawn {sleep 120; deleteVehicle _this;};
 
 
 	if (isDedicated) exitWith {};
@@ -590,6 +614,7 @@ BugzLife_fnc_explodeBug = {
 			_Part_1 = "MAR_Ant_Part_Thorax" createVehicle (_this modelToWorldVisual [0,0,0]);
 			{
 				_Part_1 setObjectTextureGlobal [_x,_textures#0];
+				_Part_1 setObjectMaterialGlobal [_x,_materials#0];
 			}forEach (_Part_1 selectionNames 1);
 			_Part_1 setPosATL (_this modelToWorldVisual [0,0,0]);
 			_Part_1 setDir 180;
@@ -597,6 +622,7 @@ BugzLife_fnc_explodeBug = {
 			_Part_2 = "MAR_Ant_Part_Head" createVehicle (_this modelToWorldVisual [0,0.5,0]);
 			{
 				_Part_2 setObjectTextureGlobal [_x,_textures#0];
+				_Part_2 setObjectMaterialGlobal [_x,_materials#0];
 			}forEach (_Part_2 selectionNames 1);
 			_Part_2 setPosATL (_this modelToWorldVisual [0,0.5,0]);
 			_Part_2 setDir 180;
@@ -604,6 +630,7 @@ BugzLife_fnc_explodeBug = {
 			_PArt_3 = "MAR_Ant_Part_Abdomen" createVehicle (_this modelToWorldVisual [0,-0.5,0]);
 			{
 				_Part_3 setObjectTextureGlobal [_x,_textures#0];
+				_Part_3 setObjectMaterialGlobal [_x,_materials#0];
 			}forEach (_Part_3 selectionNames 1);
 			_PArt_3 setPosATL (_this modelToWorldVisual [0,-0.5,0]);
 			_PArt_3 setDir 180;
@@ -616,17 +643,19 @@ BugzLife_fnc_explodeBug = {
 				_Part_4 = "MAR_Ant_Part_Leg" createVehicle (_this modelToWorldVisual [1,selectRandom [-0.5,0.5,0,0.3,-0.3],0.05]);
 				{
 					_Part_4 setObjectTextureGlobal [_x,_textures#0];
+					_Part_4 setObjectMaterialGlobal [_x,_materials#0];
 				}forEach (_Part_4 selectionNames 1);
 				_Part_4 setPosATL (_this modelToWorldVisual [0,selectRandom [legSide,1,0.5],0.05]);
 				
 				_Part_4 setVelocityModelSpace [selectRandom [legVelocity,legVelocity],0,6];
-				_Part_4 spawn {sleep 35; deleteVehicle _this;};
+				_Part_4 spawn {sleep MAR_BL_BUGPRT_DSPAWN; [_this,true,1] call BIS_fnc_VREffectKilled;};
 			};
 			
 			
 			_Part_5 = "MAR_Ant_Part_Mandible" createVehicle (_this modelToWorldVisual [-1,-0.1,0.05]);
 			{
 				_Part_5 setObjectTextureGlobal [_x,_textures#0];
+				_Part_5 setObjectMaterialGlobal [_x,_materials#0];
 			}forEach (_Part_5 selectionNames 1);
 			_Part_5 setPosATL (_this modelToWorldVisual [-1,0,0.05]);
 			_Part_5 setDir ((getDir _this) - 180);
@@ -634,13 +663,14 @@ BugzLife_fnc_explodeBug = {
 			_Part_6 = "MAR_Ant_Part_Mandible" createVehicle (_this modelToWorldVisual [-1,-0.1,0.05]);
 			{
 				_Part_6 setObjectTextureGlobal [_x,_textures#0];
+				_Part_6 setObjectMaterialGlobal [_x,_materials#0];
 			}forEach (_Part_6 selectionNames 1);
 			_Part_6 setPosATL (_this modelToWorldVisual [1,0,0.05]);
 			_Part_6 setDir ((getDir _this) - 180);
 			_Part_6 setVelocityModelSpace [-7,0,0];
 			deleteVehicle _this;
 			{
-				_x spawn {sleep 35; deleteVehicle _this;};
+				_x spawn {sleep MAR_BL_BUGPRT_DSPAWN; [_this,true,1] call BIS_fnc_VREffectKilled;};
 			}forEach [_Part_1,_Part_2,_Part_3,_Part_5,_Part_6];
 		};
 
@@ -764,7 +794,7 @@ BugsLife_HandleMelee =
 	params ["_zombie"];
 	MBradius = 1.4;
 	if (_zombie isKindOf "MAR_ANT_Ice") then {
-		MBradius = 6;							
+		MBradius = 8;							
 	};
 	{	
 		
@@ -878,7 +908,7 @@ BugsLife_HandleMelee =
 									
 										if ((_target getVariable ["optre_suit_energy",0]) <= 0) exitWith {
 											private _poop = damage _target;						
-											[_target, [(0.20 + _poop), false, _zombie]] remoteExec ["setDamage",2]; 
+											[_target, [(0.20 + _poop), false, _zombie]] remoteExec ["setDamage",_poop]; 
 										};
 										_shieldEnergy = _target getVariable ["optre_suit_energy",0];
 										_newShieldEnergy = _shieldEnergy - 25;
@@ -889,7 +919,7 @@ BugsLife_HandleMelee =
 								}]remoteExec ["spawn",_x];
 							}else{		
 									private _poop = damage _x;						
-									[_x, [(0.20 + _poop), false, _zombie]] remoteExec ["setDamage",2];
+									[_x, [(0.20 + _poop), false, _zombie]] remoteExec ["setDamage",_poop];
 						}; 
 					};
 												
