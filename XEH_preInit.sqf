@@ -289,12 +289,15 @@ Bugzlife_SpawnAntHill = {
 			_target setVariable ["gooberHealth", _newHealth, true];
 
 			if (_currentHealth == 0) then {
-				[_target, [1, false, _shooter]] remoteExec ["setDamage",_target];_target setDamage 1;
+				
+				
 
-				_target animateSource ['Anthill_Raised',1,1];
+				//_target animateSource ['Anthill_Raised',1,1];
 
 				[_target,{ 
-
+					_this allowDamage true;
+					uiSleep 0.1;
+					_this setDamage 1;
 						
 
 						uisleep 4;  
