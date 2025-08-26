@@ -219,12 +219,15 @@ Bugzlife_SpawnAntHill = {
 				if ((count units _FloodGroup)>= _spawnAmount) exitWith {};
 				if (!(alive _DroidPodCrater)||(isNil "_DroidPodCrater")) exitWith {};
 				_unit = _FloodGroup createUnit [(selectRandom _list), _spawn, [], 0, "CAN_COLLIDE"];
+				_unit attachTo [_DroidPodCrater,[0,0,0],"Body"];
 				_unit setPosATL [_spawn#0,_spawn#1,(_spawn#2)+3];
+				
 				[_unit] joinSilent _FloodGroup;
 				_unit setDir (random 360);
 
 				[_unit,["ANT_Climb_Out", 0, 0.2, false]] remoteExec ["switchMove",0];
 				sleep 2;
+				detach _unit;
 				_unit setVelocityModelSpace [0,7,3];
 				sleep 3;
 			};
@@ -244,13 +247,13 @@ Bugzlife_SpawnAntHill = {
 							if ((count units _FloodGroup)>= _spawnAmount) exitWith {};
 							if (!(alive _DroidPodCrater)||(isNil "_DroidPodCrater")) exitWith {};
 							_unit = _FloodGroup createUnit [(selectRandom _list), _spawn, [], 0, "CAN_COLLIDE"];
-							_unit setPosATL [_spawn#0,_spawn#1,(_spawn#2)+3];
+							_unit setPosATL [_spawn#0,_spawn#1,(_spawn#2)+5];
 
 							_unit setDir (random 360);
-
+							
 							[_unit,["ANT_Climb_Out", 0, 0.2, false]] remoteExec ["switchMove",0];
 							sleep 2;
-							_unit setVelocityModelSpace [0,7,3];
+							_unit setVelocityModelSpace [0,7,7];
 
 							sleep 3;
 						};
@@ -274,15 +277,31 @@ Bugzlife_SpawnAntHill = {
 
 			if ( ((str (side _shooter) == "CIV") and (((currentWeapon _shooter) == ""))) or (captive _shooter)) exitWith {};
 			if ( ( !([(side _shooter), (side _target)] call BIS_fnc_sideIsEnemy) and (str (side _target) != "CIV")) or (captive _target)) exitWith {};
-
+			systemChat (_selection#0);
+			if ((_selection#0) != "anthole") exitWith {systemChat "bingo"};
 			private _currentHealth = _target getVariable ["gooberHealth", _AntHillHP]; 
-		
+
 			private _ProjHit = _ammo#0;
+			systemChat str (_ammo#4);
+			if (_ammo#4 isKindOf "GrenadeHand") then {systemChat str _ammo#4};
 			private _newHealth = [_currentHealth - _ProjHit, 0, 500] call BIS_fnc_clamp;
 
 			_target setVariable ["gooberHealth", _newHealth, true];
 
-			if (_currentHealth == 0) then {[_target, [1, false, _shooter]] remoteExec ["setDamage",2];};
+			if (_currentHealth == 0) then {
+				[_target, [1, false, _shooter]] remoteExec ["setDamage",_target];_target setDamage 1;
+
+				_target animateSource ['Anthill_Raised',1,1];
+
+				[_target,{ 
+
+						
+
+						uisleep 4;  
+					  
+						deleteVehicle _this;
+				}] remoteExec["spawn", 0, false];
+			};
 
 			}];
 
@@ -370,7 +389,7 @@ Bugslife_TrapDoorAttack = {
     }] remoteExec["spawn", 0, false];
 
 	uiSleep 0.1;
-	
+	//grab grenade
 	if (!(_poorChuddie isKindOf "MAN")&&(_poorChuddie isKindOf "GrenadeHand"))then {
 		if (isNil {_spider getVariable "s_Food"}) then {
 								
@@ -402,6 +421,7 @@ Bugslife_TrapDoorAttack = {
 			};																		
 		};
 	};
+	//grab chuddie
 	{	
 			
 		if (
@@ -418,9 +438,7 @@ Bugslife_TrapDoorAttack = {
 			(isNil {_x getVariable "IMS_IsUnitInvicibleScripted"})
 			) 
 		then {
-				if (isNil {_spider getVariable "s_Food"}) then {
-					
-						
+				if (isNil {_spider getVariable "s_Food"}) then {					
 					_dir = getDir _spider;
 					_x setDir (_dir);
 					_soundArray_wonk = ["\Bugs_life\data\humanSounds\human_scream_1.ogg","\Bugs_life\data\humanSounds\human_scream_2.ogg","\Bugs_life\data\humanSounds\human_scream_3.ogg"];
