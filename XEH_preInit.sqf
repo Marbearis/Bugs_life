@@ -182,6 +182,7 @@ Bugzlife_SpawnAntHill = {
 
 		_groundTexture = surfaceTexture getPosATL _DroidPodCrater;
 		_DroidPodCrater setObjectTextureGlobal [0,_groundTexture];
+		
 		_soundArray = ["A3\sounds_f\sfx\explosion1.wss","A3\sounds_f\sfx\explosion2.wss","A3\sounds_f\sfx\explosion3.wss"];
 		_soundArray_wonk = ["\Bugs_life\data\AntSounds\ANT_Erupt_1.ogg","\Bugs_life\data\AntSounds\ANT_Erupt_2.ogg","\Bugs_life\data\AntSounds\ANT_Erupt_3.ogg"];	
 		playSound3D [selectRandom _soundArray, _DroidPodCrater];
@@ -884,11 +885,28 @@ BugsLife_HandleMelee =
 	
 	
 	if (_zombie isKindOf "MAR_ANT_Ice") then {
-		_zombie setVariable ["biteParams",[4,_zombie,0.35],true];			
-	}else {
+		_zombie setVariable ["biteParams",[4,getPosASL _zombie,0.35],true];	
+		melee_objectLoc= _zombie;
+		melee_radius= 4;
+		melee_damage = 	0.35;	
+	}else{
 		_zombie setVariable ["biteParams",[2,(_zombie modelToWorldVisual(_zombie selectionPosition ["a_spitPoint","Memory"])),0.25],true];
+		melee_objectLoc = (_zombie modelToWorldVisual(_zombie selectionPosition ["a_spitPoint","Memory"]));
+		melee_radius = 2;
+		melee_damage = 	0.25;
 	};
-		
+	if !(_zombie isKindOf "MAR_ANT_BASE") then {
+		melee_objectLoc = (_zombie modelToWorldVisual(_zombie selectionPosition ["weapon","Memory"]));
+		melee_radius = 2;
+		melee_damage = 	35;
+	};
+	if (_zombie isKindOf "MAR_acidCrater") then {
+		//_zombie setVariable ["biteParams",[2,(_zombie modelToWorldVisual(_zombie selectionPosition ["a_spitPoint","Memory"])),0.40],true];		
+		melee_objectLoc = _zombie;
+		melee_radius = 2;
+		melee_damage = 	0.35;
+	};
+	
 	{	
 		
 			_meleeSounds = [
@@ -921,7 +939,8 @@ BugsLife_HandleMelee =
 			if (((_x != _zombie) and (alive _x)) and (_x isKindOf "MAR_ANT_BASE")) exitWith {
 									
 				private _chimp = _x getVariable ["WBK_SynthHP",1];
-				private _newHealth = _chimp - 25 ;
+				systemChat str _chimp;
+				private _newHealth = _chimp - 35 ;
 				_x setVariable ["WBK_SynthHP", _newHealth,true];
 
 				if (_newHealth <= 0) exitWith {
@@ -942,13 +961,13 @@ BugsLife_HandleMelee =
 							
 							if (!(isNil {_target getVariable "optre_suit_energy"})) then {
 								if ((_target getVariable ["optre_suit_energy",0]) <= 0) exitWith {
-									[_target, (((_zombie getVariable ["biteParams",0.25])select 2) + 0.3), "body", "stab"] remoteExec ["ace_medical_fnc_addDamageToUnit", _target];
+									[_target, melee_damage, "body", "stab"] remoteExec ["ace_medical_fnc_addDamageToUnit", _target];
 								};
 								_shieldEnergy = _target getVariable ["optre_suit_energy",0];
 								_newShieldEnergy = _shieldEnergy - 25;
 								_target setVariable ["optre_suit_energy", _newShieldEnergy, true];
 							}else {
-								[_target, (((_zombie getVariable ["biteParams",0.25])select 2) + 0.3), "body", "stab"] remoteExec ["ace_medical_fnc_addDamageToUnit", _target];
+								[_target, melee_damage, "body", "stab"] remoteExec ["ace_medical_fnc_addDamageToUnit", _target];
 							};
 						}]remoteExec ["spawn",_x];
 						
@@ -960,7 +979,7 @@ BugsLife_HandleMelee =
 
 							case (WBK_Armor_System_OnlyHP):{
 								_currentHealth = _x getVariable "WBK_AS_HP";
-								_newDamage = _currentHealth - ((_zombie getVariable ["biteParams",0.25])select 2);
+								_newDamage = _currentHealth - melee_damage;
 								_x setVariable ["WBK_AS_HP",_newDamage,true];
 							}; 
 
@@ -968,7 +987,7 @@ BugsLife_HandleMelee =
 									_currentArmor = _x getVariable "WBK_AdvancedHealth";
 									if (_currentArmor <= 0) then {
 										_currentHealth = _x getVariable "WBK_AS_HP";
-										_newDamage = _currentHealth - ((_zombie getVariable ["biteParams",0.25])select 2);
+										_newDamage = _currentHealth - melee_damage;
 										_x setVariable ["WBK_AS_HP",_newDamage,true];
 									 }else {
 									_newDamage = _currentArmor - (15*WBK_Armor_System_DMG_Modifier);
@@ -985,7 +1004,7 @@ BugsLife_HandleMelee =
 									
 										if ((_target getVariable ["optre_suit_energy",0]) <= 0) exitWith {
 											private _poop = damage _target;						
-											[_target, [(((_zombie getVariable ["biteParams",0.25])select 2) + _poop), false, _zombie]] remoteExec ["setDamage",_poop]; 
+											[_target, [(melee_damage + _poop), false, _zombie]] remoteExec ["setDamage",_poop]; 
 										};
 										_shieldEnergy = _target getVariable ["optre_suit_energy",0];
 										_newShieldEnergy = _shieldEnergy - 25;
@@ -996,7 +1015,7 @@ BugsLife_HandleMelee =
 								}]remoteExec ["spawn",_x];
 							}else{		
 									private _poop = damage _x;						
-									[_x, [(((_zombie getVariable ["biteParams",0.25])select 2) + _poop), false, _zombie]] remoteExec ["setDamage",_poop];
+									[_x, [(melee_damage + _poop), false, _zombie]] remoteExec ["setDamage",_poop];
 						}; 
 					};
 												
@@ -1013,9 +1032,9 @@ BugsLife_HandleMelee =
 						_victim enableSimulation true;											
 					};									
 				};
-			}
-		
-	} forEach nearestObjects [((_zombie getVariable ["biteParams",_zombie])select 1),["MAN"],((_zombie getVariable ["biteParams",1.4])select 0)];
+			};	
+
+	} forEach nearestObjects [melee_objectLoc,["MAN"],melee_radius];
 };
 
 BugsLife_RangedAttack_FNC= {
@@ -1137,6 +1156,7 @@ Bugzz_fnc_ProjectileCreate = {
 			playSound3D [(selectRandom _meleeSounds), _actualHitClass];
 			_actualHitClass call BugsLife_HandleMelee;
 			private _lamd = createVehicle ["MAR_acidCrater",position _actualHitClass, [], 0, "CAN_COLLIDE"]; 
+			_lamd call BugsLife_HandleMelee;
 			_lamd spawn {sleep 30; deleteVehicle _this;};
 			
 			[_actualHitClass, {
@@ -1188,3 +1208,145 @@ Bugzz_fnc_ProjectileCreate = {
 	deleteVehicle _rocket;
 };
 
+//antqueen functions 
+
+BugsLife_AntQueen_MinionSummon_FNC = 
+{
+	params ["_unit",["_radius",15],["_minionCount",3]];
+	[_unit,["ANT_Roar", 0, 0.2, false]] remoteExec ["switchMove",0];
+	_soundArray_wonk = ["\Bugs_life\data\AntSounds\AntQueen_Screech.ogg"];
+	playSound3D [selectRandom _soundArray_wonk, _unit,false, getPosASL _unit, 5, 1, 0];
+	if ((player distance _unit) <= 50) then {
+				enableCamShake true; 
+				addCamShake [7, 7, 4];
+			};
+	uiSleep 3;
+	
+	
+	
+	for "_i" from 1 to _minionCount do {			
+		if ((alive _unit)) then 	
+		{
+			_PosOffset = [((getPosASL _unit)#0) + (random _radius),((getPosASL _unit)#1)+ (random _radius),((getPosASL _unit)#2)+3];
+			_intersections = lineIntersectsSurfaces [_PosOffset, [_PosOffset#0,_PosOffset#1,(_PosOffset#2) - 8], player, _unit, true, -1];
+			_Antlist = selectRandomWeighted ["MAR_ANT_Basic",0.8,"MAR_ANT_Ice",0.1,"MAR_ANT_Spitter",0.1];	
+			_spawn = (_intersections select 0)#0;
+			_Deform =  createVehicle ["Land_ShellCrater_02_small_F",[_spawn#0,(_spawn#1),(_spawn#2)- 5.1],[],0,"CAN_COLLIDE"];//replace with something with sections
+
+			_groundTexture = surfaceTexture getPosATL _Deform;
+			_Deform setObjectTextureGlobal [0,_groundTexture];			
+       		_Deform setVectorUp surfaceNormal position _Deform;
+
+			_ANTMinion = group _unit createUnit [_AntList, _spawn, [], 4, "CAN_COLLIDE"];					
+			[_ANTMinion] joinSilent (group _unit);
+			
+			_soundArray = ["A3\sounds_f\sfx\explosion1.wss","A3\sounds_f\sfx\explosion2.wss","A3\sounds_f\sfx\explosion3.wss"];		
+			playSound3D [selectRandom _soundArray, _ANTMinion];		
+			if ((player distance _unit) <= 12) then {
+				enableCamShake true; 
+				addCamShake [2, 2, 1];
+			};
+			_ANTMinion setPosATL [_spawn#0,(_spawn#1)+(selectRandom [2]),(_spawn#2)-6];
+			[_spawn,{ 
+				_fulgiOffset = [_this#0,(_this#1)+(selectRandom [2]),(_this#2)-6];
+				if (isDedicated) exitWith {}; 
+				_pos = _this;
+				_dustEffect = "#particlesource" createVehicleLocal _pos; 
+				_dustEffect setParticleClass "HDustVTOL1"; 
+				_dustEffect setParticleCircle[0, [0, 0, 0]]; 
+				_rocks1 = "#particlesource" createVehicleLocal _this; 
+				_rocks1 setposasl _this; 
+				_rocks1 setParticleParams[["\A3\data_f\ParticleEffects\Universal\Mud.p3d", 1, 0, 1], "", "SpaceObject", 1, 12.5, [0, 0, 0], [0, 0, 5], 5, 100, 7.9, 1, [.15, .15], [ 
+                    [0.1, 0.1, 0.1, 1], 
+                    [0.25, 0.25, 0.25, 0.5], 
+                    [0.5, 0.5, 0.5, 0] 
+                ], [0.08], 1, 0, "", "", _this, 0, false, 0.3]; 
+				_rocks1 setParticleRandom[0, [0, 0, 0], [1, 1, 6], 1, 1, [0, 0, 0, 0.1], 0, 0]; 
+				_rocks1 setDropInterval 0.01; 
+				_rocks1 setParticleCircle[0, [0, 0, 0]];
+
+				_fulgi  = "#particlesource" createVehiclelocal _fulgiOffset; 
+				_fulgi setParticleRandom [0, [1, 1, 0], [0, 0, 3], 3, 3, [0.2, 0.1, 0, 0.1], 0, 0];
+				_fulgi setDropInterval 0.004;
+				_fulgi setParticleCircle [1, [0, 0, 0]];
+				_fulgi setParticleParams [["\A3\data_f\cl_exp", 1, 0, 1],"","Billboard",1,2,[0,0,0],[0,0,0],0,0.7,1,1,[0.05, 0.20],[[1,0.5,0.1,1]],[1],0,0,"","",_this, 0, false, -1, [[120,100,0.005,1],[120,90,0.005,1],[120,90,0.005,1]]]; 
+						
+				uisleep 0.5;
+				deleteVehicle _fulgi;  
+				deleteVehicle _rocks1; 					
+				deleteVehicle _dustEffect; 											    
+			}] remoteExec["spawn", 0, false];
+			
+			[_ANTMinion,["ANT_Climb_Out", 0, 0.2, false]] remoteExec ["switchMove",0];
+			
+			sleep 2;
+			//_ANTMinion setDir (getDir _ANTMinion + (random 45));
+			//_ANTMinion setVelocityModelSpace [0,7,3];
+			sleep 3;
+		};
+	};
+};
+
+BugsLife_AntQueen_ASSUP_FNC = {
+	params ["_unit",["_radius",15]];
+	
+	_spawn = [(((getPosATL _unit)#0)+random 12),(((getPosATL _unit)#1)+random 12),(getPosATL _unit)#2];
+	_Deform_in =  createVehicle ["Land_ShellCrater_02_small_F",getPosATL _unit,[],0,"CAN_COLLIDE"];//replace with something with sections
+	_groundTexture = surfaceTexture getPosATL _Deform_in;
+	_Deform_in setObjectTextureGlobal [0,_groundTexture];			
+    _Deform_in setVectorUp surfaceNormal position _Deform_in;
+	[_unit,["ANT_Climb_IN", 0, 0.2, false]] remoteExec ["switchMove",0];
+	
+	_soundArray_wonk = ["\Bugs_life\data\AntSounds\ANT_Erupt_1.ogg","\Bugs_life\data\AntSounds\ANT_Erupt_2.ogg","\Bugs_life\data\AntSounds\ANT_Erupt_3.ogg"];	
+	playSound3D [selectRandom _soundArray_wonk, _unit];
+
+	_unit setVariable["OgPos",getPosATL _unit,true];
+	uiSleep 4;
+	_unit hideObjectGlobal true;
+	_unit hideObject true;
+	uiSleep 2;
+	//_Deform_out =  createVehicle ["Land_ShellCrater_02_small_F",[_spawn#0,(_spawn#1),(_spawn#2)- 6],[],0,"CAN_COLLIDE"];//replace with something with sections
+	//_groundTexture = surfaceTexture getPosATL _Deform_out;
+	//_Deform_out setObjectTextureGlobal [0,_groundTexture];			
+    //_Deform_out setVectorUp surfaceNormal position _Deform_out;
+	_unit setPos [_spawn#0,_spawn#1,(_spawn#2)];
+
+	[_spawn,{ 
+				_fulgiOffset = [_this#0,(_this#1)+(selectRandom [2]),(_this#2)-6];
+				if (isDedicated) exitWith {}; 
+				_pos = _this;
+				_dustEffect = "#particlesource" createVehicleLocal _pos; 
+				_dustEffect setParticleClass "HDustVTOL1"; 
+				_dustEffect setParticleCircle[0, [0, 0, 0]]; 
+				_rocks1 = "#particlesource" createVehicleLocal _this; 
+				_rocks1 setposasl _this; 
+				_rocks1 setParticleParams[["\A3\data_f\ParticleEffects\Universal\Mud.p3d", 1, 0, 1], "", "SpaceObject", 1, 12.5, [0, 0, 0], [0, 0, 5], 5, 100, 7.9, 1, [.15, .15], [ 
+                    [0.1, 0.1, 0.1, 1], 
+                    [0.25, 0.25, 0.25, 0.5], 
+                    [0.5, 0.5, 0.5, 0] 
+                ], [0.08], 1, 0, "", "", _this, 0, false, 0.3]; 
+				_rocks1 setParticleRandom[0, [0, 0, 0], [1, 1, 6], 1, 1, [0, 0, 0, 0.1], 0, 0]; 
+				_rocks1 setDropInterval 0.01; 
+				_rocks1 setParticleCircle[0, [0, 0, 0]];
+				uisleep 0.5;
+				 
+				deleteVehicle _rocks1; 					
+				deleteVehicle _dustEffect; 											    
+	}] remoteExec["spawn", 0, false];
+
+	_unit hideObjectGlobal false;
+	_unit hideObject false;
+	_soundArray_wonk = ["\Bugs_life\data\AntSounds\ANT_Erupt_1.ogg","\Bugs_life\data\AntSounds\ANT_Erupt_2.ogg","\Bugs_life\data\AntSounds\ANT_Erupt_3.ogg"];	
+	playSound3D [selectRandom _soundArray_wonk, _unit];
+	[_unit,["ANT_Climb_outAssUp", 0, 0.2, false]] remoteExec ["switchMove",0];
+	uiSleep 2;
+	[_unit,["ANT_AssOutIdle", 0, 0.2, false]] remoteExec ["switchMove",0];
+	_unit setVariable ["assUp",true,true];
+};
+
+BugsLife_AntQueen_ReturnToOGPOS = {
+	params ["_unit"];
+	_OGPOS = _unit getVariable "OgPos";
+	_unit setPosATL _OGPOS;
+	[_unit,["ANT_ClimbOut", 0, 0.2, false]] remoteExec ["switchMove",0];
+};

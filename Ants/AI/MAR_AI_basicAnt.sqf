@@ -113,7 +113,7 @@ _gruntBoy setVariable ["IMS_EventHandler_Hit",{
 	_victim = _this select 0;
 	_attacker = _this select 1;
 	_weapon = _this select 2;
-	//[_victim,selectRandom ["grunt_pain_1","grunt_pain_2","grunt_pain_3","grunt_pain_4","grunt_pain_5","grunt_pain_6","grunt_pain_7"],200] call CBA_fnc_GlobalSay3d;
+	_attacker call BugsLife_HandleMelee;
 	if (((_victim worldToModel (_attacker modelToWorld [0, 0, 0])) select 1) < 0) exitWith {
 		[_victim,["ANT_Hit_B", 0, 0.7, false]] remoteExec ["switchMove",0];
 	};
