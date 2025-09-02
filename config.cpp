@@ -4,7 +4,7 @@ class CfgPatches
 	{
 		units[] = {"MAR_ANT_Basic","MAR_ANT_Ice","MAR_ANT_Spitter","MAR_antHill","MAR_Spider_Burrower","MAR_TrapDoor","MAR_Ant_Egg","MAR_Ant_Egg_Clutch",
         "MAR_Ant_Part_Head","MAR_Ant_Part_Thorax","MAR_Ant_Part_Abdomen","MAR_Ant_Part_Leg","MAR_Ant_Part_Mandible","MAR_Ant_Part_Antenne","MAR_ANT_QUEEN","MAR_Ant_Webs","MAR_Ant_Webs_2","MAR_Spider_Webs",
-        "MAR_Spider_Webs_2","MAR_AntIce"
+        "MAR_Spider_Webs_2","MAR_AntIce","MAR_ANT_Guppy"
         };
 		weapons[] = {};
 		magazines[]={};
@@ -639,6 +639,23 @@ class cfgWeapons
 				uniformmodel="-";
 			};
 		};
+    class ANT_Uniform_Guppy:Uniform_Base 
+    {
+        	displayname="ANT_Guppy";
+			model = "Bugs_life\Ants\antguppy.p3d";
+			scope=1;
+			picture="";
+			hiddenSelections[] = {"camo","eyes"};
+			hiddenSelectionsTextures[] = {"\Bugs_life\Ants\textures\antguppy\anggup_CO.paa","\Bugs_life\Ants\textures\antguppy\anggup_CO.paa"};
+			hiddenSelectionsMaterials[]={"\Bugs_life\Ants\textures\antguppy\anggup.rvmat","\Bugs_life\Ants\textures\antguppy\anggup.rvmat"};
+            class ItemInfo: UniformItem
+			{
+				containerclass="Supply200";
+				mass=30;
+				uniformclass="ANT_Uniform_Guppy";
+				uniformmodel="-";
+			};
+    };
 };
 
 
@@ -1239,7 +1256,110 @@ class CfgMovesBasic
                 StartFreefall="ANT_AssOutIdle";   
             };
         //antQueen end  
-	
+        //antGuppy moveset
+          class MAR_ANTGuppy_Moves:NoActions
+            {
+                Disable_Gesture[]=
+                {
+                    "Disable_Gesture",
+                    "Gesture"
+                };
+                stance="ManStanceUndefined";
+                useFastMove = 1;
+                turnSpeed = 1;
+                LimpF="Guppy_Inch";
+                LimpLF="Guppy_Inch";
+                LimpRF="Guppy_Inch";
+                LimpL="Guppy_Inch";
+                LimpR="Guppy_Inch";
+                LimpB="Guppy_Inch";
+                LimpLB="Guppy_Inch";
+                LimpRB="Guppy_Inch";
+                stop="Guppy_Idle";
+                default="Guppy_Idle";
+                stopRelaxed="Guppy_Idle";
+                TurnL="Guppy_Inch";
+                TurnR="Guppy_Inch";
+                TurnLRelaxed="Guppy_Inch";
+                TurnRRelaxed="Guppy_Inch";
+                WalkF="Guppy_Inch";
+                PlayerWalkF="Guppy_Inch";
+                WalkLF="Guppy_Inch";
+                PlayerWalkLF="Guppy_Inch";
+                WalkRF="Guppy_Inch";
+                PlayerWalkRF="Guppy_Inch";
+                WalkL="Guppy_Inch";
+                PlayerWalkL="Guppy_Inch";
+                WalkR="Guppy_Inch";
+                PlayerWalkR="Guppy_Inch";
+                WalkB="Guppy_Inch";
+                PlayerWalkB="Guppy_Inch";
+                WalkLB="Guppy_Inch";
+                PlayerWalkLB="Guppy_Inch";
+                WalkRB="Guppy_Inch";
+                PlayerWalkRB="Guppy_Inch";
+                SlowF="Guppy_Inch";
+                PlayerSlowF="Guppy_Inch";
+                SlowB="Guppy_Inch";
+                PlayerSlowB="Guppy_Inch";
+                PlayerFastF="Guppy_Inch";
+                combat="Guppy_Idle";
+                up="Guppy_Idle";
+                down="Guppy_Idle";
+                gear="Guppy_Idle";
+                upDegree="ManPosNoWeapon";
+                PlayerSlowLF="Guppy_Inch";
+                PlayerSlowRF="Guppy_Inch";
+                PlayerSlowL="Guppy_Inch";
+                PlayerSlowR="Guppy_Inch";
+                PlayerSlowLB="Guppy_Inch";
+                PlayerSlowRB="Guppy_Inch";
+                FastF="Guppy_Inch";
+                FastLF="Guppy_Inch";
+                FastRF="Guppy_Inch";
+                FastL="Guppy_Inch";
+                FastR="Guppy_Inch";
+                FastLB="Guppy_Inch";
+                FastRB="Guppy_Inch";
+                TactF="Guppy_Inch";
+                TactLF="Guppy_Inch";
+                TactRF="Guppy_Inch";
+                TactL="Guppy_Inch";
+                TactR="Guppy_Inch";
+                TactLB="Guppy_Inch";
+                TactRB="Guppy_Inch";
+                TactB="Guppy_Inch";
+                PlayerTactF="Guppy_Inch";
+                PlayerTactLF="Guppy_Inch";
+                PlayerTactRF="Guppy_Inch";
+                PlayerTactL="Guppy_Inch";
+                PlayerTactR="Guppy_Inch";
+                PlayerTactLB="Guppy_Inch";
+                PlayerTactRB="Guppy_Inch";
+                PlayerTactB="Guppy_Inch";
+                Die="ANT_Death";
+                StartFreefall="Guppy_Idle";
+                Unconscious = "Guppy_Idle";
+            };
+            class MAR_Guppy_Inch:MAR_ANTGuppy_Moves
+            {
+                turnSpeed=0;
+                PlayerCrouch="Guppy_Inch";
+                Up="Guppy_Inch";
+                Crouch="Guppy_Inch";
+                AdjustB="";
+                Stand="Guppy_Idle";
+            };
+            class MAR_Guppy_Attack:MAR_ANTGuppy_Moves
+            {
+                turnSpeed=0;
+                PlayerCrouch="ANT_Attack_1";
+                Up="ANT_Attack_1";
+                Crouch="ANT_Attack_1";
+                AdjustB="";
+                Stand="ANT_Attack_1";
+            };
+        //antguppy moveset end
     };      
 	
 };
@@ -1297,6 +1417,39 @@ class CfgGestures_MAR_ANT: CfgGesturesMale
 	};
 };
 
+class CfgGestures_MAR_ANT_Guppy:CfgGestures_MAR_ANT
+{
+    skeletonName = "antGup_Armature";
+	class ManActions
+	{
+	};
+	class Actions;
+	class Default;
+	class BlendAnims {
+		ANT_FullBody[]=
+		{
+		};
+	};
+	class States
+	{
+		class Disable_Gesture: Default
+		{
+			speed=1;
+			file = "\Bugs_life\Ants\animations\antGuppyIdle.rtm";
+			disableWeapons=0;
+			interpolationRestart=2;
+			enableOptics=1;
+			weaponIK=1;
+			looped=0;
+			leftHandIKBeg=1;
+			leftHandIKCurve[]={1};
+			leftHandIKEnd=1;
+			rightHandIKBeg=1;
+			rightHandIKCurve[]={1};
+			rightHandIKEnd=1;
+		};
+	};
+};
 class CfgGestures_MAR_ANT_Queen: CfgGesturesMale
 {
 	skeletonName = "ant_Queen_S";
@@ -1771,6 +1924,149 @@ class CfgMoves_MAR_ANT: CfgMovesMaleSdr
             0.2,
             "a_rearleg.l",
             0.2
+        };
+		
+	};
+};
+
+class CfgMoves_MAR_ANT_Guppy: CfgMovesMaleSdr
+{
+	gestures="CfgGestures_MAR_ANT_Guppy";
+	skeletonName = "antGup_Armature";
+	collisionVertexPattern[] = {"1a","2a","3a","4a","5a","6a","7a","8a","9a","10a","11a","12a","13a","14a","15a","16a","17a","18a","19a","20a","21a","22a","23a","24a","25a","26a","27a","28a","29a","30a","31a","32a","33a","34a"};
+	collisionGeomCompPattern[] = {1};
+	class Default: Default
+    {
+        actions = "MAR_ANTGuppy_Moves";
+		file = "\Bugs_life\Ants\animations\antGuppyIdle.rtm";
+		collisionShape = "A3\anims_f\Data\Geom\Sdr\Perc_Wrfl.p3d";
+		collisionShapeSafe = "A3\anims_f\Data\Geom\Sdr\Perc_Wrfl.p3d";
+    };
+	class StandBase: StandBase
+    {
+        actions = "MAR_ANTGuppy_Moves";
+        //ragdoll=0;
+		file = "\Bugs_life\Ants\animations\antGuppyIdle.rtm";
+		collisionShape = "A3\anims_f\Data\Geom\Sdr\Perc_Wrfl.p3d";
+		collisionShapeSafe = "A3\anims_f\Data\Geom\Sdr\Perc_Wrfl.p3d";
+    };
+	class DefaultDie: Default
+	{
+		aiming="aimingNo";
+		legs="legsNo";
+		head="headNo";
+        file = "\Bugs_life\Ants\animations\antGuppyIdle.rtm";
+		disableWeapons=1;
+        //ragdoll=1;
+		interpolationRestart=1;
+		soundOverride="fallbody";
+		soundEdge[]={0.44999999};
+		soundEnabled=0;
+	};
+	class States
+	{
+		class Guppy_Idle: StandBase
+		{
+			collisionShape = "A3\anims_f\Data\Geom\Sdr\Perc_Wrfl.p3d";
+		    collisionShapeSafe = "A3\anims_f\Data\Geom\Sdr\Perc_Wrfl.p3d";			
+			file = "\Bugs_life\Ants\animations\antGuppyIdle.rtm";
+            actions = "MAR_ANTGuppy_Moves";
+			duty = 0.1;
+			boundingSphere = 4;
+			interpolationSpeed = 1.5;
+			variantAfter[]={6,6,6};
+            variantsAI[] = {};
+            variantsPlayer[] = {};			
+            speed = -3;
+            relSpeedMin = 1;
+            relSpeedMax = 1;
+            canPullTrigger = 1;
+            canReload = 1;
+            limitGunMovement = 0.5;
+            headBobStrength=0;
+            headBobMode=0;
+            disableWeapons = 0;
+            disableWeaponsLong = 0;
+            enableMissile = 1;
+            enableOptics = 1;
+			leaning="HeadDefault_MAR_Guppy";
+            soundOverride="idle";
+			aiming="HeadDefault_MAR_Guppy";
+		    aimingBody="HeadDefault_MAR_Guppy";
+			head = "HeadDefault_MAR_Guppy";
+			legs="legsDefault_MAR_Guppy";
+			InterpolateTo[]=
+			{
+				"Guppy_Idle",
+				0.01,
+                "Guppy_Inch",
+                0.01,
+                "ANT_Attack_1",
+                0.1							
+				
+			};
+            interpolateFrom[]={
+       	
+            };
+			
+			preload = 1;
+		};
+
+		class Guppy_Inch:Guppy_Idle
+        {
+            file ="\Bugs_life\Ants\animations\antGuppyinch.rtm";
+            actions = "MAR_Guppy_Inch";
+            interpolationSpeed = 10;
+            speed = -0.7;           
+            soundOverride="Run";
+            leaning="none";
+            soundOverride="idle";
+			aiming="none";
+		    aimingBody="none";
+			head = "none";
+			legs="none";
+        };
+	
+        class ANT_Attack_1:Guppy_Inch
+        {
+            actions = "MAR_Guppy_Attack";
+            file ="\Bugs_life\Ants\animations\antGuppyattack.rtm";
+            speed = -1; 
+            looped = false;
+        };
+
+        class ANT_Death: Guppy_Inch
+        {
+            looped = false;
+            terminal = 1;
+            speed = -3; 
+            file ="\Bugs_life\Ants\animations\antGuppydeath.rtm";
+            soundOverride = "death";
+        };
+
+	
+		
+	};
+	
+	class BlendAnims: BlendAnims
+	{
+		legsDefault_MAR_Guppy[]=
+		{
+            "a_head",
+            0.4,
+            "a_bod",
+            0.3,
+            "a_butt",
+            0.1
+					
+		};
+        HeadDefault_MAR_Guppy[]={
+            "a_head",
+            0.5,
+            "a_bod",
+            0.4,
+            "a_butt",
+            0.1
         };
 		
 	};

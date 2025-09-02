@@ -41,6 +41,47 @@
             };
         };
     };
+    class MAR_ANT_Guppy:MAR_ANT_BASE
+    {
+        side = 0;
+        scope = 2;			
+        scopeCurator = 2;
+        impactEffectsBlood = "MAR_ImpactEffectsBugGuts_Orange";
+        impactEffectsNoBlood = "MAR_ImpactEffectsBugGuts_Orange";
+        editorPreview="";    
+        displayName = "Ant grub";     
+        hiddenSelections[] = {"camo","eyes"};
+        model = "Bugs_life\Ants\antguppy.p3d";
+		hiddenSelectionsTextures[] = {"\Bugs_life\Ants\textures\antguppy\anggup_CO.paa","\Bugs_life\Ants\textures\antguppy\anggup_CO.paa"};
+		hiddenSelectionsMaterials[]={"\Bugs_life\Ants\textures\antguppy\anggup.rvmat","\Bugs_life\Ants\textures\antguppy\anggup.rvmat"};
+        uniformClass = "ANT_Uniform_Guppy";
+        nakedUniform = "ANT_Uniform_Guppy";
+        _generalMacro = "MAR_ANT_Guppy";
+        gestures = "CfgGestures_MAR_ANT_Guppy";
+        moves = "CfgMoves_MAR_ANT_Guppy";
+        class Eventhandlers
+        {
+            init = "_this#0 allowFleeing 0;_this#0 setSpeaker 'NoVoice';_this#0 disableConversation true;";
+        };
+        class SoundEnvironExt {		
+            generic[] = {
+                {"run", {"\Bugs_life\data\AntSounds\antRun.ogg", 1, 1, 40}},
+                {"idle", {"\Bugs_life\data\AntSounds\idleChitter.ogg", 1, 1, 25}},                    
+                {"walk", {"\Bugs_life\data\AntSounds\AntWalk.ogg", 1, 1, 25}},  
+                {"meleeAttack", {"\Bugs_life\data\AntSounds\antBite.ogg", 1, 1, 25}}, 
+                {"rangedAttack", {"\Bugs_life\data\AntSounds\antSpit.ogg", 1, 1, 100}}          
+            };
+        };
+        class SoundEquipment {	
+            soldier[] = {
+                {"run", {"\Bugs_life\data\AntSounds\antRun.ogg", 1, 1, 40}},
+                {"idle", {"\Bugs_life\data\AntSounds\idleChitter.ogg", 1, 1, 25}},                    
+                {"walk", {"\Bugs_life\data\AntSounds\AntWalk.ogg", 1, 1, 25}},  
+                {"meleeAttack", {"\Bugs_life\data\AntSounds\antBite.ogg", 1, 1, 25}}, 
+                {"rangedAttack", {"\Bugs_life\data\AntSounds\antSpit.ogg", 1, 1, 100}} 
+            };
+        };
+    };
     class MAR_ANT_Basic:MAR_ANT_BASE
     {
         side = 0;

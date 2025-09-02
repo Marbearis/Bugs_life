@@ -91,6 +91,20 @@
 ] call CBA_fnc_addSetting;
 
 [ 
+    "MAR_BL_ANTGRUBHLTTH", 
+    "EDITBOX", 
+    ["Ant Grub Health"],
+    ["Marbearis' Bugs & critters","ANT Settings"],
+    "40",
+    1,
+    {   
+        params ["_value"];  
+        _number = parseNumber _value;
+		MAR_BL_ANTGRUBHLTTH = _number;
+    }
+] call CBA_fnc_addSetting;
+
+[ 
     "MAR_BL_ANTSPITTERHLTTH", 
     "EDITBOX", 
     ["Spitter Health"],
@@ -573,13 +587,35 @@ BugzLife_fnc_explodeBug = {
 
 	if (isDedicated) exitWith {};			
 	if (!(MAR_BL_CANBUGSEXPLODE)and!((_this isKindOf "MAR_Ant_Egg")||(_this isKindOf "MAR_Ant_Egg_Clutch")||(_this isKindOf "MAR_ANT_Spitter")||(_this isKindOf "MAR_Spider_Burrower")||(_this isKindOf "MAR_ANT_Ice"))) exitWith {
-		[_this,[(selectRandom ["ANT_Death_3","ANT_Death_2"]), 0, 0.2, false]] remoteExec ["switchMove",0];
-		uiSleep 1.1;
-		[_this,["ANT_Death", 0, 0.2, false]] remoteExec ["switchMove",0];
+		switch (typeOf _this) do {
+			case "MAR_ANT_Guppy":{
+				[_this,["ANT_Death", 0, 0.2, false]] remoteExec ["switchMove",0];
+			};
+			case "MAR_ANT_BASE": {
+				[_this,[(selectRandom ["ANT_Death_3","ANT_Death_2"]), 0, 0.2, false]] remoteExec ["switchMove",0];
+				uiSleep 1.1;
+				[_this,["ANT_Death", 0, 0.2, false]] remoteExec ["switchMove",0];
+			};
+			default {
+					[_this,[(selectRandom ["ANT_Death_3","ANT_Death_2"]), 0, 0.2, false]] remoteExec ["switchMove",0];
+					uiSleep 1.1;
+					[_this,["ANT_Death", 0, 0.2, false]] remoteExec ["switchMove",0];
+			};
+		};
+		
+	
 	};
-	if (_this isKindOf "MAR_ANT_BASE") then {
-		[_this,[(selectRandom ["ANT_Death_3","ANT_Death_2"]), 0, 0.2, false]] remoteExec ["switchMove",0];
+	switch (typeOf _this) do {
+		case "MAR_ANT_Guppy":{
+			[_this,["ANT_Death", 0, 0.2, false]] remoteExec ["switchMove",0];
+		};
+		case "MAR_ANT_BASE": {
+			[_this,[(selectRandom ["ANT_Death_3","ANT_Death_2"]), 0, 0.2, false]] remoteExec ["switchMove",0];
+		};
+		default {[_this,[(selectRandom ["ANT_Death_3","ANT_Death_2"]), 0, 0.2, false]] remoteExec ["switchMove",0];};
 	};
+	
+	
 	
 
 	
@@ -698,7 +734,7 @@ BugzLife_fnc_explodeBug = {
 
 	if (isDedicated) exitWith {};
 
-	if ((_this isKindOf "MAR_Ant_Egg")||(_this isKindOf "MAR_Ant_Egg_Clutch")||!(MAR_BL_CANSPAWNGIBLETS)) exitWith {};
+	if ((_this isKindOf "MAR_Ant_Egg")||(_this isKindOf "MAR_ANT_Guppy")||(_this isKindOf "MAR_Ant_Egg_Clutch")||!(MAR_BL_CANSPAWNGIBLETS)) exitWith {deleteVehicle _this;};//bug part exclusion
 	switch true do {
 		case (_this isKindOf "MAR_ANT_BASE"):{
 			_Part_1 = "MAR_Ant_Part_Thorax" createVehicle (_this modelToWorldVisual [0,0,0]);

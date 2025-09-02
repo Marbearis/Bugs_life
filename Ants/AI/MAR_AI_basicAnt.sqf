@@ -13,7 +13,10 @@ if ((isPlayer _gruntBoy) or !(alive _gruntBoy) or !(isNil {_gruntBoy getVariable
 			_gruntBoy setVariable ["WBK_SynthHP",MAR_BL_ANTSPITTERHLTTH,true];
 			_gruntBoy setVariable ["WBK_SynthHPMax",MAR_BL_ANTSPITTERHLTTH,true];
 		};
-
+		case ("MAR_ANT_Guppy"):{
+			_gruntBoy setVariable ["WBK_SynthHP",MAR_BL_ANTGRUBHLTTH,true];
+			_gruntBoy setVariable ["WBK_SynthHPMax",MAR_BL_ANTGRUBHLTTH,true];
+		};
 		case ("MAR_ANT_Ice"):{
 			_gruntBoy setVariable ["WBK_SynthHP",MAR_BL_ANTICEHLTTH,true];
 			_gruntBoy setVariable ["WBK_SynthHPMax",MAR_BL_ANTICEHLTTH,true];
@@ -39,6 +42,10 @@ switch typeOf _gruntBoy do {
 		_gruntBoy setVariable ["WBK_SynthHP",MAR_BL_ANTSPITTERHLTTH,true];
 		_gruntBoy setVariable ["WBK_SynthHPMax",MAR_BL_ANTSPITTERHLTTH,true];
 	};
+	case ("MAR_ANT_Guppy"):{
+			_gruntBoy setVariable ["WBK_SynthHP",MAR_BL_ANTGRUBHLTTH,true];
+			_gruntBoy setVariable ["WBK_SynthHPMax",MAR_BL_ANTGRUBHLTTH,true];
+		};
 	case ("MAR_ANT_Ice"):{
 		_gruntBoy setVariable ["WBK_SynthHP",MAR_BL_ANTICEHLTTH,true];
 		_gruntBoy setVariable ["WBK_SynthHPMax",MAR_BL_ANTICEHLTTH,true];
@@ -147,7 +154,7 @@ _this addEventHandler [
 		[_target, "WBK_Halo_Hit",[_target,_shooter]] call BIS_fnc_callScriptedEventHandler;
 		_target setVariable ["WBK_SynthHP",_new_vv,true];
 		if (!(isNull objectParent _target) or !(isTouchingGround _target) or (animationState _target == "ANT_Hit_B") or (animationState _target == "ANT_Hit_F") or (animationState _target == "ANT_Death")) exitWith {};
-       // [_target,selectRandom ["grunt_pain_1","grunt_pain_2","grunt_pain_3","grunt_pain_4","grunt_pain_5","grunt_pain_6","grunt_pain_7"],200] call CBA_fnc_GlobalSay3d;
+      
 		if ((isNil{_target getVariable "canBeStunned"}) && (_isEnoughDamage > 12))then
 		{
 			_target setVariable ["canBeStunned",false,true];
@@ -261,7 +268,7 @@ _loopPathfind = [{
 				default {};
 			};
 		};
-		case !(animationState _unit in ["ant_idle","ant_run","ant_walk_r","ant_walk_l","ant_walk_b","ant_turn_l","ant_turn_r"]): {
+		case !(animationState _unit in ["ant_idle","ant_run","ant_walk_r","ant_walk_l","ant_walk_b","ant_turn_l","ant_turn_r","guppy_idle","guppy_inch"]): {
 			_unit setVariable ["WBK_IsUnitLocked",0];
 			_unit enableAI "ANIM";
 			_unit disableAI "MOVE";
@@ -286,11 +293,22 @@ _loopPathfind = [{
 					_unit disableAI "MOVE";
 					_unit disableAI "ANIM";
 					doStop _unit;
-					if  ((_unit distance _nearEnemy) > 2) then {
-						[_unit,"ANT_Run",[0,0,0]] spawn ANTZ_MoveAi;
-					}else{
-						[_unit,"ANT_Walk",[0,0,0]] spawn ANTZ_MoveAi;
+					switch (typeOf _unit) do {
+						case "MAR_ANT_Guppy": {
+							[_unit,"Guppy_Inch",[0,0,0]] spawn ANTZ_MoveAi;
+						};
+						case "MAR_ANT_QUEEN":{
+
+						};
+						default {
+							if  ((_unit distance _nearEnemy) > 2) then {
+								[_unit,"ANT_Run",[0,0,0]] spawn ANTZ_MoveAi;
+							}else{
+								[_unit,"ANT_Walk",[0,0,0]] spawn ANTZ_MoveAi;
+							};
+						};
 					};
+				
 					_unit setVariable ["WBK_AI_LastKnownLoc",getPosATLVisual _nearEnemy];
 					_dir = [[0,1,0], -([_unit, _nearEnemy] call BIS_fnc_dirTo)] call BIS_fnc_rotateVector2D;
 					_unit setVelocityTransformation [ 
