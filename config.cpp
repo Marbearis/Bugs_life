@@ -4,7 +4,7 @@ class CfgPatches
 	{
 		units[] = {"MAR_ANT_Basic","MAR_ANT_Ice","MAR_ANT_Spitter","MAR_antHill","MAR_Spider_Burrower","MAR_TrapDoor","MAR_Ant_Egg","MAR_Ant_Egg_Clutch",
         "MAR_Ant_Part_Head","MAR_Ant_Part_Thorax","MAR_Ant_Part_Abdomen","MAR_Ant_Part_Leg","MAR_Ant_Part_Mandible","MAR_Ant_Part_Antenne","MAR_ANT_QUEEN","MAR_Ant_Webs","MAR_Ant_Webs_2","MAR_Spider_Webs",
-        "MAR_Spider_Webs_2","MAR_AntIce","MAR_ANT_Guppy"
+        "MAR_Spider_Webs_2","MAR_AntIce","MAR_ANT_Guppy","MAR_Ant_Part_GrubHead","MAR_Ant_Part_Grubbutt"
         };
 		weapons[] = {};
 		magazines[]={};
@@ -2019,12 +2019,10 @@ class CfgMoves_MAR_ANT_Guppy: CfgMovesMaleSdr
             interpolationSpeed = 10;
             speed = -0.7;           
             soundOverride="Run";
-            leaning="none";
-            soundOverride="idle";
-			aiming="none";
-		    aimingBody="none";
-			head = "none";
-			legs="none";
+            soundOverride="idle";			
+            aiming="aimingNo";
+		    legs="legsNo";
+		    head="headNo";
         };
 	
         class ANT_Attack_1:Guppy_Inch

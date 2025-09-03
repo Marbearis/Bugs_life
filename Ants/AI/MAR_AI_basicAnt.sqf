@@ -230,8 +230,8 @@ _actFr = [{
 					!((vehicle _en) isKindOf "Tank") and 
 					!((vehicle _en) isKindOf "Air")): {
 					
-					[_mutant,_en] spawn Bugslife_ANTMelee;
-					[_mutant, "WBK_Halo_Melee",[_mutant,_en]] call BIS_fnc_callScriptedEventHandler;
+						[_mutant,_en] spawn Bugslife_ANTMelee;
+						[_mutant, "WBK_Halo_Melee",[_mutant,_en]] call BIS_fnc_callScriptedEventHandler;
 				};
 
 				case ((_ins >= 0.8) and

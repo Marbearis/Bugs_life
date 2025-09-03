@@ -34,7 +34,29 @@
             simulationStep = 0.05;
             SoundSetExplosion[] = {"Explosion_Debris_SoundSet"};		  
         };
-   
+
+		class B_Bugslife_EggMortar:B_BugsLife_Acid_Spit
+		{
+			explosionSoundEffect = "DefaultExplosion";            
+			model = "\Bugs_life\Ants\egg.p3d";
+			effectFly="BugsLife_AcidSpit_Orange";
+			simulation = "shotGrenade";
+			timeToLive = 900;
+            grenadeFireSound[] = {};
+            grenadeBurningSound[] = {};
+			hit = 9;
+            indirectHit = 3;
+            indirectHitRange = 3;
+			airFriction = -0.001;
+            whistleDist = 16;
+            typicalSpeed = 26;
+            explosionTime = 0;
+            fuseDistance = 1;
+            directionalExplosion = 0;
+            deflectionSlowDown = 0;
+            simulationStep = 0.05;
+            SoundSetExplosion[] = {"Explosion_Debris_SoundSet"};		
+		};
 	
 		
 		

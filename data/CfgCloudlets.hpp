@@ -207,3 +207,26 @@ class BugsLife_AcidSpit
 		lifeTime=1;
 	};
 };
+
+class BugsLife_AcidSpit_Orange
+{
+    class BloodMist
+	{
+		simulation="particles";
+		type="MAR_BugGut_Mist_Orange";
+		position[]={0,0,0};
+		intensity=1;
+		interval=1;
+		lifeTime=1;
+		MoveVelocityVar[]={0,0,0};
+	};
+	class Blood
+	{
+		simulation="particles";
+		type="MAR_BugGuts_Orange";
+		position[]={0,0,0};
+		intensity=1;
+		interval=1;
+		lifeTime=1;
+	};
+};

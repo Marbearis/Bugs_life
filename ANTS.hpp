@@ -175,6 +175,10 @@
     {
         side = 2;
     };
+    class MAR_ANT_Guppy_G:MAR_ANT_Guppy
+    {
+        side = 2;
+    };
     class MAR_ANT_Ice_G:MAR_ANT_Ice
     {
         side = 2;
@@ -222,11 +226,41 @@
         model = "\Bugs_life\Ants\parts\Head.p3d";
         displayName = "Ant head";
         hiddenSelections[] = {"camo","eyes"};
-		hiddenSelectionsTextures[] = {"\Bugs_life\Ants\textures\SpitterAnt\ANT_CO.paa","\Bugs_life\Ants\textures\SpitterAnt\ANT_CO.paa"};
-        class Eventhandlers
-        {
-            init = "_this#0 call BugsLife_AntEgginit";
-        };
+        hiddenSelectionsTextures[] = {"\Bugs_life\Ants\textures\SpitterAnt\ANT_CO.paa","\Bugs_life\Ants\textures\SpitterAnt\ANT_CO.paa"};
+        hiddenSelectionsMaterials[] = {"\Bugs_life\Ants\textures\SpitterAnt\ANT.rvmat","\Bugs_life\Ants\textures\SpitterAnt\ANT.rvmat"};
+       
+       
+    };
+
+    class MAR_Ant_Part_GrubHead:Land_Basketball_01_F
+    {
+        scope = 2;			
+		scopeCurator = 2;
+        armor = 1;
+        editorSubcategory = "MAR_Bugs_Ants";
+        editorCategory = "MAR_Bugs";
+        model = "\Bugs_life\Ants\parts\antguppy_head.p3d";
+        displayName = "Antgrub head";
+        hiddenSelections[]={"camo","eyes"};
+		hiddenSelectionsTextures[] = {"\Bugs_life\Ants\textures\antguppy\anggup_CO.paa","\Bugs_life\Ants\textures\antguppy\anggup_CO.paa"};
+		hiddenSelectionsMaterials[]={"\Bugs_life\Ants\textures\antguppy\anggup.rvmat","\Bugs_life\Ants\textures\antguppy\anggup.rvmat"};
+   
+       
+    };
+
+    class MAR_Ant_Part_Grubbutt:MAR_Ant_Part_GrubHead
+    {
+        scope = 2;			
+		scopeCurator = 2;
+        armor = 1;
+        editorSubcategory = "MAR_Bugs_Ants";
+        editorCategory = "MAR_Bugs";
+        model = "\Bugs_life\Ants\parts\antguppy_butt.p3d";
+        displayName = "Antgrub butt";
+    
+		hiddenSelectionsTextures[] = {"\Bugs_life\Ants\textures\antguppy\anggup_CO.paa","\Bugs_life\Ants\textures\antguppy\anggup_CO.paa"};
+		hiddenSelectionsMaterials[]={"\Bugs_life\Ants\textures\antguppy\anggup.rvmat","\Bugs_life\Ants\textures\antguppy\anggup.rvmat"};
+      
        
     };
 
@@ -290,7 +324,7 @@
         displayName = "Ant webbing tall";
     };
 
-    class MAR_Ant_Part_Thorax:Land_Basketball_01_F
+    class MAR_Ant_Part_Thorax:MAR_Ant_Part_Head
     {
         scope = 2;			
 		scopeCurator = 2;
@@ -302,7 +336,7 @@
 		hiddenSelectionsTextures[] = {"\Bugs_life\Ants\textures\SpitterAnt\ANT_CO.paa","\Bugs_life\Ants\textures\SpitterAnt\ANT_CO.paa"};
     };
 
-    class MAR_Ant_Part_Abdomen:Land_Basketball_01_F
+    class MAR_Ant_Part_Abdomen:MAR_Ant_Part_Head
     {
         scope = 2;			
 		scopeCurator = 2;
@@ -314,7 +348,7 @@
 		hiddenSelectionsTextures[] = {"\Bugs_life\Ants\textures\SpitterAnt\ANT_CO.paa","\Bugs_life\Ants\textures\SpitterAnt\ANT_CO.paa"};
     };
 
-    class MAR_Ant_Part_Leg:Land_Basketball_01_F
+    class MAR_Ant_Part_Leg:MAR_Ant_Part_Head
     {
         scope = 2;			
 		scopeCurator = 2;
@@ -326,7 +360,7 @@
 		hiddenSelectionsTextures[] = {"\Bugs_life\Ants\textures\SpitterAnt\ANT_CO.paa","\Bugs_life\Ants\textures\SpitterAnt\ANT_CO.paa"};
     };
 
-    class MAR_Ant_Part_Antenne:Land_Basketball_01_F
+    class MAR_Ant_Part_Antenne:MAR_Ant_Part_Head
     {
         scope = 2;			
 		scopeCurator = 2;
@@ -338,7 +372,7 @@
 		hiddenSelectionsTextures[] = {"\Bugs_life\Ants\textures\SpitterAnt\ANT_CO.paa","\Bugs_life\Ants\textures\SpitterAnt\ANT_CO.paa"};
     };
 
-    class MAR_Ant_Part_Mandible:Land_Basketball_01_F
+    class MAR_Ant_Part_Mandible:MAR_Ant_Part_Head
     {
         scope = 2;			
 		scopeCurator = 2;
