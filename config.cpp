@@ -1142,10 +1142,10 @@ class CfgMovesBasic
                 stop="ANT_Queen_Idle";
                 default="ANT_Queen_Idle";
                 stopRelaxed="ANT_Queen_Idle";
-                TurnL="ANT_Queen_Idle";
-                TurnR="ANT_Queen_Idle";
-                TurnLRelaxed="ANT_Queen_Idle";
-                TurnRRelaxed="ANT_Queen_Idle";
+                TurnL="ANT_Queen_Turn_L";
+                TurnR="ANT_Queen_Turn_R";
+                TurnLRelaxed="ANT_Queen_Turn_L";
+                TurnRRelaxed="ANT_Queen_Turn_R";
                 WalkF="ANT_Queen_Idle";
                 PlayerWalkF="ANT_Queen_Idle";
                 WalkLF="ANT_Queen_Idle";
@@ -1209,6 +1209,22 @@ class CfgMovesBasic
             {
 
             };
+           class MAR_ANTQueen_TurnR: MAR_ANTQueen_Moves{
+                turnSpeed=4.5;
+                PlayerCrouch="ANT_Queen_Turn_R";
+                Up="ANT_Queen_Turn_R";
+                Crouch="ANT_Queen_Turn_R";
+                AdjustB="";
+                Stand="ANT_Queen_Idle";                              
+           };
+           class MAR_ANTQueen_TurnL: MAR_ANTQueen_Moves{
+                turnSpeed=4.5;
+                PlayerCrouch="ANT_Queen_Turn_L";
+                Up="ANT_Queen_Turn_L";
+                Crouch="ANT_Queen_Turn_L";
+                AdjustB="";
+                Stand="ANT_Queen_Idle";                
+           };
             class MAR_ANTQueen_Roar:MAR_ANTQueen_Moves
             {
                 turnSpeed=4.5;
@@ -1217,6 +1233,14 @@ class CfgMovesBasic
                 Crouch="MAR_ANTQueen_Roar";
                 AdjustB="";
                 Stand="MAR_ANTQueen_Roar";
+            };
+            class MAR_ANTQueen_PKfire:MAR_ANTQueen_Moves
+            {
+                PlayerCrouch="ANT_PKfire";
+                Up="ANT_PKfire";
+                Crouch="ANT_PKfire";
+                AdjustB="";
+                Stand="ANT_PKfire";
             };
             class MAR_ANTQueen_ClimbIn:MAR_ANTQueen_Moves
             {
@@ -2206,6 +2230,20 @@ class CfgMoves_MAR_ANT_Queen: CfgMovesMaleSdr
                 actions = "MAR_ANTQueen_Walk";
                 soundOverride="walk";
             };
+            class ANT_Queen_Turn_L:ANT_Queen_Idle
+            {
+                file = "\Bugs_life\Ants\animations\antQueen_tunr_L.rtm";
+                speed = -1.2;
+                actions = "MAR_ANTQueen_TurnL";
+                soundOverride="walk";
+            };
+             class ANT_Queen_Turn_R:ANT_Queen_Idle
+            {
+                file = "\Bugs_life\Ants\animations\antQueen_tunr_R.rtm";
+                speed = -1.2;
+                actions = "MAR_ANTQueen_TurnR";
+                soundOverride="walk";
+            };
         //locomotion
             class ANT_Climb_IN: ANT_Queen_Idle
             {   
@@ -2260,7 +2298,7 @@ class CfgMoves_MAR_ANT_Queen: CfgMovesMaleSdr
                     0.01
                 };
             };
-             class ANT_Climb_outAssUp: ANT_AssOutIdle
+            class ANT_Climb_outAssUp: ANT_AssOutIdle
             {   
                 file = "\Bugs_life\Ants\animations\antQueen_ClimbOutAssUp.rtm";
                 leaning="empty";
@@ -2290,6 +2328,15 @@ class CfgMoves_MAR_ANT_Queen: CfgMovesMaleSdr
                 actions = "MAR_ANTQueen_Roar";		
                 looped = false;
                 speed = -3;
+            };
+             class ANT_PKfire: ANT_Queen_Idle
+            {   
+                file = "\Bugs_life\Ants\animations\antQueen_pkfire.rtm";
+             
+                actions = "MAR_ANTQueen_PKfire";		
+                looped = false;
+                speed = -6;
+                soundOverride = "pkfire"
             };
             class ANT_ClimbOut: ANT_Queen_Idle
             {   

@@ -33,6 +33,7 @@ if ((isPlayer _gruntBoy) or !(alive _gruntBoy) or !(isNil {_gruntBoy getVariable
 			
 			_gruntBoy setVariable ["WBK_SynthHP",MAR_BL_ANTQUEENHLTTH,true];
 			_gruntBoy setVariable ["WBK_SynthHPMax",MAR_BL_ANTQUEENHLTTH,true];
+			_gruntBoy setVariable ["IMS_IsUnitInvicibleScripted",true,true];
 		};
 
 		default {
@@ -76,6 +77,7 @@ switch true  do {
 		
 		_gruntBoy setVariable ["WBK_SynthHP",MAR_BL_ANTQUEENHLTTH,true];
 		_gruntBoy setVariable ["WBK_SynthHPMax",MAR_BL_ANTQUEENHLTTH,true];
+		_gruntBoy setVariable ["IMS_IsUnitInvicibleScripted",true,true];
 	};
 
 	default {
@@ -261,11 +263,24 @@ _actFr = [{
 						[_mutant,_en] spawn Bugslife_ANTMelee;
 						[_mutant, "WBK_Halo_Melee",[_mutant,_en]] call BIS_fnc_callScriptedEventHandler;
 				};
+				case ((_ins >= 0.8) and
+					(_mutant isKindOf "MAR_ANT_QUEEN") and
+					(isNil {_mutant getVariable "IsCanBreathFire"}) and
+					(isNull objectParent _mutant) and 
+					!(animationState _mutant in ["ant_attack_1","ant_roar","ant_attack_ranged","ant_climb_outassup","ant_climb_in","ant_climb_inass","ant_climbout","ant_assoutidle","ant_pkfire"]) and														
+					((_en distance _mutant) < 40) and ((_en distance _mutant) > 2.5) and
+					!(isNull _en) and 
+					(((_mutant worldToModel (_en modelToWorld [0, 0, 0])) select 0) < 7) and
+					(alive _en)): {
+					
+						[_mutant,_en] spawn BugsLife_AntQueen_FireBreath;
+					
+				};		
 
 				case ((_ins >= 0.8) and
 					(_mutant isKindOf "MAR_ANT_Spitter") and
 					(isNil {_mutant getVariable "IsCanFire"}) and
-					(isNull objectParent _mutant) and 
+					(isNull objectParent _mutant) and					
 					!(animationState _mutant == "ANT_Attack_1")and
 					!(animationState _mutant == "ANT_Attack_Ranged")and  								
 					((_en distance _mutant) < 90) and ((_en distance _mutant) > 2.5) and
@@ -276,35 +291,45 @@ _actFr = [{
 						[_mutant,_en] spawn BugsLife_RangedAttack_FNC;
 					
 				};	
+
 				case (
 				(_mutant isKindOf "MAR_ANT_QUEEN") and					
 				(isNil {_mutant getVariable "assUp"}) and
-				(isNil {_mutant getVariable "IsCanSummon"}) and
+				(isNil {_mutant getVariable "IsCanFire"}) and				
 				(isNull objectParent _mutant) and 
-				!(animationState _mutant in ["ant_attack_1","ant_roar","ant_attack_ranged","ant_climb_outassup","ant_climb_in","ant_climb_inass","ant_climbout","ant_assoutidle"]) and	 								
-				((_en distance _mutant) < 90) and ((_en distance _mutant) > 2.5) and
+				!(animationState _mutant in ["ant_attack_1","ant_roar","ant_attack_ranged","ant_climb_outassup","ant_climb_in","ant_climb_inass","ant_climbout","ant_assoutidle","ant_pkfire"]) and	 								
+				((_en distance _mutant) < 60) and ((_en distance _mutant) > 6) and
 				!(isNull _en) and 
 				(alive _en)): {
-					if (((random 100) >= 50)&&(isNil {_mutant getVariable "IsCanFire"})) then {
-						[_mutant,24] spawn BugsLife_AntQueen_ASSUP_FNC;
-					}else {
-						[_mutant,24,8] spawn BugsLife_AntQueen_MinionSummon_FNC;
-					};
-					
+						[_mutant,24] spawn BugsLife_AntQueen_ASSUP_FNC;									
 				};	
+
+				case (
+				(_mutant isKindOf "MAR_ANT_QUEEN") and									
+				(isNil {_mutant getVariable "IsCanSummon"}) and
+				(isNull objectParent _mutant) and 
+				(count(units group _mutant)<25) and 
+				!(animationState _mutant in ["ant_attack_1","ant_roar","ant_attack_ranged","ant_climb_outassup","ant_climb_in","ant_climb_inass","ant_climbout","ant_assoutidle","ant_pkfire"]) and	 								
+				((_en distance _mutant) < 100) and ((_en distance _mutant) > 2) and
+				!(isNull _en) and 
+				(alive _en)): {				
+					[_mutant,24,8,_en] spawn BugsLife_AntQueen_MinionSummon_FNC;								
+				};	
+
 				case (
 					(_mutant isKindOf "MAR_ANT_QUEEN") and
 					(isNil {_mutant getVariable "IsCanFire"}) and
 					!(isNil {_mutant getVariable "assUp"}) and
 					(isNull objectParent _mutant) and 
 					!(animationState _mutant in ["ant_attack_1","ant_roar","ant_attack_ranged","ant_climb_outassup","ant_climb_in","ant_climbout"]) and											
-					((_en distance _mutant) < 90) and ((_en distance _mutant) > 2.5) and
+					((_en distance _mutant) < 90)and 
 					!(isNull _en) and 
 					(alive _en)): {
 						
-							[_mutant,_en] spawn BugsLife_RangedAttack_FNC;
+						[_mutant,_en] spawn BugsLife_RangedAttack_FNC;
 																	
-				};		
+				};	
+				
 			};
 		};
 	};
@@ -314,7 +339,23 @@ _loopPathfind = [{
     _array = _this select 0;
     _unit = _array select 0;
 	_nearEnemy = _unit findNearestEnemy _unit; 
-	if (_unit isKindOf "MAR_ANT_QUEEN")exitWith{};
+	if (_unit isKindOf "MAR_ANT_QUEEN")exitWith{
+		if (animationState _unit in ["ant_pkfire"]) then
+			{
+				_dir = [[0,1,0], -([_unit, _nearEnemy] call BIS_fnc_dirTo)] call BIS_fnc_rotateVector2D;
+				_unit setVelocityTransformation [ 
+				getPosASL _unit,  
+				getPosASL _unit,  
+				[0,0,(velocity _unit select 2) - 1],  
+				[(velocity _unit select 0),(velocity _unit select 1),(velocity _unit select 2) - 1], 
+				vectorDir _unit,  
+				_dir,  
+				vectorUp _unit,  
+				vectorUp _unit, 
+				0.1
+				];
+			};
+	};
 	switch true do {
 		case (!(simulationEnabled _unit) || !(isNull (remoteControlled _unit)) || (isNull _nearEnemy) or !(alive _nearEnemy) or !(alive _unit) or !(isNull attachedTo _unit) or (lifeState _unit == "INCAPACITATED") or (_unit distance _nearEnemy >= 500)): {
 			switch true do {

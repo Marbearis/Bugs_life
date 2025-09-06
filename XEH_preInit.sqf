@@ -686,23 +686,24 @@ BugzLife_fnc_explodeBug = {
 
 	
 	
-	if (MAR_BL_SillyMode) then {
 
-		_meleeSounds = [
+	[_this,{
+		if (MAR_BL_SillyMode) then {
+			_meleeSounds = [
 			"\Bugs_life\data\funnymodesounds\antparty.ogg"
-		];
-		playSound3D [selectRandom _meleeSounds, _this,false,_this,3,1];
-
-	}else {
-
-		_meleeSounds = [
-			"\Bugs_life\data\AntSounds\ant_explode.ogg",
-			"\Bugs_life\data\AntSounds\ant_explode_1.ogg",
-			"\Bugs_life\data\AntSounds\ant_explode_2.ogg"
-		];
-		playSound3D [selectRandom _meleeSounds, _this,false,_this,5,GlobalBugSoundPitch];
-
-	};
+			];
+			playSound3D [selectRandom _meleeSounds, _this,false,_this,3,1,0,0,true];
+		}else{
+			_meleeSounds = [
+				"\Bugs_life\data\AntSounds\ant_explode.ogg",
+				"\Bugs_life\data\AntSounds\ant_explode_1.ogg",
+				"\Bugs_life\data\AntSounds\ant_explode_2.ogg"
+			];
+			playSound3D [selectRandom _meleeSounds, _this,false,_this,5,GlobalBugSoundPitch,0,0,true];
+		};
+	}]remoteExec ["spawn",0];
+		
+	
 	
 	private _lamd = createVehicle ["MAR_acidCrater",position _this, [], 0, "CAN_COLLIDE"];
 	if (_this isKindOf "MAR_ANT_Ice") then {
@@ -804,21 +805,21 @@ BugzLife_fnc_explodeBug = {
 			_PArt_2 = "MAR_Ant_Part_Grubbutt" createVehicle (_this modelToWorldVisual [0,-0.5,0]);
 			if (MAR_BL_SillyMode) then {
 				{
-					_Part_1 setObjectTextureGlobal [_x,"\Bugs_life\Ants\textures\antguppy\anggupsilly_CO.paa"];
+					_Part_1 setObjectTexture [_x,"\Bugs_life\Ants\textures\antguppy\anggupsilly_CO.paa"];
 					
 				}forEach (_Part_1 selectionNames 1);
 				{
-					_Part_2 setObjectTextureGlobal [_x,"\Bugs_life\Ants\textures\antguppy\anggupsilly_CO.paa"];
+					_Part_2 setObjectTexture [_x,"\Bugs_life\Ants\textures\antguppy\anggupsilly_CO.paa"];
 					
 				}forEach (_Part_2 selectionNames 1);
 			}else{
 				{
-					_Part_1 setObjectTextureGlobal [_x,_textures#0];
-					_Part_1 setObjectMaterialGlobal [_x,_materials#0];
+					_Part_1 setObjectTexture [_x,_textures#0];
+					_Part_1 setObjectMaterial [_x,_materials#0];
 				}forEach (_Part_1 selectionNames 1);
 				{
-					_Part_2 setObjectTextureGlobal [_x,_textures#0];
-					_Part_2 setObjectMaterialGlobal [_x,_materials#0];
+					_Part_2 setObjectTexture [_x,_textures#0];
+					_Part_2 setObjectMaterial [_x,_materials#0];
 				}forEach (_Part_2 selectionNames 1);
 			};
 			
@@ -932,21 +933,24 @@ Bugslife_ANTMelee = {
 	
 		[_zombie,["ANT_Attack_1", 0, 0.2, false]] remoteExec ["switchMove",0];
 		if !(animationState _zombie in ["ant_attack_1"])exitWith {};
-		if ((_zombie isKindOf "MAR_ANT_Guppy")&&(MAR_BL_SillyMode)) then 
-		{
-			_meleeSounds = [
-				"\Bugs_life\data\funnymodesounds\squeak_1.ogg",
-				"\Bugs_life\data\funnymodesounds\squeak_2.ogg",
-				"\Bugs_life\data\funnymodesounds\squeak_3.ogg",
-				"\Bugs_life\data\funnymodesounds\squeak_4.ogg"
-			];
-			playSound3D [selectRandom _meleeSounds, _zombie,false, getPosASL _zombie, 1, selectRandom [1,0.9,0.8,1.1,1.2], 0];
-		}else {
-			_meleeSounds = [
-				"\Bugs_life\data\AntSounds\antBite.ogg"
-			];
-			playSound3D [selectRandom _meleeSounds, _zombie,false, getPosASL _zombie, 1, selectRandom [1,0.9,0.8,1.1,1.2], 0];
-		};	
+		[_zombie,{
+			if ((_this isKindOf "MAR_ANT_Guppy")&&(MAR_BL_SillyMode)) then 
+			{
+				_meleeSounds = [
+					"\Bugs_life\data\funnymodesounds\squeak_1.ogg",
+					"\Bugs_life\data\funnymodesounds\squeak_2.ogg",
+					"\Bugs_life\data\funnymodesounds\squeak_3.ogg",
+					"\Bugs_life\data\funnymodesounds\squeak_4.ogg"
+				];
+				playSound3D [selectRandom _meleeSounds, _this,false, getPosASL _this, 1, selectRandom [1,0.9,0.8,1.1,1.2], 0,0,true];
+			}else {
+				_meleeSounds = [
+					"\Bugs_life\data\AntSounds\antBite.ogg"
+				];
+				playSound3D [selectRandom _meleeSounds, _this,false, getPosASL _this, 1, selectRandom [1,0.9,0.8,1.1,1.2], 0,0,true];
+			};	
+		}]remoteExec ["spawn",0];
+	
 		
 		
 
@@ -1220,12 +1224,12 @@ BugsLife_RangedAttack_FNC= {
 			};
 
 			case (_mantis isKindOf "MAR_ANT_QUEEN"):{
-				_mantis spawn {uisleep 20; _this setVariable ["IsCanFire",nil];};
+				_mantis spawn {uisleep 35; _this setVariable ["IsCanFire",nil];};
 				for "_i" from 1 to 3 do {
 					
 					[_mantis,["ANT_Attack_Ranged", 0, 0.2, false]] remoteExec ["switchMove",0];	
 					uiSleep 0.3;				
-					[_mantis,((_mantis modelToWorldVisual (_mantis selectionPosition "a_butt"))),"B_Bugslife_EggMortar", _en,  [(aimPos _en select 0) + (selectRandom [0,3,4,5,-3,-4,-5]),(aimPos _en select 1)+(selectRandom [0,3,4,5,-3,-4,-5]),(aimPos _en select 2)+(20)], (15), false, [0,0,0]] spawn Bugzz_fnc_ProjectileCreate;		
+					[_mantis,((_mantis modelToWorldVisual (_mantis selectionPosition "a_butt"))),"B_Bugslife_EggMortar", _en,  [(aimPos _en select 0) + (selectRandom [0,3,4,5,-3,-4,-5]),(aimPos _en select 1)+(selectRandom [0,3,4,5,-3,-4,-5]),(aimPos _en select 2)+(20)], (15+((_mantis distance _en)/6)), false, [0,0,0]] spawn Bugzz_fnc_ProjectileCreate;		
 					uiSleep 1;
 					[_mantis,["ANT_AssOutIdle", 0, 0.2, false]] remoteExec ["switchMove",0];	
 				};
@@ -1404,11 +1408,11 @@ Bugzz_fnc_ProjectileCreate = {
 
 BugsLife_AntQueen_MinionSummon_FNC = 
 {
-	params ["_unit",["_radius",15],["_minionCount",3]];
+	params ["_unit",["_radius",15],["_minionCount",3],"_en"];
 
 	[_unit,["ANT_Roar", 0, 0.2, false]] remoteExec ["switchMove",0];
 	_unit setVariable ["IsCanSummon",1];
-	_unit spawn {uisleep 25; _this setVariable ["IsCanSummon",nil];};
+	_unit spawn {uisleep 35; _this setVariable ["IsCanSummon",nil];};
 	_soundArray_wonk = ["\Bugs_life\data\AntSounds\AntQueen_Screech.ogg"];
 	playSound3D [selectRandom _soundArray_wonk, _unit,false, getPosASL _unit, 5, 1, 0];
 	if ((player distance _unit) <= 50) then {
@@ -1422,19 +1426,19 @@ BugsLife_AntQueen_MinionSummon_FNC =
 	for "_i" from 1 to _minionCount do {			
 		if ((alive _unit)) then 	
 		{
-			_PosOffset = [((getPosASL _unit)#0) + (random _radius),((getPosASL _unit)#1)+ (random _radius),((getPosASL _unit)#2)];
+			_PosOffset = [((getPosATL _en)#0) + (random _radius),((getPosATL _en)#1)+ (random _radius),((getPosATL _en)#2)];
 			
 			_Antlist = selectRandomWeighted ["MAR_ANT_Basic",0.8,"MAR_ANT_Ice",0.1,"MAR_ANT_Spitter",0.1];	
 			_spawn = _PosOffset;
-			_Deform =  createVehicle ["MAR_antcraterDirt",[_spawn#0,(_spawn#1),((_spawn#2)- 5.1)],[],12,"NONE"];
+			_Deform =  createVehicle ["MAR_antcraterDirt",[_spawn#0,(_spawn#1),((_spawn#2))],[],12,"NONE"];
 
 			_groundTexture = surfaceTexture getPosATL _Deform;
 			_Deform setObjectTextureGlobal [0,_groundTexture];			
        		_Deform setVectorUp surfaceNormal position _Deform;
-			_Deform animateSource ['Anthill_Raised',-0.8,5];
+			_Deform animateSource ['Anthill_Raised',-0.65,5];
 			_Deform spawn {
 				uiSleep 30;
-				_this animateSource ['Anthill_Raised',1,5];
+				_this animateSource ['Anthill_Raised',1,10];
 				uiSleep 3;
 				deleteVehicle _this;
 			};
@@ -1490,8 +1494,8 @@ BugsLife_AntQueen_MinionSummon_FNC =
 
 BugsLife_AntQueen_ASSUP_FNC = {
 	params ["_unit",["_radius",15]];
-	_unit setVariable ["IsCanFire",1];
-	_unit setVariable ["IsCanSummon",1];
+	
+	
 	_spawn = [(((getPosATL _unit)#0)+random 12),(((getPosATL _unit)#1)+random 12),(getPosATL _unit)#2];
 	_Deform_in =  createVehicle ["MAR_antcraterDirt",getPosATL _unit,[],0,"CAN_COLLIDE"];
 	_groundTexture = surfaceTexture getPosATL _Deform_in;
@@ -1557,7 +1561,7 @@ BugsLife_AntQueen_ASSUP_FNC = {
 	uiSleep 2;
 	[_unit,["ANT_AssOutIdle", 0, 0.2, false]] remoteExec ["switchMove",0];
 	uiSleep 2;
-	_unit setVariable ["IsCanFire",nil];
+	
 	_unit setVariable ["assUp",1,true];
 };
 
@@ -1575,5 +1579,50 @@ BugsLife_AntQueen_ReturnToOGPOS = {
 	_soundArray_wonk = ["\Bugs_life\data\AntSounds\ANT_Erupt_1.ogg","\Bugs_life\data\AntSounds\ANT_Erupt_2.ogg","\Bugs_life\data\AntSounds\ANT_Erupt_3.ogg"];	
 	playSound3D [selectRandom _soundArray_wonk, _unit];
 	_unit setVariable ["assUp",nil,true];
-	_unit setVariable ["IsCanSummon",nil];
+	
+};
+
+BugsLife_AntQueen_FireBreath = {
+	params ["_unit","_en"];
+	systemChat "bwaahhhh";
+	
+	
+	_unit setVariable ["IsCanBreathFire",1,true];
+	_unit spawn {sleep 25; _this setVariable ["IsCanBreathFire",nil,true];};
+	_soundArray_wonk = ["\Bugs_life\data\AntSounds\antqueenfire.ogg"];
+	playSound3D [selectRandom _soundArray_wonk, _unit,false, getPosASL _unit, 5, 1, 0];
+	[_unit,["ANT_PKfire", 0, 0.2, false]] remoteExec ["switchMove",0];
+	
+	uiSleep 1.9;
+	
+	for "_i" from 0 to 3 do {
+		uiSleep 0.8;
+		[[_unit,_en], {
+			if (isDedicated) exitWith {};
+			params ["_unit","_en"];
+		
+			
+			_fog1 = "#particlesource" createVehicleLocal getposaTL _unit;   
+			_fog1 attachTo [_unit,[0,2,1],"a_spitpoint",true];   
+			_fog1 setParticleParams [     
+				["\A3\data_f\cl_exp", 1, 0, 1], "", "Billboard", 3, 3,     
+				[0, 0, 0],  _unit vectorModelToWorld [0,25,0], 5, 25, 7.9, 0,     
+				[0.8,0.8,0.8],[[1, 0.2, 0, 1]], [1000], 1, 0, "", "", _fog1, 0, true,1, [[25, 12, 0, 1],[25, 12, 0, 1],[25, 12, 0, 1]]   
+			];     
+			_fog1 setParticleRandom [1, [0,0,0], [1, 10, 0], 2, 1.5, [25, 0, 0, 1], 0, 0];     
+			_fog1 setParticleCircle [1, [0, 0, 0]];     
+			_fog1 setDropInterval 0.004;     
+			_fog1 setParticleFire [10,20,0.01];  
+				
+			_fog1 spawn {  
+				uisleep 1; deleteVehicle _this;  
+			};    
+
+							
+		}] remoteExec ["spawn", 0];
+	};
+	uiSleep 5;
+	
+	
+	
 };

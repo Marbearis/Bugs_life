@@ -61,7 +61,7 @@
         moves = "CfgMoves_MAR_ANT_Guppy";
         class Eventhandlers
         {
-            init = "_this#0 allowFleeing 0;_this#0 setSpeaker 'NoVoice';_this#0 disableConversation true;";
+            init = "_this#0 allowFleeing 0;_this#0 setSpeaker 'NoVoice';_this#0 disableConversation true; _this#0 allowDamage false;";
         };
         class SoundEnvironExt {		
             generic[] = {
