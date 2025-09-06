@@ -215,6 +215,27 @@
         };
 
     };
+    class MAR_antcraterDirt: MAR_antHill
+    {
+        scope = 2;			
+		scopeCurator = 2;   
+        model = "\Bugs_life\Ants\antdirtcrater.p3d";
+        displayName = "Ant dirtCrater";
+        hiddenSelections[] = {"camo"};
+		hiddenSelectionsTextures[] = {"\Bugs_life\Ants\textures\dirtcrater\DefaultMaterial_CO.paa"};
+        hiddenSelectionsMaterials[]={"\Bugs_life\Ants\textures\dirtcrater\DefaultMaterial.rvmat"};
+        class AnimationSources
+        {
+            class Anthill_Raised
+            {
+                source="user";
+                animPeriod=3;
+                initPhase=1;
+                sound="";
+                soundPosition="";
+            };
+        };
+    };
 
     class MAR_Ant_Part_Head:Land_Basketball_01_F
     {

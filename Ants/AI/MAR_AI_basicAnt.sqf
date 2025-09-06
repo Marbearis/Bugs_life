@@ -3,27 +3,40 @@ _gruntBoy = _this select 0;
 
 
 if ((isPlayer _gruntBoy) or !(alive _gruntBoy) or !(isNil {_gruntBoy getVariable "WBK_SynthHP"})) exitWith {
-	switch typeOf _gruntBoy do {
-		case ("MAR_ANT_Basic"):{
+	switch true  do {
+		case (_gruntBoy isKindOf "MAR_ANT_Basic"):{
+			
 			_gruntBoy setVariable ["WBK_SynthHP",MAR_BL_ANTWORKERHLTTH,true];
 			_gruntBoy setVariable ["WBK_SynthHPMax",MAR_BL_ANTWORKERHLTTH,true];
 		};
 
-		case ("MAR_ANT_Spitter"):{
+		case (_gruntBoy isKindOf "MAR_ANT_Spitter"):{
+			
 			_gruntBoy setVariable ["WBK_SynthHP",MAR_BL_ANTSPITTERHLTTH,true];
 			_gruntBoy setVariable ["WBK_SynthHPMax",MAR_BL_ANTSPITTERHLTTH,true];
 		};
-		case ("MAR_ANT_Guppy"):{
+		
+		case (_gruntBoy isKindOf "MAR_ANT_Guppy"):{
+			
 			_gruntBoy setVariable ["WBK_SynthHP",MAR_BL_ANTGRUBHLTTH,true];
 			_gruntBoy setVariable ["WBK_SynthHPMax",MAR_BL_ANTGRUBHLTTH,true];
 		};
-		case ("MAR_ANT_Ice"):{
+		
+		case (_gruntBoy isKindOf "MAR_ANT_Ice"):{
+			
 			_gruntBoy setVariable ["WBK_SynthHP",MAR_BL_ANTICEHLTTH,true];
 			_gruntBoy setVariable ["WBK_SynthHPMax",MAR_BL_ANTICEHLTTH,true];
 			[_gruntBoy,1.5]remoteExec ["setAnimSpeedCoef",0];
 		};
+		
+		case (_gruntBoy isKindOf "MAR_ANT_QUEEN"):{
+			
+			_gruntBoy setVariable ["WBK_SynthHP",MAR_BL_ANTQUEENHLTTH,true];
+			_gruntBoy setVariable ["WBK_SynthHPMax",MAR_BL_ANTQUEENHLTTH,true];
+		};
 
 		default {
+			
 			_gruntBoy setVariable ["WBK_SynthHP",MAR_BL_ANTWORKERHLTTH,true];
 			_gruntBoy setVariable ["WBK_SynthHPMax",MAR_BL_ANTWORKERHLTTH,true];
 		};
@@ -33,28 +46,43 @@ if ((isPlayer _gruntBoy) or !(alive _gruntBoy) or !(isNil {_gruntBoy getVariable
 _gruntBoy setSpeaker "NoVoice";
 (group _gruntBoy) setFormation "LINE";
 _gruntBoy disableConversation true;
-switch typeOf _gruntBoy do {
-	case ("MAR_ANT_Basic"):{
+switch true  do {
+	case (_gruntBoy isKindOf "MAR_ANT_Basic"):{
+		
 		_gruntBoy setVariable ["WBK_SynthHP",MAR_BL_ANTWORKERHLTTH,true];
 		_gruntBoy setVariable ["WBK_SynthHPMax",MAR_BL_ANTWORKERHLTTH,true];
 	};
-	case ("MAR_ANT_Spitter"):{
+
+	case (_gruntBoy isKindOf "MAR_ANT_Spitter"):{
+		
 		_gruntBoy setVariable ["WBK_SynthHP",MAR_BL_ANTSPITTERHLTTH,true];
 		_gruntBoy setVariable ["WBK_SynthHPMax",MAR_BL_ANTSPITTERHLTTH,true];
 	};
-	case ("MAR_ANT_Guppy"):{
-			_gruntBoy setVariable ["WBK_SynthHP",MAR_BL_ANTGRUBHLTTH,true];
-			_gruntBoy setVariable ["WBK_SynthHPMax",MAR_BL_ANTGRUBHLTTH,true];
-		};
-	case ("MAR_ANT_Ice"):{
+	
+	case (_gruntBoy isKindOf "MAR_ANT_Guppy"):{
+		
+		_gruntBoy setVariable ["WBK_SynthHP",MAR_BL_ANTGRUBHLTTH,true];
+		_gruntBoy setVariable ["WBK_SynthHPMax",MAR_BL_ANTGRUBHLTTH,true];
+	};
+	
+	case (_gruntBoy isKindOf "MAR_ANT_Ice"):{
+		
 		_gruntBoy setVariable ["WBK_SynthHP",MAR_BL_ANTICEHLTTH,true];
 		_gruntBoy setVariable ["WBK_SynthHPMax",MAR_BL_ANTICEHLTTH,true];
 		[_gruntBoy,1.5]remoteExec ["setAnimSpeedCoef",0];
 	};
+	
+	case (_gruntBoy isKindOf "MAR_ANT_QUEEN"):{
+		
+		_gruntBoy setVariable ["WBK_SynthHP",MAR_BL_ANTQUEENHLTTH,true];
+		_gruntBoy setVariable ["WBK_SynthHPMax",MAR_BL_ANTQUEENHLTTH,true];
+	};
+
 	default {
+		
 		_gruntBoy setVariable ["WBK_SynthHP",MAR_BL_ANTWORKERHLTTH,true];
 		_gruntBoy setVariable ["WBK_SynthHPMax",MAR_BL_ANTWORKERHLTTH,true];
-	};
+	};	
 };
 
 _gruntBoy setVariable ["lambs_danger_disableAI", true];
@@ -247,11 +275,36 @@ _actFr = [{
 					
 						[_mutant,_en] spawn BugsLife_RangedAttack_FNC;
 					
-				};
-
-		
-				
-				
+				};	
+				case (
+				(_mutant isKindOf "MAR_ANT_QUEEN") and					
+				(isNil {_mutant getVariable "assUp"}) and
+				(isNil {_mutant getVariable "IsCanSummon"}) and
+				(isNull objectParent _mutant) and 
+				!(animationState _mutant in ["ant_attack_1","ant_roar","ant_attack_ranged","ant_climb_outassup","ant_climb_in","ant_climb_inass","ant_climbout","ant_assoutidle"]) and	 								
+				((_en distance _mutant) < 90) and ((_en distance _mutant) > 2.5) and
+				!(isNull _en) and 
+				(alive _en)): {
+					if (((random 100) >= 50)&&(isNil {_mutant getVariable "IsCanFire"})) then {
+						[_mutant,24] spawn BugsLife_AntQueen_ASSUP_FNC;
+					}else {
+						[_mutant,24,8] spawn BugsLife_AntQueen_MinionSummon_FNC;
+					};
+					
+				};	
+				case (
+					(_mutant isKindOf "MAR_ANT_QUEEN") and
+					(isNil {_mutant getVariable "IsCanFire"}) and
+					!(isNil {_mutant getVariable "assUp"}) and
+					(isNull objectParent _mutant) and 
+					!(animationState _mutant in ["ant_attack_1","ant_roar","ant_attack_ranged","ant_climb_outassup","ant_climb_in","ant_climbout"]) and											
+					((_en distance _mutant) < 90) and ((_en distance _mutant) > 2.5) and
+					!(isNull _en) and 
+					(alive _en)): {
+						
+							[_mutant,_en] spawn BugsLife_RangedAttack_FNC;
+																	
+				};		
 			};
 		};
 	};
@@ -261,6 +314,7 @@ _loopPathfind = [{
     _array = _this select 0;
     _unit = _array select 0;
 	_nearEnemy = _unit findNearestEnemy _unit; 
+	if (_unit isKindOf "MAR_ANT_QUEEN")exitWith{};
 	switch true do {
 		case (!(simulationEnabled _unit) || !(isNull (remoteControlled _unit)) || (isNull _nearEnemy) or !(alive _nearEnemy) or !(alive _unit) or !(isNull attachedTo _unit) or (lifeState _unit == "INCAPACITATED") or (_unit distance _nearEnemy >= 500)): {
 			switch true do {
@@ -268,6 +322,7 @@ _loopPathfind = [{
 				default {};
 			};
 		};
+		
 		case !(animationState _unit in ["ant_idle","ant_run","ant_walk_r","ant_walk_l","ant_walk_b","ant_turn_l","ant_turn_r","guppy_idle","guppy_inch"]): {
 			_unit setVariable ["WBK_IsUnitLocked",0];
 			_unit enableAI "ANIM";

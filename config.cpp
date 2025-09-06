@@ -4,7 +4,7 @@ class CfgPatches
 	{
 		units[] = {"MAR_ANT_Basic","MAR_ANT_Ice","MAR_ANT_Spitter","MAR_antHill","MAR_Spider_Burrower","MAR_TrapDoor","MAR_Ant_Egg","MAR_Ant_Egg_Clutch",
         "MAR_Ant_Part_Head","MAR_Ant_Part_Thorax","MAR_Ant_Part_Abdomen","MAR_Ant_Part_Leg","MAR_Ant_Part_Mandible","MAR_Ant_Part_Antenne","MAR_ANT_QUEEN","MAR_Ant_Webs","MAR_Ant_Webs_2","MAR_Spider_Webs",
-        "MAR_Spider_Webs_2","MAR_AntIce","MAR_ANT_Guppy","MAR_Ant_Part_GrubHead","MAR_Ant_Part_Grubbutt"
+        "MAR_Spider_Webs_2","MAR_AntIce","MAR_ANT_Guppy","MAR_Ant_Part_GrubHead","MAR_Ant_Part_Grubbutt","MAR_antcraterDirt"
         };
 		weapons[] = {};
 		magazines[]={};
@@ -1227,6 +1227,14 @@ class CfgMovesBasic
                 AdjustB="";
                 Stand="ANT_Climb_IN";  
             };
+            class MAR_ANTQueen_ClimbInAss:MAR_ANTQueen_ClimbIn
+            {
+                PlayerCrouch="ANT_Climb_INAss";
+                Up="ANT_Climb_INAss";
+                Crouch="ANT_Climb_INAss";
+                AdjustB="";
+                Stand="ANT_Climb_INAss";  
+            };
             class MAR_ANTQueen_ClimbOutAssUp:MAR_ANTQueen_Moves
             {
                 turnSpeed=4.5;
@@ -1254,6 +1262,15 @@ class CfgMovesBasic
                 AdjustB="";
                 Stand="ANT_AssOutIdle";  
                 StartFreefall="ANT_AssOutIdle";   
+            };
+            class MAR_ANTQueen_AttackRanged:MAR_ANTQueen_AssOutIdle
+            {
+                PlayerCrouch="ANT_Attack_Ranged";
+                Up="ANT_Attack_Ranged";
+                Crouch="ANT_Attack_Ranged";
+                AdjustB="";
+                Stand="ANT_AssOutIdle";  
+                StartFreefall="ANT_AssOutIdle";    
             };
         //antQueen end  
         //antGuppy moveset
@@ -2203,25 +2220,26 @@ class CfgMoves_MAR_ANT_Queen: CfgMovesMaleSdr
                 InterpolateTo[]=
                 {
                     "ANT_Climb_outAssUp",
-                    0.01,							                                
+                    0.01							                                
                 };
             };
-            class ANT_Climb_outAssUp: ANT_Queen_Idle
+
+            class ANT_Climb_INAss: ANT_Queen_Idle
             {   
-                file = "\Bugs_life\Ants\animations\antQueen_ClimbOutAssUp.rtm";
+                file = "\Bugs_life\Ants\animations\antQueen_climbinAss.rtm";
                 leaning="empty";
                 aiming="empty";
                 aimingBody="empty";
                 head = "empty";	
-                actions = "MAR_ANTQueen_ClimbOutAssUp";	
+                actions = "MAR_ANTQueen_ClimbInAss";	
                 looped = false;
-                speed = -3;
+                speed = -4;
                 InterpolateTo[]=
-                {
-                    "ANT_Climb_IN",
-                    0.01,							                                
+                {							                                
                 };
             };
+
+           
             class ANT_AssOutIdle: ANT_Queen_Idle
             {   
                 file = "\Bugs_life\Ants\animations\antQueen_IdleAssUp.rtm";
@@ -2235,7 +2253,31 @@ class CfgMoves_MAR_ANT_Queen: CfgMovesMaleSdr
                 InterpolateTo[]=
                 {
                     "ANT_AssOutIdle",
-                    0.01,							                                
+                    0.01,
+                    "ANT_Attack_Ranged",
+                    0.01,
+                    "ANT_Climb_INAss",
+                    0.01
+                };
+            };
+             class ANT_Climb_outAssUp: ANT_AssOutIdle
+            {   
+                file = "\Bugs_life\Ants\animations\antQueen_ClimbOutAssUp.rtm";
+                leaning="empty";
+                aiming="empty";
+                aimingBody="empty";
+                head = "empty";	
+                actions = "MAR_ANTQueen_ClimbOutAssUp";	
+                looped = false;
+                speed = -3;
+                InterpolateTo[]=
+                {
+                    "ANT_AssOutIdle",
+                    0.01,
+                    "ANT_Attack_Ranged",
+                    0.01,
+                    "ANT_Climb_INAss",
+                    0.01						                                
                 };
             };
             class ANT_Roar: ANT_Queen_Idle
@@ -2259,10 +2301,26 @@ class CfgMoves_MAR_ANT_Queen: CfgMovesMaleSdr
                 actions = "MAR_ANTQueen_ClimbOut";		
                 looped = false;
                 speed = -4;
-                  InterpolateTo[]=
+                InterpolateTo[]=
                 {
                     "ANT_Queen_Idle",
-                    0.01,							                                
+                    0.01							                                
+                };
+            };
+            class ANT_Attack_Ranged:ANT_AssOutIdle
+            {
+                file = "\Bugs_life\Ants\animations\antQueen_Eggmortar.rtm";
+                actions = "MAR_ANTQueen_AttackRanged";	
+                looped = false;
+                speed = -1.2;
+                InterpolateTo[]=
+                {
+                    "ANT_AssOutIdle",
+                    0.01,
+                    "ANT_Attack_Ranged",
+                    0.01,
+                    "ANT_Climb_INAss",
+                    0.01						                                
                 };
             };
 

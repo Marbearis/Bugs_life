@@ -160,6 +160,19 @@
     }
 ] call CBA_fnc_addSetting;
 
+[ 
+    "MAR_BL_ANTQUEENHLTTH", 
+    "EDITBOX", 
+    ["AntQueen Health","She is a boss unit so it should be relatively high"],
+    ["Marbearis' Bugs & critters","ANT Settings"],
+    "700",
+    1,
+    {   
+        params ["_value"];  
+        _number = parseNumber _value;
+		MAR_BL_ANTQUEENHLTTH = _number;
+    }
+] call CBA_fnc_addSetting;
 
 
 
@@ -1077,7 +1090,7 @@ BugsLife_HandleMelee =
 			if (((_x != _zombie) and (alive _x)) and (_x isKindOf "MAR_ANT_BASE")) exitWith {
 									
 				private _chimp = _x getVariable ["WBK_SynthHP",1];
-				systemChat str _chimp;
+				
 				private _newHealth = _chimp - 35 ;
 				_x setVariable ["WBK_SynthHP", _newHealth,true];
 
@@ -1179,7 +1192,7 @@ BugsLife_RangedAttack_FNC= {
 
 	params ["_mantis","_en"];
 	_mantis setVariable ["IsCanFire",1]; 
-	_mantis spawn {uisleep selectRandom [1,2,3,4]; _this setVariable ["IsCanFire",nil];};	
+		
 	[_mantis,["ANT_Attack_Ranged", 0, 0.2, false]] remoteExec ["switchMove",0];
 	_meleeSounds = [
 		"\Bugs_life\data\AntSounds\antSpit.ogg"
@@ -1189,13 +1202,13 @@ BugsLife_RangedAttack_FNC= {
 
 	uiSleep 0.3;
 	if !(animationState _mantis in ["ant_attack_ranged"]) exitWith {};
-	if (((_mantis worldToModel (_en modelToWorld [0, 0, 0])) select 0) < 7) exitWith {					
+					
 		switch true do {
 	
-			case (_mantis isKindOf "MAR_ANT_Spitter"): {
+			case ((_mantis isKindOf "MAR_ANT_Spitter")&&(((_mantis worldToModel (_en modelToWorld [0, 0, 0])) select 0) < 7)): {
 				
 				_mantis setVariable ["WBK_OPTRE_AfterContact",1];
-																							
+				_mantis spawn {uisleep selectRandom [1,2,3,4]; _this setVariable ["IsCanFire",nil];};																				
 				uiSleep 0.3;				
 				[_mantis,_mantis modelToWorldVisual [0,5,1],"B_BugsLife_Acid_Spit", _en, selectRandom [[(aimPos _en select 0) - 1,aimPos _en select 1,aimPos _en select 2],[(aimPos _en select 0) + 1,aimPos _en select 1,aimPos _en select 2],[(aimPos _en select 0) - 2,aimPos _en select 1,aimPos _en select 2],[(aimPos _en select 0) + 2,aimPos _en select 1,aimPos _en select 2],[eyePos _en select 0, eyePos _en select 1,(eyePos _en select 2) + 2],[eyePos _en select 0, eyePos _en select 1,(eyePos _en select 2) + 2],[eyePos _en select 0, eyePos _en select 1,(eyePos _en select 2) + 1]], (selectRandom [40,50,55]), false, [0,0,0]] spawn Bugzz_fnc_ProjectileCreate;						
 			};
@@ -1207,18 +1220,24 @@ BugsLife_RangedAttack_FNC= {
 			};
 
 			case (_mantis isKindOf "MAR_ANT_QUEEN"):{
-				_mantis spawn {uisleep 15; _this setVariable ["IsCanFire",nil];};
-				for "_i" from 1 to 3 do {					
+				_mantis spawn {uisleep 20; _this setVariable ["IsCanFire",nil];};
+				for "_i" from 1 to 3 do {
+					
+					[_mantis,["ANT_Attack_Ranged", 0, 0.2, false]] remoteExec ["switchMove",0];	
+					uiSleep 0.3;				
 					[_mantis,((_mantis modelToWorldVisual (_mantis selectionPosition "a_butt"))),"B_Bugslife_EggMortar", _en,  [(aimPos _en select 0) + (selectRandom [0,3,4,5,-3,-4,-5]),(aimPos _en select 1)+(selectRandom [0,3,4,5,-3,-4,-5]),(aimPos _en select 2)+(20)], (15), false, [0,0,0]] spawn Bugzz_fnc_ProjectileCreate;		
 					uiSleep 1;
+					[_mantis,["ANT_AssOutIdle", 0, 0.2, false]] remoteExec ["switchMove",0];	
 				};
+				uiSleep 4;
+				if ((animationState _mantis) == "ANT_AssOutIdle")then {_mantis spawn BugsLife_AntQueen_ReturnToOGPOS;};
 			};
 			
 			default {
 							
 			};
 		};
-	};
+	
 };
 
 Bugzz_fnc_ProjectileCreate = {
@@ -1382,10 +1401,14 @@ Bugzz_fnc_ProjectileCreate = {
 
 //antqueen functions 
 
+
 BugsLife_AntQueen_MinionSummon_FNC = 
 {
 	params ["_unit",["_radius",15],["_minionCount",3]];
+
 	[_unit,["ANT_Roar", 0, 0.2, false]] remoteExec ["switchMove",0];
+	_unit setVariable ["IsCanSummon",1];
+	_unit spawn {uisleep 25; _this setVariable ["IsCanSummon",nil];};
 	_soundArray_wonk = ["\Bugs_life\data\AntSounds\AntQueen_Screech.ogg"];
 	playSound3D [selectRandom _soundArray_wonk, _unit,false, getPosASL _unit, 5, 1, 0];
 	if ((player distance _unit) <= 50) then {
@@ -1399,17 +1422,24 @@ BugsLife_AntQueen_MinionSummon_FNC =
 	for "_i" from 1 to _minionCount do {			
 		if ((alive _unit)) then 	
 		{
-			_PosOffset = [((getPosASL _unit)#0) + (random _radius),((getPosASL _unit)#1)+ (random _radius),((getPosASL _unit)#2)+3];
-			_intersections = lineIntersectsSurfaces [_PosOffset, [_PosOffset#0,_PosOffset#1,(_PosOffset#2) - 8], player, _unit, true, -1];
+			_PosOffset = [((getPosASL _unit)#0) + (random _radius),((getPosASL _unit)#1)+ (random _radius),((getPosASL _unit)#2)];
+			
 			_Antlist = selectRandomWeighted ["MAR_ANT_Basic",0.8,"MAR_ANT_Ice",0.1,"MAR_ANT_Spitter",0.1];	
-			_spawn = (_intersections select 0)#0;
-			_Deform =  createVehicle ["Land_ShellCrater_02_small_F",[_spawn#0,(_spawn#1),(_spawn#2)- 5.1],[],0,"CAN_COLLIDE"];//replace with something with sections
+			_spawn = _PosOffset;
+			_Deform =  createVehicle ["MAR_antcraterDirt",[_spawn#0,(_spawn#1),((_spawn#2)- 5.1)],[],12,"NONE"];
 
 			_groundTexture = surfaceTexture getPosATL _Deform;
 			_Deform setObjectTextureGlobal [0,_groundTexture];			
        		_Deform setVectorUp surfaceNormal position _Deform;
-
-			_ANTMinion = group _unit createUnit [_AntList, _spawn, [], 4, "CAN_COLLIDE"];					
+			_Deform animateSource ['Anthill_Raised',-0.8,5];
+			_Deform spawn {
+				uiSleep 30;
+				_this animateSource ['Anthill_Raised',1,5];
+				uiSleep 3;
+				deleteVehicle _this;
+			};
+			uiSleep 1;
+			_ANTMinion = group _unit createUnit [_AntList, position _Deform, [], 0, "CAN_COLLIDE"];					
 			[_ANTMinion] joinSilent (group _unit);
 			
 			_soundArray = ["A3\sounds_f\sfx\explosion1.wss","A3\sounds_f\sfx\explosion2.wss","A3\sounds_f\sfx\explosion3.wss"];		
@@ -1418,16 +1448,17 @@ BugsLife_AntQueen_MinionSummon_FNC =
 				enableCamShake true; 
 				addCamShake [2, 2, 1];
 			};
-			_ANTMinion setPosATL [_spawn#0,(_spawn#1)+(selectRandom [2]),(_spawn#2)-6];
-			[_spawn,{ 
-				_fulgiOffset = [_this#0,(_this#1)+(selectRandom [2]),(_this#2)-6];
+			_DeformPos = getPosATL _Deform;
+			_ANTMinion setPosATL [_DeformPos#0,_DeformPos#1,(_DeformPos#2)-6];
+			[_DeformPos,{ 
+				_fulgiOffset =_this;
 				if (isDedicated) exitWith {}; 
 				_pos = _this;
 				_dustEffect = "#particlesource" createVehicleLocal _pos; 
 				_dustEffect setParticleClass "HDustVTOL1"; 
 				_dustEffect setParticleCircle[0, [0, 0, 0]]; 
 				_rocks1 = "#particlesource" createVehicleLocal _this; 
-				_rocks1 setposasl _this; 
+				_rocks1 setposASL [_this#0,_this#1,(_this#2)+2]; 
 				_rocks1 setParticleParams[["\A3\data_f\ParticleEffects\Universal\Mud.p3d", 1, 0, 1], "", "SpaceObject", 1, 12.5, [0, 0, 0], [0, 0, 5], 5, 100, 7.9, 1, [.15, .15], [ 
                     [0.1, 0.1, 0.1, 1], 
                     [0.25, 0.25, 0.25, 0.5], 
@@ -1448,10 +1479,10 @@ BugsLife_AntQueen_MinionSummon_FNC =
 				deleteVehicle _rocks1; 					
 				deleteVehicle _dustEffect; 											    
 			}] remoteExec["spawn", 0, false];
-			
+			uiSleep 0.5;	
 			[_ANTMinion,["ANT_Climb_Out", 0, 0.2, false]] remoteExec ["switchMove",0];
 			
-			sleep 1;
+			sleep 0.2;
 		
 		};
 	};
@@ -1459,12 +1490,20 @@ BugsLife_AntQueen_MinionSummon_FNC =
 
 BugsLife_AntQueen_ASSUP_FNC = {
 	params ["_unit",["_radius",15]];
-	
+	_unit setVariable ["IsCanFire",1];
+	_unit setVariable ["IsCanSummon",1];
 	_spawn = [(((getPosATL _unit)#0)+random 12),(((getPosATL _unit)#1)+random 12),(getPosATL _unit)#2];
-	_Deform_in =  createVehicle ["Land_ShellCrater_02_small_F",getPosATL _unit,[],0,"CAN_COLLIDE"];//replace with something with sections
+	_Deform_in =  createVehicle ["MAR_antcraterDirt",getPosATL _unit,[],0,"CAN_COLLIDE"];
 	_groundTexture = surfaceTexture getPosATL _Deform_in;
 	_Deform_in setObjectTextureGlobal [0,_groundTexture];			
     _Deform_in setVectorUp surfaceNormal position _Deform_in;
+	_Deform_in animateSource ['Anthill_Raised',-0.9,5];
+	_Deform_in spawn {
+			uiSleep 30;
+			_this animateSource ['Anthill_Raised',1,5];
+			uiSleep 3;
+			deleteVehicle _this;
+	};
 	[_unit,["ANT_Climb_IN", 0, 0.2, false]] remoteExec ["switchMove",0];
 	
 	_soundArray_wonk = ["\Bugs_life\data\AntSounds\ANT_Erupt_1.ogg","\Bugs_life\data\AntSounds\ANT_Erupt_2.ogg","\Bugs_life\data\AntSounds\ANT_Erupt_3.ogg"];	
@@ -1475,10 +1514,7 @@ BugsLife_AntQueen_ASSUP_FNC = {
 	_unit hideObjectGlobal true;
 	_unit hideObject true;
 	uiSleep 2;
-	//_Deform_out =  createVehicle ["Land_ShellCrater_02_small_F",[_spawn#0,(_spawn#1),(_spawn#2)- 6],[],0,"CAN_COLLIDE"];//replace with something with sections
-	//_groundTexture = surfaceTexture getPosATL _Deform_out;
-	//_Deform_out setObjectTextureGlobal [0,_groundTexture];			
-    //_Deform_out setVectorUp surfaceNormal position _Deform_out;
+	
 	_unit setPos [_spawn#0,_spawn#1,(_spawn#2)];
 
 	[_spawn,{ 
@@ -1508,15 +1544,36 @@ BugsLife_AntQueen_ASSUP_FNC = {
 	_unit hideObject false;
 	_soundArray_wonk = ["\Bugs_life\data\AntSounds\ANT_Erupt_1.ogg","\Bugs_life\data\AntSounds\ANT_Erupt_2.ogg","\Bugs_life\data\AntSounds\ANT_Erupt_3.ogg"];	
 	playSound3D [selectRandom _soundArray_wonk, _unit];
+	_Deform_out =  createVehicle ["MAR_antcraterDirt",getPosATL _unit,[],0,"CAN_COLLIDE"];
+	_groundTexture = surfaceTexture getPosATL _Deform_out;
+	_Deform_out setObjectTextureGlobal [0,_groundTexture];		
+	_Deform_out animateSource ['Anthill_Raised',-0.7,5];	
+    _Deform_out setVectorUp surfaceNormal position _Deform_out;
+	_Deform_out spawn {
+		uiSleep 45;
+		_this animateSource ['Anthill_Raised',1,5];
+	};
 	[_unit,["ANT_Climb_outAssUp", 0, 0.2, false]] remoteExec ["switchMove",0];
 	uiSleep 2;
 	[_unit,["ANT_AssOutIdle", 0, 0.2, false]] remoteExec ["switchMove",0];
-	_unit setVariable ["assUp",true,true];
+	uiSleep 2;
+	_unit setVariable ["IsCanFire",nil];
+	_unit setVariable ["assUp",1,true];
 };
 
 BugsLife_AntQueen_ReturnToOGPOS = {
 	params ["_unit"];
 	_OGPOS = _unit getVariable "OgPos";
+	_soundArray_wonk = ["\Bugs_life\data\AntSounds\ANT_Erupt_1.ogg","\Bugs_life\data\AntSounds\ANT_Erupt_2.ogg","\Bugs_life\data\AntSounds\ANT_Erupt_3.ogg"];	
+	playSound3D [selectRandom _soundArray_wonk, _unit];
+	[_unit,["ANT_Climb_INAss", 0, 0.2, false]] remoteExec ["switchMove",0];
+
+	uiSleep 5;
 	_unit setPosATL _OGPOS;
+	
 	[_unit,["ANT_ClimbOut", 0, 0.2, false]] remoteExec ["switchMove",0];
+	_soundArray_wonk = ["\Bugs_life\data\AntSounds\ANT_Erupt_1.ogg","\Bugs_life\data\AntSounds\ANT_Erupt_2.ogg","\Bugs_life\data\AntSounds\ANT_Erupt_3.ogg"];	
+	playSound3D [selectRandom _soundArray_wonk, _unit];
+	_unit setVariable ["assUp",nil,true];
+	_unit setVariable ["IsCanSummon",nil];
 };
