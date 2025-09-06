@@ -448,7 +448,9 @@ _loopPathfind = [{
 _loopPathfindDoMove = [{
     _array = _this select 0;
     _unit = _array select 0;
+		if (_unit isKindOf "MAR_ANT_QUEEN")exitWith{};
 	switch true do {
+		
 		default {
 			_nearEnemy = _unit findNearestEnemy _unit; 
 			_unit enableAI "MOVE";
