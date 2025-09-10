@@ -164,6 +164,50 @@
             };
         };
     };
+
+    class MAR_ANTWASP:MAR_Critter_BASE
+    {
+        side = 0;
+        scope = 2;			
+        scopeCurator = 2;
+        impactEffectsBlood = "MAR_ImpactEffectsBugGuts_Orange";
+        impactEffectsNoBlood = "MAR_ImpactEffectsBugGuts_Orange";
+        editorPreview="";
+        faction = "MAR_Bug_Faction";
+        editorSubcategory = "MAR_Bugs_Ants";
+        displayName = "Ant Wasp";
+        model = "\Bugs_life\Ants\antwasp.p3d";
+        //hiddenSelections[] = {"camo","eyes","camo1"};
+        //hiddenSelectionsTextures[] = {"\Bugs_life\Ants\textures\queen\body_CO.paa","\Bugs_life\Ants\textures\queen\body_CO.paa","\Bugs_life\Ants\textures\queen\eggAbdomen_CO.paa"};
+        //hiddenSelectionsMaterials[] = {"\Bugs_life\Ants\textures\queen\body.rvmat","\Bugs_life\Ants\textures\queen\body.rvmat","\Bugs_life\Ants\textures\queen\eggAbdomen.rvmat"};
+        uniformClass = "ANT_Uniform_AntWasp";
+        nakedUniform = "ANT_Uniform_AntWasp";
+        _generalMacro = "MAR_ANT_Wasp";
+        gestures = "CfgGestures_MAR_ANT_Wasp";
+        moves = "CfgMoves_MAR_ANT_Wasp";
+        class Eventhandlers
+        {
+            init = "_this#0 allowFleeing 0;_this#0 setSpeaker 'NoVoice';_this#0 disableConversation true;";//[_this#0] execVM 'Bugs_life\Ants\AI\BasicAnt.sqf'
+        };
+        class SoundEnvironExt {		
+            generic[] = {
+                {"run", {"\Bugs_life\data\AntSounds\antRun.ogg", 1, 1, 40}},
+                {"idle", {"\Bugs_life\data\AntSounds\idleChitter.ogg", 1, 1, 25}},                    
+                {"walk", {"\Bugs_life\data\AntSounds\AntWalk.ogg", 1, 1, 25}},  
+                {"meleeAttack", {"\Bugs_life\data\AntSounds\antBite.ogg", 1, 1, 25}}, 
+                {"rangedAttack", {"\Bugs_life\data\AntSounds\antSpit.ogg", 1, 1, 100}}          
+            };
+        };
+        class SoundEquipment {	
+            soldier[] = {
+                {"run", {"\Bugs_life\data\AntSounds\antRun.ogg", 1, 1, 40}},
+                {"idle", {"\Bugs_life\data\AntSounds\idleChitter.ogg", 1, 1, 25}},                    
+                {"walk", {"\Bugs_life\data\AntSounds\AntWalk.ogg", 1, 1, 25}},  
+                {"meleeAttack", {"\Bugs_life\data\AntSounds\antBite.ogg", 1, 1, 25}}, 
+                {"rangedAttack", {"\Bugs_life\data\AntSounds\antSpit.ogg", 1, 1, 100}} 
+            };
+        };
+    };
 //OPFOR END
 
 //GREENFOR

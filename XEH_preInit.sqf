@@ -688,6 +688,7 @@ BugzLife_fnc_explodeBug = {
 	
 
 	[_this,{
+		if (isDedicated) exitWith {};
 		if (MAR_BL_SillyMode) then {
 			_meleeSounds = [
 			"\Bugs_life\data\funnymodesounds\antparty.ogg"
@@ -701,7 +702,7 @@ BugzLife_fnc_explodeBug = {
 			];
 			playSound3D [selectRandom _meleeSounds, _this,false,_this,5,GlobalBugSoundPitch,0,0,true];
 		};
-	}]remoteExec ["spawn",0];
+	}]remoteExec ["call",[0,-2]select isDedicated];
 		
 	
 	
@@ -934,6 +935,7 @@ Bugslife_ANTMelee = {
 		[_zombie,["ANT_Attack_1", 0, 0.2, false]] remoteExec ["switchMove",0];
 		if !(animationState _zombie in ["ant_attack_1"])exitWith {};
 		[_zombie,{
+			if (isDedicated) exitWith {};
 			if ((_this isKindOf "MAR_ANT_Guppy")&&(MAR_BL_SillyMode)) then 
 			{
 				_meleeSounds = [
@@ -949,7 +951,7 @@ Bugslife_ANTMelee = {
 				];
 				playSound3D [selectRandom _meleeSounds, _this,false, getPosASL _this, 1, selectRandom [1,0.9,0.8,1.1,1.2], 0,0,true];
 			};	
-		}]remoteExec ["spawn",0];
+		}]remoteExec ["call",[0,-2] select isDedicated];
 	
 		
 		

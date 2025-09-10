@@ -4,7 +4,7 @@ class CfgPatches
 	{
 		units[] = {"MAR_ANT_Basic","MAR_ANT_Ice","MAR_ANT_Spitter","MAR_antHill","MAR_Spider_Burrower","MAR_TrapDoor","MAR_Ant_Egg","MAR_Ant_Egg_Clutch",
         "MAR_Ant_Part_Head","MAR_Ant_Part_Thorax","MAR_Ant_Part_Abdomen","MAR_Ant_Part_Leg","MAR_Ant_Part_Mandible","MAR_Ant_Part_Antenne","MAR_ANT_QUEEN","MAR_Ant_Webs","MAR_Ant_Webs_2","MAR_Spider_Webs",
-        "MAR_Spider_Webs_2","MAR_AntIce","MAR_ANT_Guppy","MAR_Ant_Part_GrubHead","MAR_Ant_Part_Grubbutt","MAR_antcraterDirt"
+        "MAR_Spider_Webs_2","MAR_AntIce","MAR_ANT_Guppy","MAR_Ant_Part_GrubHead","MAR_Ant_Part_Grubbutt","MAR_antcraterDirt","MAR_ANTWASP"
         };
 		weapons[] = {};
 		magazines[]={};
@@ -62,7 +62,8 @@ class CfgVehicles
 	class Land_Basketball_01_F; // External class reference
     class B_Soldier_base_F;	// External class reference
     class Marby_C_ExportClass : B_Soldier_base_F {
-        identityTypes[] = {"empty_Face"};
+        faceType = "WBK_HaloCustomFace";
+        identityTypes[] = {};
     };
 
     class MAR_Critter_BASE : Marby_C_ExportClass 
@@ -656,6 +657,21 @@ class cfgWeapons
 				uniformmodel="-";
 			};
     };
+      class ANT_Uniform_AntWasp:Uniform_Base 
+    {
+        	displayname="ANT_Wasp";
+			model = "\Bugs_life\Ants\antwasp.p3d";
+			scope=1;
+			picture="";
+		
+            class ItemInfo: UniformItem
+			{
+				containerclass="Supply200";
+				mass=30;
+				uniformclass="ANT_Uniform_AntWasp";
+				uniformmodel="-";
+			};
+    };
 };
 
 
@@ -665,6 +681,15 @@ class CfgMovesBasic
 	class Default;
 	class StandBase;
 	class BlendAnims;
+    class ManActions
+	{
+		Ant_Ascend[]=
+        {
+            "Ant_Ascend",
+            "Gesture"
+        };
+	
+	};
 	class Actions
 	{
 		class Default;
@@ -1401,6 +1426,96 @@ class CfgMovesBasic
                 Stand="ANT_Attack_1";
             };
         //antguppy moveset end
+        //antWasp
+          class MAR_ANTWasp_Moves:MAR_ANT_Moves
+            {
+                
+                
+                stance="ManStanceUndefined";
+                useFastMove = 1;
+                turnSpeed = 1;
+                LimpF="ANT_Wasp_Idle";
+                LimpLF="ANT_Wasp_Idle";
+                LimpRF="ANT_Wasp_Idle";
+                LimpL="ANT_Wasp_Idle";
+                LimpR="ANT_Wasp_Idle";
+                LimpB="ANT_Wasp_Idle";
+                LimpLB="ANT_Wasp_Idle";
+                LimpRB="ANT_Wasp_Idle";
+                stop="ANT_Wasp_Idle";
+                default="ANT_Wasp_Idle";
+                stopRelaxed="ANT_Wasp_Idle";
+                TurnL="ANT_Wasp_Idle";
+                TurnR="ANT_Wasp_Idle";
+                TurnLRelaxed="ANT_Wasp_Idle";
+                TurnRRelaxed="ANT_Wasp_Idle";
+                WalkF="ANT_Wasp_Idle";
+                PlayerWalkF="ANT_Wasp_Idle";
+                WalkLF="ANT_Wasp_Idle";
+                PlayerWalkLF="ANT_Wasp_Idle";
+                WalkRF="ANT_Wasp_Idle";
+                PlayerWalkRF="ANT_Wasp_Idle";
+                WalkL="ANT_Wasp_Idle";
+                PlayerWalkL="ANT_Wasp_Idle";
+                WalkR="ANT_Wasp_Idle";
+                PlayerWalkR="ANT_Wasp_Idle";
+                WalkB="ANT_Wasp_Idle";
+                PlayerWalkB="ANT_Wasp_Idle";
+                WalkLB="ANT_Wasp_Idle";
+                PlayerWalkLB="ANT_Wasp_Idle";
+                WalkRB="ANT_Wasp_Idle";
+                PlayerWalkRB="ANT_Wasp_Idle";
+                SlowF="ANT_Wasp_Idle";
+                PlayerSlowF="ANT_Wasp_Idle";
+                SlowB="ANT_Wasp_Idle";
+                PlayerSlowB="ANT_Wasp_Idle";
+                PlayerFastF="ANT_Wasp_Idle";
+                combat="ANT_Wasp_Idle";
+                up="ANT_Wasp_Idle";
+                down="ANT_Wasp_Idle";
+                gear="ANT_Wasp_Idle";
+                upDegree="ManPosNoWeapon";
+                PlayerSlowLF="ANT_Wasp_Idle";
+                PlayerSlowRF="ANT_Wasp_Idle";
+                PlayerSlowL="ANT_Wasp_Idle";
+                PlayerSlowR="ANT_Wasp_Idle";
+                PlayerSlowLB="ANT_Wasp_Idle";
+                PlayerSlowRB="ANT_Wasp_Idle";
+                FastF="ANT_Wasp_Idle";
+                FastLF="ANT_Wasp_Idle";
+                FastRF="ANT_Wasp_Idle";
+                FastL="ANT_Wasp_Idle";
+                FastR="ANT_Wasp_Idle";
+                FastLB="ANT_Wasp_Idle";
+                FastRB="ANT_Wasp_Idle";
+                TactF="ANT_Wasp_Idle";
+                TactLF="ANT_Wasp_Idle";
+                TactRF="ANT_Wasp_Idle";
+                TactL="ANT_Wasp_Idle";
+                TactR="ANT_Wasp_Idle";
+                TactLB="ANT_Wasp_Idle";
+                TactRB="ANT_Wasp_Idle";
+                TactB="ANT_Wasp_Idle";
+                PlayerTactF="ANT_Wasp_Idle";
+                PlayerTactLF="ANT_Wasp_Idle";
+                PlayerTactRF="ANT_Wasp_Idle";
+                PlayerTactL="ANT_Wasp_Idle";
+                PlayerTactR="ANT_Wasp_Idle";
+                PlayerTactLB="ANT_Wasp_Idle";
+                PlayerTactRB="ANT_Wasp_Idle";
+                PlayerTactB="ANT_Wasp_Idle";
+                Die="ANT_Wasp_Idle";
+                StartFreefall="ANT_Wasp_Hover";
+                Unconscious = "ANT_Wasp_Idle";
+            };
+            class MAR_ANTWasp_Hover:MAR_ANTWasp_Moves
+            {
+                PlayerCrouch="ANT_Wasp_Hover";
+                Up="ANT_Wasp_Hover";
+                Crouch="ANT_Wasp_Hover";
+                AdjustB="";
+                Stand="ANT_Wasp_Hover";
+            };
     };      
 	
 };
@@ -1491,6 +1606,7 @@ class CfgGestures_MAR_ANT_Guppy:CfgGestures_MAR_ANT
 		};
 	};
 };
+
 class CfgGestures_MAR_ANT_Queen: CfgGesturesMale
 {
 	skeletonName = "ant_Queen_S";
@@ -1510,6 +1626,39 @@ class CfgGestures_MAR_ANT_Queen: CfgGesturesMale
 		{
 			speed=1;
 			file = "\Bugs_life\Ants\animations\idle_1.rtm";
+			disableWeapons=0;
+			interpolationRestart=2;
+			enableOptics=1;
+			weaponIK=1;
+			looped=0;
+			leftHandIKBeg=1;
+			leftHandIKCurve[]={1};
+			leftHandIKEnd=1;
+			rightHandIKBeg=1;
+			rightHandIKCurve[]={1};
+			rightHandIKEnd=1;
+		};
+	};
+};
+
+class CfgGestures_MAR_ANT_Wasp:CfgGesturesMale{
+    skeletonName = "antwasp_S";
+	class ManActions
+	{
+	};
+	class Actions;
+	class Default;
+	class BlendAnims {
+		ANT_FullBody[]=
+		{
+		};
+	};
+	class States
+	{
+		class Ant_Ascend: Default
+		{
+			speed=1;
+			file = "\Bugs_life\Ants\animations\antwasp\antwaspascend_gesture.rtm";
 			disableWeapons=0;
 			interpolationRestart=2;
 			enableOptics=1;
@@ -2497,6 +2646,222 @@ class CfgMoves_MAR_ANT_Queen: CfgMovesMaleSdr
 	};
 };
 
+class CfgMoves_MAR_ANT_Wasp: CfgMovesMaleSdr
+{
+	gestures="CfgGestures_MAR_ANT_Wasp";
+	skeletonName = "antwasp_S";
+	collisionVertexPattern[] = {"1a","2a","3a","4a","5a","6a","7a","8a","9a","10a","11a","12a","13a","14a","15a","16a","17a","18a","19a","20a","21a","22a","23a","24a","25a","26a","27a","28a","29a","30a","31a","32a","33a","34a"};
+	collisionGeomCompPattern[] = {1};
+	class Default: Default
+    {
+        actions = "MAR_ANTWasp_Moves";
+		file = "\Bugs_life\Ants\animations\antwasp\antwaspgroundidle.rtm";
+		collisionShape = "A3\anims_f\Data\Geom\Sdr\Perc_Wrfl.p3d";
+		collisionShapeSafe = "A3\anims_f\Data\Geom\Sdr\Perc_Wrfl.p3d";
+    };
+	class StandBase: StandBase
+    {
+        actions = "MAR_ANTWasp_Moves";
+        //ragdoll=0;
+		file = "\Bugs_life\Ants\animations\antwasp\antwaspgroundidle.rtm";
+		collisionShape = "A3\anims_f\Data\Geom\Sdr\Perc_Wrfl.p3d";
+		collisionShapeSafe = "A3\anims_f\Data\Geom\Sdr\Perc_Wrfl.p3d";
+    };
+	class DefaultDie: Default
+	{
+		aiming="aimingNo";
+		legs="legsNo";
+		head="headNo";
+        file = "\Bugs_life\Ants\animations\antwasp\antwaspgroundidle.rtm";
+		disableWeapons=1;
+        //ragdoll=1;
+		interpolationRestart=1;
+		soundOverride="fallbody";
+		soundEdge[]={0.44999999};
+		soundEnabled=0;
+	};
+	class States
+	{
+ 
+		class ANT_Wasp_Idle: Default
+		{
+			collisionShape = "A3\anims_f\Data\Geom\Sdr\Perc_Wrfl.p3d";
+		    collisionShapeSafe = "A3\anims_f\Data\Geom\Sdr\Perc_Wrfl.p3d";			
+			file = "\Bugs_life\Ants\animations\antwasp\antwaspgroundidle.rtm";
+            actions = "MAR_ANTWasp_Moves";
+			duty = 0.1;
+			boundingSphere = 4;
+			interpolationSpeed = 1.5;
+			variantAfter[]={6,6,6};
+            variantsAI[] = {};
+            variantsPlayer[] = {};			
+            speed = -2;
+            relSpeedMin = 1;
+            relSpeedMax = 1;
+            canPullTrigger = 1;
+            canReload = 1;
+            limitGunMovement = 0.5;
+            headBobStrength=0;
+            headBobMode=0;
+            disableWeapons = 0;
+            disableWeaponsLong = 0;
+            enableMissile = 1;
+            enableOptics = 1;
+            forceAim=1;
+			leaning="empty";
+            soundOverride="idle";
+			aiming="aimingNo";
+		    aimingBody="bodyNo";
+			head = "headNo";
+			legs="legsNo";
+         
+			InterpolateTo[]=
+			{
+							
+			};
+            interpolateFrom[]=
+            {                
+            };		
+			preload = 1;
+		};
+	
+		
+		//locomotion
+            class ANT_Wasp_Hover:ANT_Wasp_Idle
+            {
+                file = "\Bugs_life\Ants\animations\antwasp\antwasphover.rtm";
+                speed = -1.2;
+                actions = "MAR_ANTWasp_Hover";
+                soundOverride="fly";
+            };
+          
+
+		
+		
+	};
+	
+	class BlendAnims: BlendAnims
+	{
+		legsDefault_MAR_ANTQueen[]=
+		{
+            "a_head",
+            0.8,
+            "a_mandible.l",
+            0.7,
+            "a_mandible.r",
+            0.7,
+            "a_antenne_r",
+            0.7,
+            "a_antenne_r.001",	
+            0.5,
+            "a_antenne_r.002",	
+            0.3,
+            "a_antenne_l",
+            0.7,
+            "a_antenne_l.001",	
+            0.5,   
+            "a_antenne_l.002",	
+            0.3,  
+            "a_thorax",
+            0.9,
+            "a_mid",
+            0.8,  
+            "a_foreleg.r",
+            0.9,
+			"a_foreleg.r.001",
+            0.8,
+            "a_foreleg.r.002",
+            0.6800000,
+            "a_foreleg.r.003",
+            0.6800000,
+            "a_midleg.r",
+            0.9,
+            "a_midleg.r.001",
+            0.8,
+            "a_midleg.r.002",
+            0.6800000,
+            "a_midleg.r.003",
+            0.6800000,
+            "a_rearleg.r",
+            0.9,
+            "a_rearleg.r.001",
+            0.8,
+            "a_rearleg.r.002",
+            0.6800000,
+            "a_rearleg.r.003",
+            0.6800000,
+            "a_foreleg.l",
+            0.9,
+            "a_foreleg.l.001",
+            0.8,
+            "a_foreleg.l.002",
+            0.6800000,
+            "a_foreleg.l.003",
+            0.6800000,
+            "a_midleg.l",
+            0.9,
+            "a_midleg.l.001",
+            0.8,
+            "a_midleg.l.002",
+            0.6800000,
+            "a_midleg.l.003",
+            0.6800000,
+            "a_rearleg.l",
+            0.9,
+            "a_rearleg.l.001",
+            0.8,
+            "a_rearleg.l.002",
+            0.6800000,
+            "a_rearleg.l.003",
+            0.6800000
+					
+		};
+        HeadDefault_MAR_ANTQueen[]={
+            "a_head",
+            0.6,
+            "a_mandible.l",
+            0.5,
+            "a_mandible.r",
+            0.5,
+            "a_antenne_r",
+            0.5,
+            "a_antenne_r.001",	
+            0.5,
+            "a_antenne_r.002",	
+            0.3,
+            "a_antenne_l",
+            0.5,
+            "a_antenne_l.001",	
+            0.5,
+            "a_antenne_l.002",	
+            0.3,
+            "a_thorax",
+            0.2,
+            "a_mid",
+            0.1,
+            "a_abdomen",
+            0.5,
+            "a_abdomen.001",
+            0.4,
+            "a_abdomen.002",
+            0.3,
+            "a_foreleg.r",
+            0.2,
+            "a_midleg.r",
+            0.2,
+            "a_rearleg.r",
+            0.2,
+            "a_foreleg.l",
+            0.2,
+            "a_midleg.l",
+            0.2,
+            "a_rearleg.l",
+            0.2
+        };
+		
+	};
+};
+
 class CfgMoves_MAR_Spider: CfgMovesMaleSdr
 {
 	gestures="CfgGestures_MAR_Spider";
@@ -2652,7 +3017,26 @@ class CfgMoves_MAR_Spider: CfgMovesMaleSdr
 };
 
 
-
+class CfgFaces
+{
+    class Default;
+    class WBK_HaloCustomFace: Default
+    {
+        class Default
+        {
+            name="";
+            head="";
+            material="";
+            texture="#(rgb,8,8,3)color(0.5,0.5,1,1)";
+            textureHL="#(rgb,8,8,3)color(0.5,0.5,1,1)";
+            materialHL="";
+            identityTypes[]=
+            {
+                "Default"
+            };
+        };
+    };
+};
 
 
 
