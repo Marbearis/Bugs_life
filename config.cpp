@@ -683,9 +683,17 @@ class CfgMovesBasic
 	class BlendAnims;
     class ManActions
 	{
-		Ant_Ascend[]=
+		Ant_Grounded[]=
         {
-            "Ant_Ascend",
+            "Ant_Grounded",
+            "Gesture"
+        };
+        Ant_5ft[]={
+            "Ant_5ft",
+            "Gesture"
+        };
+        Ant_10ft[]={
+            "Ant_10ft",
             "Gesture"
         };
 	
@@ -1427,10 +1435,9 @@ class CfgMovesBasic
             };
         //antguppy moveset end
         //antWasp
-          class MAR_ANTWasp_Moves:MAR_ANT_Moves
+            class MAR_ANTWasp_Moves:MAR_ANT_Moves
             {
-                
-                
+                                
                 stance="ManStanceUndefined";
                 useFastMove = 1;
                 turnSpeed = 1;
@@ -1508,13 +1515,133 @@ class CfgMovesBasic
                 StartFreefall="ANT_Wasp_Hover";
                 Unconscious = "ANT_Wasp_Idle";
             };
-            class MAR_ANTWasp_Hover:MAR_ANTWasp_Moves
+            class MAR_ANTwasp_FLYMoves:MAR_ANTWasp_Moves
             {
-                PlayerCrouch="ANT_Wasp_Hover";
-                Up="ANT_Wasp_Hover";
-                Crouch="ANT_Wasp_Hover";
+                stance="ManStanceUndefined";
+                useFastMove = 1;
+                turnSpeed = 1;
+                LimpF="ANT_Wasp_FlyF";
+                LimpLF="ANT_Wasp_FlyF";
+                LimpRF="ANT_Wasp_FlyF";
+                LimpL="ANT_Wasp_FlyL";
+                LimpR="ANT_Wasp_FlyR";
+                LimpB="ANT_Wasp_FlyB";
+                LimpLB="ANT_Wasp_FlyB";
+                LimpRB="ANT_Wasp_FlyB";
+                stop="ANT_Wasp_Hover";
+                default="ANT_Wasp_Hover";
+                stopRelaxed="ANT_Wasp_Hover";
+                TurnL="ANT_Wasp_Hover";
+                TurnR="ANT_Wasp_Hover";
+                TurnLRelaxed="ANT_Wasp_Hover";
+                TurnRRelaxed="ANT_Wasp_Hover";
+                WalkF="ANT_Wasp_FlyF";
+                PlayerWalkF="ANT_Wasp_FlyF";
+                WalkLF="ANT_Wasp_FlyF";
+                PlayerWalkLF="ANT_Wasp_FlyF";
+                WalkRF="ANT_Wasp_FlyF";
+                PlayerWalkRF="ANT_Wasp_FlyF";
+                WalkL="ANT_Wasp_FlyL";
+                PlayerWalkL="ANT_Wasp_FlyL";
+                WalkR="ANT_Wasp_FlyR";
+                PlayerWalkR="ANT_Wasp_FlyR";
+                WalkB="ANT_Wasp_FlyB";
+                PlayerWalkB="ANT_Wasp_FlyB";
+                WalkLB="ANT_Wasp_FlyB";
+                PlayerWalkLB="ANT_Wasp_FlyB";
+                WalkRB="ANT_Wasp_FlyB";
+                PlayerWalkRB="ANT_Wasp_FlyB";
+                SlowF="ANT_Wasp_FlyF";
+                PlayerSlowF="ANT_Wasp_FlyF";
+                SlowB="ANT_Wasp_FlyB";
+                PlayerSlowB="ANT_Wasp_FlyB";
+                PlayerFastF="ANT_Wasp_FlyF";
+                combat="ANT_Wasp_Hover";
+                up="ANT_Wasp_Hover";
+                down="ANT_Wasp_Hover";
+                gear="ANT_Wasp_Hover";
+                upDegree="ManPosNoWeapon";
+                PlayerSlowLF="ANT_Wasp_FlyF";
+                PlayerSlowRF="ANT_Wasp_FlyF";
+                PlayerSlowL="ANT_Wasp_FlyL";
+                PlayerSlowR="ANT_Wasp_FlyR";
+                PlayerSlowLB="ANT_Wasp_FlyB";
+                PlayerSlowRB="ANT_Wasp_FlyB";
+                FastF="ANT_Wasp_FlyF";
+                FastLF="ANT_Wasp_FlyF";
+                FastRF="ANT_Wasp_FlyF";
+                FastL="ANT_Wasp_FlyL";
+                FastR="ANT_Wasp_FlyR";
+                FastLB="ANT_Wasp_FlyB";
+                FastRB="ANT_Wasp_FlyB";
+                TactF="ANT_Wasp_FlyF";
+                TactLF="ANT_Wasp_FlyF";
+                TactRF="ANT_Wasp_FlyF";
+                TactL="ANT_Wasp_FlyL";
+                TactR="ANT_Wasp_FlyR";
+                TactLB="ANT_Wasp_FlyB";
+                TactRB="ANT_Wasp_FlyB";
+                TactB="ANT_Wasp_FlyB";
+                PlayerTactF="ANT_Wasp_FlyF";
+                PlayerTactLF="ANT_Wasp_FlyF";
+                PlayerTactRF="ANT_Wasp_FlyF";
+                PlayerTactL="ANT_Wasp_FlyL";
+                PlayerTactR="ANT_Wasp_FlyR";
+                PlayerTactLB="ANT_Wasp_FlyB";
+                PlayerTactRB="ANT_Wasp_FlyB";
+                PlayerTactB="ANT_Wasp_FlyB";
+                Die="ANT_Wasp_Hover";
+                StartFreefall="ANT_Wasp_Hover";
+                Unconscious = "ANT_Wasp_Hover";
+            };
+         
+            class MAR_ANTWasp_Fly_F:MAR_ANTwasp_FLYMoves
+            {
+                PlayerCrouch="ANT_Wasp_FlyF";
+                Up="ANT_Wasp_FlyF";
+                Crouch="ANT_Wasp_FlyF";
                 AdjustB="";
                 Stand="ANT_Wasp_Hover";
+            };
+            class MAR_ANTWasp_Fly_B:MAR_ANTwasp_FLYMoves
+            {
+                PlayerCrouch="ANT_Wasp_FlyB";
+                Up="ANT_Wasp_FlyB";
+                Crouch="ANT_Wasp_FlyB";
+                AdjustB="";
+                Stand="ANT_Wasp_Hover";
+            };
+            class MAR_ANTWasp_Fly_L:MAR_ANTwasp_FLYMoves
+            {
+                PlayerCrouch="ANT_Wasp_FlyL";
+                Up="ANT_Wasp_FlyL";
+                Crouch="ANT_Wasp_FlyL";
+                AdjustB="";
+                Stand="ANT_Wasp_Hover";
+            };
+            class MAR_ANTWasp_Fly_R:MAR_ANTwasp_FLYMoves
+            {
+                PlayerCrouch="ANT_Wasp_FlyR";
+                Up="ANT_Wasp_FlyR";
+                Crouch="ANT_Wasp_FlyR";
+                AdjustB="";
+                Stand="ANT_Wasp_Hover";
+            };
+            class MAR_ANTWasp_Attack_Stinger:MAR_ANTwasp_FLYMoves
+            {
+                PlayerCrouch="ANT_Wasp_attackStinger";
+                Up="ANT_Wasp_attackStinger";
+                Crouch="ANT_Wasp_attackStinger";
+                AdjustB="";
+                Stand="ANT_Wasp_attackStinger";
+            };
+            class MAR_ANTWasp_Attack_Scythes:MAR_ANTwasp_FLYMoves
+            {
+                PlayerCrouch="ANT_Wasp_attackScythes";
+                Up="ANT_Wasp_attackScythes";
+                Crouch="ANT_Wasp_attackScythes";
+                AdjustB="";
+                Stand="ANT_Wasp_attackScythes";
             };
     };      
 	
@@ -1649,28 +1776,47 @@ class CfgGestures_MAR_ANT_Wasp:CfgGesturesMale{
 	class Actions;
 	class Default;
 	class BlendAnims {
-		ANT_FullBody[]=
+		ANT_Landcontact[]=
 		{
+            "landcontact", 1
 		};
 	};
 	class States
 	{
-		class Ant_Ascend: Default
+		class Ant_Grounded: Default
 		{
-			speed=1;
-			file = "\Bugs_life\Ants\animations\antwasp\antwaspascend_gesture.rtm";
+			speed=-1.2;
+			file = "\Bugs_life\Ants\animations\antwasp\antwaspgrounded_gesture.rtm";
 			disableWeapons=0;
 			interpolationRestart=2;
 			enableOptics=1;
 			weaponIK=1;
-			looped=0;
+            mask = "ANT_Landcontact";
+			looped=1;
+            interpolationSpeed = 0.5;
 			leftHandIKBeg=1;
 			leftHandIKCurve[]={1};
 			leftHandIKEnd=1;
 			rightHandIKBeg=1;
 			rightHandIKCurve[]={1};
 			rightHandIKEnd=1;
+            interpolateTo[]={
+                "Ant_Grounded",
+                0.01,
+                "Ant_5ft",
+                0.01,
+                "Ant_10ft",
+                0.01
+            };
 		};
+        class Ant_5ft:Ant_Grounded
+        {
+            file = "\Bugs_life\Ants\animations\antwasp\antwasphover5ft_gesture.rtm";
+        };
+        class Ant_10ft:Ant_Grounded
+        {
+            file = "\Bugs_life\Ants\animations\antwasp\antwasphover10ft_gesture.rtm";
+        };
 	};
 };
 
@@ -2656,16 +2802,16 @@ class CfgMoves_MAR_ANT_Wasp: CfgMovesMaleSdr
     {
         actions = "MAR_ANTWasp_Moves";
 		file = "\Bugs_life\Ants\animations\antwasp\antwaspgroundidle.rtm";
-		collisionShape = "A3\anims_f\Data\Geom\Sdr\Perc_Wrfl.p3d";
-		collisionShapeSafe = "A3\anims_f\Data\Geom\Sdr\Perc_Wrfl.p3d";
+		collisionShape = "A3\anims_f\Data\Geom\Sdr\perc_idlelarge.p3d";
+		collisionShapeSafe = "A3\anims_f\Data\Geom\Sdr\perc_idlelarge.p3d";
     };
 	class StandBase: StandBase
     {
         actions = "MAR_ANTWasp_Moves";
         //ragdoll=0;
 		file = "\Bugs_life\Ants\animations\antwasp\antwaspgroundidle.rtm";
-		collisionShape = "A3\anims_f\Data\Geom\Sdr\Perc_Wrfl.p3d";
-		collisionShapeSafe = "A3\anims_f\Data\Geom\Sdr\Perc_Wrfl.p3d";
+		collisionShape = "A3\anims_f\Data\Geom\Sdr\perc_idlelarge.p3d";
+		collisionShapeSafe = "A3\anims_f\Data\Geom\Sdr\perc_idlelarge.p3d";
     };
 	class DefaultDie: Default
 	{
@@ -2717,7 +2863,10 @@ class CfgMoves_MAR_ANT_Wasp: CfgMovesMaleSdr
          
 			InterpolateTo[]=
 			{
-							
+                "ANT_Wasp_Idle",
+                0.01,
+				"ANT_Wasp_Hover",
+                0.01		
 			};
             interpolateFrom[]=
             {                
@@ -2731,9 +2880,72 @@ class CfgMoves_MAR_ANT_Wasp: CfgMovesMaleSdr
             {
                 file = "\Bugs_life\Ants\animations\antwasp\antwasphover.rtm";
                 speed = -1.2;
-                actions = "MAR_ANTWasp_Hover";
+                actions = "MAR_ANTwasp_FLYMoves";
+                soundOverride="fly";
+                InterpolateTo[]=
+                {
+                    "ANT_Wasp_Idle",
+                    0.01,
+                    "ANT_Wasp_Hover",
+                    0.01,
+                    "ANT_Wasp_FlyF",
+                    0.01,		
+                    "ANT_Wasp_FlyB",
+                    0.01,
+                    "ANT_Wasp_FlyL",
+                    0.01,
+                    "ANT_Wasp_FlyR",
+                    0.01,
+                    "ANT_Wasp_attackScythes",
+                    0.01,
+                    "ANT_Wasp_attackStinger",
+                    0.01,
+                };
+            };
+            class ANT_Wasp_FlyF:ANT_Wasp_Hover
+            {
+                file = "\Bugs_life\Ants\animations\antwasp\antwaspflyF.rtm";
+                speed = -1.2;
+                actions = "MAR_ANTWasp_Fly_F";
                 soundOverride="fly";
             };
+            class ANT_Wasp_FlyB:ANT_Wasp_Hover
+            {
+                file = "\Bugs_life\Ants\animations\antwasp\antwaspflyB.rtm";
+                speed = -1.2;
+                actions = "MAR_ANTWasp_Fly_B";
+                soundOverride="fly";
+            };
+            class ANT_Wasp_FlyL:ANT_Wasp_Hover
+            {
+                file = "\Bugs_life\Ants\animations\antwasp\antwaspflyL.rtm";
+                speed = -1.2;
+                actions = "MAR_ANTWasp_Fly_L";
+                soundOverride="fly";
+            };
+            class ANT_Wasp_FlyR:ANT_Wasp_Hover
+            {
+                file = "\Bugs_life\Ants\animations\antwasp\antwaspflyR.rtm";
+                speed = -1.2;
+                actions = "MAR_ANTWasp_Fly_R";
+                soundOverride="fly";
+            };
+            class ANT_Wasp_attackScythes:ANT_Wasp_Hover
+            {
+                file = "\Bugs_life\Ants\animations\antwasp\antwaspfly_attackScythes.rtm";
+                speed = -1.2;
+                looped = false;
+                actions = "MAR_ANTWasp_Attack_Scythes";
+                soundOverride="fly";
+            };
+            class ANT_Wasp_attackStinger:ANT_Wasp_attackScythes
+            {
+                file = "\Bugs_life\Ants\animations\antwasp\antwaspfly_attackStinger.rtm";
+                speed = -1.2;              
+                actions = "MAR_ANTWasp_Attack_Stinger";
+                soundOverride="fly";
+            };
+          
           
 
 		
