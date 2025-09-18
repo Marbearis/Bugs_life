@@ -36,6 +36,12 @@ if ((isPlayer _gruntBoy) or !(alive _gruntBoy) or !(isNil {_gruntBoy getVariable
 			_gruntBoy setVariable ["IMS_IsUnitInvicibleScripted",true,true];
 		};
 
+		case (_gruntBoy isKindOf "MAR_ANTWASP"):{
+			_gruntBoy setVariable ["WBK_SynthHP",MAR_BL_ANTWASPHLTTH,true];
+			_gruntBoy setVariable ["WBK_SynthHPMax",MAR_BL_ANTWASPHLTTH,true];
+			_gruntBoy setVariable ["IMS_IsUnitInvicibleScripted",true,true];
+		};
+
 		default {
 			
 			_gruntBoy setVariable ["WBK_SynthHP",MAR_BL_ANTWORKERHLTTH,true];
@@ -77,6 +83,12 @@ switch true  do {
 		
 		_gruntBoy setVariable ["WBK_SynthHP",MAR_BL_ANTQUEENHLTTH,true];
 		_gruntBoy setVariable ["WBK_SynthHPMax",MAR_BL_ANTQUEENHLTTH,true];
+		_gruntBoy setVariable ["IMS_IsUnitInvicibleScripted",true,true];
+	};
+
+	case (_gruntBoy isKindOf "MAR_ANTWASP"):{
+		_gruntBoy setVariable ["WBK_SynthHP",MAR_BL_ANTWASPHLTTH,true];
+		_gruntBoy setVariable ["WBK_SynthHPMax",MAR_BL_ANTWASPHLTTH,true];
 		_gruntBoy setVariable ["IMS_IsUnitInvicibleScripted",true,true];
 	};
 

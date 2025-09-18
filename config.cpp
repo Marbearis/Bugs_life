@@ -61,6 +61,7 @@ class CfgVehicles
 	class Items_base_F; // External class reference
 	class Land_Basketball_01_F; // External class reference
     class B_Soldier_base_F;	// External class reference
+    class Land_InvisibleBarrier_F;
     class Marby_C_ExportClass : B_Soldier_base_F {
         faceType = "WBK_HaloCustomFace";
         identityTypes[] = {};
@@ -530,6 +531,19 @@ class CfgVehicles
         displayName = "ice spike";
     };
 
+    class collider_Rectangle:Land_InvisibleBarrier_F{
+        scope = 1;			
+		scopeCurator = 1;
+        model = "\Bugs_life\Colliders\rectangle_collider.p3d";
+    };
+    class P_Stinger_Prop:House_F{
+        scope = 2;			
+		scopeCurator = 2;
+        editorSubcategory = "MAR_Bugs_Ants";
+        editorCategory = "MAR_Bugs";
+        model = "Bugs_Life\Projectiles\stinger.p3d";
+        displayName = "Stinger";  
+    };
     #include "Spiders.hpp"
     #include "ANTS.hpp"
 };
@@ -1594,7 +1608,15 @@ class CfgMovesBasic
                 StartFreefall="ANT_Wasp_Hover";
                 Unconscious = "ANT_Wasp_Hover";
             };
-         
+            class MAR_AntWasp_Death:MAR_ANTwasp_FLYMoves
+            {
+                  turnSpeed=0;
+                    PlayerCrouch="ANT_Death";
+                    Up="ANT_Death";
+                    Crouch="ANT_Death";
+                    AdjustB="";
+                    Stand="ANT_Death";
+            }
             class MAR_ANTWasp_Fly_F:MAR_ANTwasp_FLYMoves
             {
                 PlayerCrouch="ANT_Wasp_FlyF";
@@ -1629,20 +1651,21 @@ class CfgMovesBasic
             };
             class MAR_ANTWasp_Attack_Stinger:MAR_ANTwasp_FLYMoves
             {
-                PlayerCrouch="ANT_Wasp_attackStinger";
-                Up="ANT_Wasp_attackStinger";
-                Crouch="ANT_Wasp_attackStinger";
+                PlayerCrouch="ANT_Attack_Ranged";
+                Up="ANT_Attack_Ranged";
+                Crouch="ANT_Attack_Ranged";
                 AdjustB="";
-                Stand="ANT_Wasp_attackStinger";
+                Stand="ANT_Attack_Ranged";
             };
             class MAR_ANTWasp_Attack_Scythes:MAR_ANTwasp_FLYMoves
             {
-                PlayerCrouch="ANT_Wasp_attackScythes";
-                Up="ANT_Wasp_attackScythes";
-                Crouch="ANT_Wasp_attackScythes";
+                PlayerCrouch="ANT_Attack_1";
+                Up="ANT_Attack_1";
+                Crouch="ANT_Attack_1";
                 AdjustB="";
-                Stand="ANT_Wasp_attackScythes";
+                Stand="ANT_Attack_1";
             };
+
     };      
 	
 };
@@ -2818,7 +2841,7 @@ class CfgMoves_MAR_ANT_Wasp: CfgMovesMaleSdr
 		aiming="aimingNo";
 		legs="legsNo";
 		head="headNo";
-        file = "\Bugs_life\Ants\animations\antwasp\antwaspgroundidle.rtm";
+        file = "\Bugs_life\Ants\animations\antwasp\antwaspdeath.rtm";
 		disableWeapons=1;
         //ragdoll=1;
 		interpolationRestart=1;
@@ -2900,6 +2923,8 @@ class CfgMoves_MAR_ANT_Wasp: CfgMovesMaleSdr
                     0.01,
                     "ANT_Wasp_attackStinger",
                     0.01,
+                    "ANT_Death",
+                    0.01
                 };
             };
             class ANT_Wasp_FlyF:ANT_Wasp_Hover
@@ -2930,7 +2955,7 @@ class CfgMoves_MAR_ANT_Wasp: CfgMovesMaleSdr
                 actions = "MAR_ANTWasp_Fly_R";
                 soundOverride="fly";
             };
-            class ANT_Wasp_attackScythes:ANT_Wasp_Hover
+            class ANT_Attack_1:ANT_Wasp_Hover
             {
                 file = "\Bugs_life\Ants\animations\antwasp\antwaspfly_attackScythes.rtm";
                 speed = -1.2;
@@ -2938,14 +2963,19 @@ class CfgMoves_MAR_ANT_Wasp: CfgMovesMaleSdr
                 actions = "MAR_ANTWasp_Attack_Scythes";
                 soundOverride="fly";
             };
-            class ANT_Wasp_attackStinger:ANT_Wasp_attackScythes
+            class ANT_Attack_Ranged:ANT_Attack_1
             {
                 file = "\Bugs_life\Ants\animations\antwasp\antwaspfly_attackStinger.rtm";
                 speed = -1.2;              
                 actions = "MAR_ANTWasp_Attack_Stinger";
                 soundOverride="fly";
             };
-          
+            class ANT_Death:ANT_Attack_1
+            {
+                file = "\Bugs_life\Ants\animations\antwasp\antwaspdeath.rtm";
+                speed = -1.2;        
+                terminal = true;                   
+            };
           
 
 		
@@ -3279,6 +3309,15 @@ class Extended_InitPost_EventHandlers
            init = "_unit = _this select 0; if (local _unit) then {[_unit] execVM '\Bugs_life\Ants\AI\MAR_AI_basicAnt.sqf';};";
         };						
     };
+
+    class MAR_ANTWASP
+    {
+        class MAR_ANT_Wasp_AI_INIT 
+        {
+           init = "_unit = _this select 0; if (local _unit) then {[_unit] execVM '\Bugs_life\Ants\AI\MAR_AI_AntWasp.sqf';};";
+        };	
+    };
+
     class MAR_Spider_Base 
     {
         class MAR_Spider_Basic_AI_INIT 
@@ -3286,6 +3325,7 @@ class Extended_InitPost_EventHandlers
            init = "_unit = _this select 0; if (local _unit) then {[_unit] execVM '\Bugs_life\Spiders\AI\MAR_AI_basicSpider.sqf';};";
         };						
     };
+    
 };
 
 class CfgGroups

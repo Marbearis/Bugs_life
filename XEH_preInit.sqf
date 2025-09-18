@@ -174,6 +174,20 @@
     }
 ] call CBA_fnc_addSetting;
 
+[ 
+    "MAR_BL_ANTWASPHLTTH", 
+    "EDITBOX", 
+    ["Ant Wasp health","not particularly tough but a bit more so than your average ant"],
+    ["Marbearis' Bugs & critters","ANT Settings"],
+    "150",
+    1,
+    {   
+        params ["_value"];  
+        _number = parseNumber _value;
+		MAR_BL_ANTWASPHLTTH = _number;
+    }
+] call CBA_fnc_addSetting;
+
 
 
 
@@ -621,6 +635,13 @@ Bugzlife_BugDeathContainer = {
 			};
 
 		};
+		case (_bug isKindOf "MAR_ANTWASP"):{
+			[_bug,"Ant_Grounded"] remoteExec ["playGesture",0];
+			
+			if (((MAR_BL_BUGEXPLODECHANCE >= floor (random 100))||MAR_BL_BUGEXPLODECHANCE == 100) && (MAR_BL_CANBUGSEXPLODE)) then {_bug spawn BugzLife_fnc_explodeBug;}else {
+				[_bug,["ANT_Death", 0, 0.2, false]] remoteExec ["switchMove",0];
+			};
+		};
 		default {};
 	};
 };
@@ -638,6 +659,9 @@ BugzLife_fnc_explodeBug = {
 				uiSleep 1.1;
 				[_this,["ANT_Death", 0, 0.2, false]] remoteExec ["switchMove",0];
 			};
+			case "MAR_ANTWASP": {			
+				[_this,["ANT_Death", 0, 0.2, false]] remoteExec ["switchMove",0];
+			};
 			default {
 					[_this,[(selectRandom ["ANT_Death_3","ANT_Death_2"]), 0, 0.2, false]] remoteExec ["switchMove",0];
 					uiSleep 1.1;
@@ -653,6 +677,9 @@ BugzLife_fnc_explodeBug = {
 		};
 		case "MAR_ANT_BASE": {
 			[_this,[(selectRandom ["ANT_Death_3","ANT_Death_2"]), 0, 0.2, false]] remoteExec ["switchMove",0];
+		};
+		case "MAR_ANTWASP":{
+			[_this,["ANT_Death", 0, 0.2, false]] remoteExec ["switchMove",0];
 		};
 		default {[_this,[(selectRandom ["ANT_Death_3","ANT_Death_2"]), 0, 0.2, false]] remoteExec ["switchMove",0];};
 	};
@@ -969,6 +996,7 @@ Bugslife_ANTMelee = {
 			[_zombie, [1, false, _zombie]] remoteExec ["setDamage",2];
 		};
 		_zombie call BugsLife_HandleMelee;
+		if (_zombie isKindOf "MAR_ANTWASP") then {[_zombie,["ANT_Wasp_FlyB", 0, 0.2, false]] remoteExec ["switchMove",0];};
 	};
 };
 
@@ -1225,6 +1253,16 @@ BugsLife_RangedAttack_FNC= {
 				[_mantis,_mantis modelToWorldVisual [0,1.2,1],"G_40mm_HE", _en, selectRandom [[(aimPos _en select 0) - 1,aimPos _en select 1,aimPos _en select 2],[(aimPos _en select 0) + 1,aimPos _en select 1,aimPos _en select 2],[(aimPos _en select 0) - 2,aimPos _en select 1,aimPos _en select 2],[(aimPos _en select 0) + 2,aimPos _en select 1,aimPos _en select 2],[eyePos _en select 0, eyePos _en select 1,(eyePos _en select 2) + 2],[eyePos _en select 0, eyePos _en select 1,(eyePos _en select 2) + 2],[eyePos _en select 0, eyePos _en select 1,(eyePos _en select 2) + 1]], (selectRandom [120,150,160]), false, [0,0,0]] spawn Bugzz_fnc_ProjectileCreate;						
 			};
 
+			case (_mantis isKindOf "MAR_ANTWASP"):{
+				_mantis setVariable ["WBK_OPTRE_AfterContact",1];
+				_mantis spawn {uisleep selectRandom [1,2,3,4]; _this setVariable ["IsCanFire",nil];};																				
+				uiSleep 0.3;				
+				[_mantis,_mantis modelToWorldVisual [0,5,1],"B_Stinger", _en, selectRandom [[(aimPos _en select 0) - 1,aimPos _en select 1,aimPos _en select 2],[(aimPos _en select 0) + 1,aimPos _en select 1,aimPos _en select 2],[(aimPos _en select 0) - 2,aimPos _en select 1,aimPos _en select 2],[(aimPos _en select 0) + 2,aimPos _en select 1,aimPos _en select 2],[eyePos _en select 0, eyePos _en select 1,(eyePos _en select 2) + 2],[eyePos _en select 0, eyePos _en select 1,(eyePos _en select 2) + 2],[eyePos _en select 0, eyePos _en select 1,(eyePos _en select 2) + 1]], (selectRandom [40,50,55]), false, [0,0,0]] spawn Bugzz_fnc_ProjectileCreate;	
+				[_mantis,_mantis modelToWorldVisual [0,5,1],"B_Stinger", _en, selectRandom [[(aimPos _en select 0) - 1,aimPos _en select 1,aimPos _en select 2],[(aimPos _en select 0) + 1,aimPos _en select 1,aimPos _en select 2],[(aimPos _en select 0) - 2,aimPos _en select 1,aimPos _en select 2],[(aimPos _en select 0) + 2,aimPos _en select 1,aimPos _en select 2],[eyePos _en select 0, eyePos _en select 1,(eyePos _en select 2) + 2],[eyePos _en select 0, eyePos _en select 1,(eyePos _en select 2) + 2],[eyePos _en select 0, eyePos _en select 1,(eyePos _en select 2) + 1]], (selectRandom [40,50,55]), false, [0,0,0]] spawn Bugzz_fnc_ProjectileCreate;	
+				[_mantis,_mantis modelToWorldVisual [0,5,1],"B_Stinger", _en, selectRandom [[(aimPos _en select 0) - 1,aimPos _en select 1,aimPos _en select 2],[(aimPos _en select 0) + 1,aimPos _en select 1,aimPos _en select 2],[(aimPos _en select 0) - 2,aimPos _en select 1,aimPos _en select 2],[(aimPos _en select 0) + 2,aimPos _en select 1,aimPos _en select 2],[eyePos _en select 0, eyePos _en select 1,(eyePos _en select 2) + 2],[eyePos _en select 0, eyePos _en select 1,(eyePos _en select 2) + 2],[eyePos _en select 0, eyePos _en select 1,(eyePos _en select 2) + 1]], (selectRandom [40,50,55]), false, [0,0,0]] spawn Bugzz_fnc_ProjectileCreate;						
+			};
+			
+
 			case (_mantis isKindOf "MAR_ANT_QUEEN"):{
 				_mantis spawn {uisleep 35; _this setVariable ["IsCanFire",nil];};
 				for "_i" from 1 to 3 do {
@@ -1273,6 +1311,92 @@ Bugzz_fnc_ProjectileCreate = {
 	_rocket setShotParents [vehicle _shooter, _shooter];  
 	private _currentPos = getPosASLVisual _rocket;   
 	private _targetPos = _tgtPos;   
+	if (_rocket isKindOf "B_Stinger") then {
+		private _stinger = "P_Stinger_Prop"createVehicle position _rocket;
+		_stinger attachTo [_rocket,[0,0,0]];		
+		_rocket setVariable ["spikespawned",_stinger,true];
+		_stinger spawn {uiSleep 35; deleteVehicle _this;};
+		if (isNil "Marb_Brute_DamagedParts") then {
+		// checking to see if the variable is already in play, if not continuing with the script
+		Marb_Brute_DamagedParts = [];// making the variable
+		addMissionEventHandler ["Draw3D", {
+			Marb_Brute_DamagedParts = Marb_Brute_DamagedParts - [0];// asigning the base value
+			{
+				_x params ["_entity", "_obj", "_pos", "_vup", "_selection", "_time", "_objCount"];// setting base params of the variable "_x" is basically "_this" in this case
+
+				if (time > _time) then {
+					// creating the time check to delete old spikes 
+					deleteVehicle _obj;// deleting old spikes
+					Marb_Brute_DamagedParts set [_forEachIndex, 0];// resetting the damaged parts after deleting the spikes
+					continue;
+				};
+
+				if (_selection == "") then {
+					_obj setPosWorld (_entity modelToWorldVisualWorld _pos);
+					_obj setVectorDirAndUp (_vup apply {
+						_entity vectorModelToWorldVisual _x
+					});
+					continue;
+				};
+				_entity selectionVectorDirAndUp [_selection, 7e15] params ["_y", "_z"];
+				_x = _y vectorCrossProduct _z;
+				_m = matrixTranspose [_x, _y, _z];
+				_pos = flatten(_m matrixMultiply _pos) vectorAdd (_entity selectionPosition [_selection, 7e15]);
+				_obj setPosWorld (_entity modelToWorldVisualWorld _pos);
+				_obj setVectorDirAndUp (_vup apply {
+					_entity vectorModelToWorldVisual flatten(_m matrixMultiply _x)
+				});
+			} forEach Marb_Brute_DamagedParts;
+		}];
+	};
+
+	_rocket addEventHandler ["HitPart", {
+		// the primary sauce, adding the hit part event handler that creates our spikes and attaches it to the lad thanks to the variable above
+		params [ "_projectile", "_entity", "_projectileOwner", "_pos", "_velocity", "_normal", "_components", "_radius", "_surfaceType"];
+          
+		if (isNull _entity) exitWith {};// no object means script do nothing
+		if (count _components == 0) exitWith {
+			// object has no components, we stick a spike in it and lock it in place so it moves with doors and such
+			private _bruteSpike = _projectile getVariable "spikespawned";
+			
+			_relpos = _entity worldToModel ASLToAGL _pos;
+			_vup = [vectorDir _projectile, vectorUp _projectile] apply {
+				_entity vectorWorldToModel _x
+			};
+			 deleteVehicle _projectile;
+			Marb_Brute_DamagedParts pushBack [_entity, _bruteSpike, _relpos, _vup, "", time + 10];
+		};
+
+		{
+			_selection = _x;
+			private _bruteSpike = _projectile getVariable "spikespawned";// oject has selections so we can stick spikes in the lad!
+
+			_relpos = _entity worldToModel ASLToAGL _pos;
+
+			_entity selectionVectorDirAndUp [_selection, 7e15] params ["_y", "_z"];
+			_x = _y vectorCrossProduct _z;
+			_m = [_x, _y, _z];
+
+			_relpos = _relpos vectorDiff (_entity selectionPosition [_selection, 7e15]) apply {
+				[_x]
+			};
+			_relpos = _m matrixMultiply _relpos;
+			_vup = [vectorDir _projectile, vectorUp _projectile] apply {
+				_m matrixMultiply (_entity vectorWorldToModel _x apply {
+					[_x]
+				})
+			};
+			deleteVehicle _projectile;
+			_objCounter = 0;
+			_objCount = (_objCounter + 1);
+
+			Marb_Brute_DamagedParts pushBack [_entity, _bruteSpike, _relpos, _vup, _selection, time + 7];// pushing back to the variable above i believe...arma wiki says 
+			// "insert an element to the back of the given array. This command modifies the original array"
+		} forEach _Components;
+	}];
+
+	};
+
 	if (_rocket isKindOf "B_BugsLife_Acid_Spit") then {
 		[_rocket, {
 			if (isDedicated) exitWith {};
@@ -1405,8 +1529,42 @@ Bugzz_fnc_ProjectileCreate = {
 	deleteVehicle _rocket;
 };
 
-//antqueen functions 
+BugsLife_ColliderSpawn_FNC = {
 
+	params ["_unit"];
+
+	private _thorax = createVehicle ["collider_Rectangle",position _unit,[],0,"CAN_COLLIDE"];
+	_thorax attachTo [_unit,[0,0,0],"a_thorax",true];
+
+	private _colliderArray = [_thorax];
+
+	{
+		_x allowDamage false;
+		
+		_x addEventHandler ["HitPart", {
+				
+			(_this select 0) params ["_target", "_shooter", "_projectile", "_position", "_velocity", "_selection", "_ammo", "_vector", "_radius", "_surfaceType", "_isDirect"]; 
+			_pappy = attachedTo _target;
+			if (isNil "_pappy") then {deleteVehicle _target};
+			if ( ((str (side _shooter) == "CIV") and (((currentWeapon _shooter) == ""))) or (captive _shooter)) exitWith {};
+			if ( ( !([(side _shooter), (side _target)] call BIS_fnc_sideIsEnemy) and (str (side _target) != "CIV")) or (captive _target)) exitWith {};
+																								
+			private _currentHealth = _pappy getVariable ["WBK_SynthHP",MAR_BL_ANTWASPHLTTH]; 
+
+			private _ProjHit = _ammo#0;
+			private _newHealth = [_currentHealth - _ProjHit, 0, 500] call BIS_fnc_clamp;
+
+			_pappy setVariable ["WBK_SynthHP", _newHealth, true];
+			
+
+		}];
+		
+
+	}forEach _colliderArray;
+
+};
+
+//antqueen functions 
 
 BugsLife_AntQueen_MinionSummon_FNC = 
 {

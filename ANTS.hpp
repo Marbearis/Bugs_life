@@ -177,9 +177,9 @@
         editorSubcategory = "MAR_Bugs_Ants";
         displayName = "Ant Wasp";
         model = "\Bugs_life\Ants\antwasp.p3d";
-        //hiddenSelections[] = {"camo","eyes","camo1"};
-        //hiddenSelectionsTextures[] = {"\Bugs_life\Ants\textures\queen\body_CO.paa","\Bugs_life\Ants\textures\queen\body_CO.paa","\Bugs_life\Ants\textures\queen\eggAbdomen_CO.paa"};
-        //hiddenSelectionsMaterials[] = {"\Bugs_life\Ants\textures\queen\body.rvmat","\Bugs_life\Ants\textures\queen\body.rvmat","\Bugs_life\Ants\textures\queen\eggAbdomen.rvmat"};
+        hiddenSelections[] = {"camo","eyes"};
+        hiddenSelectionsTextures[] = {"\Bugs_life\Ants\textures\antwasp\antwasp_CO.paa","\Bugs_life\Ants\textures\antwasp\antwasp_CO.paa"};
+        hiddenSelectionsMaterials[] = {"\Bugs_life\Ants\textures\antwasp\antwasp.rvmat","\Bugs_life\Ants\textures\antwasp\antwasp.rvmat"};
         uniformClass = "ANT_Uniform_AntWasp";
         nakedUniform = "ANT_Uniform_AntWasp";
         _generalMacro = "MAR_ANT_Wasp";
