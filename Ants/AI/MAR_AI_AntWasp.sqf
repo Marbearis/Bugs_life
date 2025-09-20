@@ -20,12 +20,17 @@ _gruntBoy setVariable ["WBK_CovieAI", 1];
 _gruntBoy allowFleeing 0;
 sleep (selectRandom [0.1,0.5,0.3,0.9]);
 
+
+
 if !(isNil "WBK_IsPresent_PIR") then {
 	_gruntBoy setVariable ["dam_ignore_hit0",true,true];
 	_gruntBoy setVariable ["dam_ignore_effect0",true,true];
 };
 _gruntBoy call BugsLife_ColliderSpawn_FNC;
 _gruntBoy setUnitPos "UP";
+if (_gruntBoy getVariable ["isFlying",true]) then {
+	[_gruntBoy,["ANT_Wasp_Hover", 0, 0.7, false]] remoteExec ["switchMove",0];
+};
 _gruntBoy spawn {
 sleep 0.7;
 _this doMove (getPos _this);
@@ -120,7 +125,7 @@ _gruntBoy addEventHandler ["Suppressed", {
 			[_target, "WBK_Halo_Hit",[_target,_shooter]] call BIS_fnc_callScriptedEventHandler;
 			_target setVariable ["WBK_SynthHP",_new_vv,true];
 			if (!(isNull objectParent _target) or !(isTouchingGround _target) or (animationState _target == "ANT_Hit_B") or (animationState _target == "ANT_Hit_F") or (animationState _target == "ANT_Death")) exitWith {};
-		
+		/*
 			if ((isNil{_target getVariable "canBeStunned"}) && (_isEnoughDamage > 12))then
 			{
 				_target setVariable ["canBeStunned",false,true];
@@ -131,6 +136,7 @@ _gruntBoy addEventHandler ["Suppressed", {
 				};
 				[_target,["ANT_Hit_F", 0, 0.7, false]] remoteExec ["switchMove",0];
 			};
+		*/
 		}
 	];
 }] remoteExec ["spawn", [0,-2] select isDedicated,true];
@@ -190,23 +196,23 @@ _actFr = [{
 					!(animationState _mutant == "ANT_Attack_1")and
 					(gestureState _mutant == "Ant_5ft") and 
 					!(animationState _mutant == "ANT_Attack_Ranged")and  								
-					((_en distance _mutant) < 2.5) and ((_en distance _mutant) > 0) and
+					((_en distance _mutant) < 3) and ((_en distance _mutant) > 0) and
 					!(isNull _en) and 
 					(alive _en) and 
 					!((vehicle _en) isKindOf "Tank") and 
 					!((vehicle _en) isKindOf "Air")): {
-					
+						[_unit, "Ant_Grounded"] remoteExec ["playGesture",0];
 						[_mutant,_en] spawn Bugslife_ANTMelee;
 						[_mutant, "WBK_Halo_Melee",[_mutant,_en]] call BIS_fnc_callScriptedEventHandler;
 				};
 			
 
-				case ((_ins >= 0.8) and
+				case ((_ins >= 0.2) and
 					(isNil {_mutant getVariable "IsCanFire"}) and
 					(isNull objectParent _mutant) and					
 					!(animationState _mutant == "ANT_Attack_1")and
 					!(animationState _mutant == "ANT_Attack_Ranged")and  								
-					((_en distance _mutant) < 90) and ((_en distance _mutant) > 2.5) and
+					((_en distance _mutant) < 300) and ((_en distance _mutant) > 2.5) and
 					!(isNull _en) and 
 					(((_mutant worldToModel (_en modelToWorld [0, 0, 0])) select 0) < 7) and
 					(alive _en)): {
@@ -243,7 +249,7 @@ _loopPathfind = [{
 	_nearEnemy = _unit findNearestEnemy _unit; 
 
 	switch true do {
-		case (!(simulationEnabled _unit) || !(isNull (remoteControlled _unit)) || (isNull _nearEnemy) or !(alive _nearEnemy) or !(alive _unit) or !(isNull attachedTo _unit) or (lifeState _unit == "INCAPACITATED") or (_unit distance _nearEnemy >= 500)): {
+		case (!(simulationEnabled _unit) || !(isNull (remoteControlled _unit)) || (isNull _nearEnemy) or !(alive _nearEnemy) or !(alive _unit) or !(isNull attachedTo _unit) or (lifeState _unit == "INCAPACITATED") or (_unit distance _nearEnemy >= 900)): {
 			switch true do {
 				case !(isNil {_unit getVariable "WBK_IsUnitLocked"}): {_unit setVariable ["WBK_IsUnitLocked",nil];};
 				default {};

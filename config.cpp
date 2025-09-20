@@ -41,6 +41,7 @@ class CfgEditorSubcategories
 
 class cfgFactionClasses
 {
+    class NO_CATEGORY;
 	class MAR_Bug_Faction
 		{
             displayName = "Bugs"; 
@@ -48,6 +49,10 @@ class cfgFactionClasses
             priority = 1; 
             side = 0; 
 		};
+    class MAR_BugModules:NO_CATEGORY
+    {
+        displayName = "Critter Modules";
+    };
 };
 
 ///---
@@ -57,6 +62,26 @@ class Eventhandlers;
 
 class CfgVehicles
 { 
+    class Logic;
+	class Module_F : Logic
+	{
+		class AttributesBase
+		{
+			class Default;
+			class Edit;					// Default edit box (i.e. text input field)
+			class Combo;				// Default combo box (i.e. drop-down menu)
+			class Checkbox;				// Default checkbox (returned value is Boolean)
+			class CheckboxNumber;		// Default checkbox (returned value is Number)
+			class ModuleDescription;	// Module description
+			class Units;				// Selection of units on which the module is applied
+		};
+
+		// Description base classes (for more information see below):
+		class ModuleDescription
+		{
+			class AnyBrain;
+		};
+	};
 	class House_F; // External class reference
 	class Items_base_F; // External class reference
 	class Land_Basketball_01_F; // External class reference
@@ -546,6 +571,8 @@ class CfgVehicles
     };
     #include "Spiders.hpp"
     #include "ANTS.hpp"
+    //Modules
+    
 };
 
 class WeaponFireGun;
@@ -2529,6 +2556,8 @@ class CfgMoves_MAR_ANT_Queen: CfgMovesMaleSdr
                 "ANT_Queen_inAir",
                 0.01,
                 "ANT_Queen_Landing",
+                0.01,
+                "ANT_ClimbOut",
                 0.01				
 			};
             interpolateFrom[]=
@@ -2666,11 +2695,7 @@ class CfgMoves_MAR_ANT_Queen: CfgMovesMaleSdr
                 actions = "MAR_ANTQueen_ClimbOut";		
                 looped = false;
                 speed = -4;
-                InterpolateTo[]=
-                {
-                    "ANT_Queen_Idle",
-                    0.01							                                
-                };
+               
             };
             class ANT_Attack_Ranged:ANT_AssOutIdle
             {
@@ -2974,7 +2999,8 @@ class CfgMoves_MAR_ANT_Wasp: CfgMovesMaleSdr
             {
                 file = "\Bugs_life\Ants\animations\antwasp\antwaspdeath.rtm";
                 speed = -1.2;        
-                terminal = true;                   
+                terminal = true;   
+                soundOverride="";                
             };
           
 
@@ -3325,6 +3351,8 @@ class Extended_InitPost_EventHandlers
            init = "_unit = _this select 0; if (local _unit) then {[_unit] execVM '\Bugs_life\Spiders\AI\MAR_AI_basicSpider.sqf';};";
         };						
     };
+
+   
     
 };
 

@@ -104,6 +104,7 @@
 
 		class B_Stinger: B_408_Ball{
 			model = "Bugs_Life\Projectiles\stinger.p3d";
+			hit = 19;
 			tracerScale = 1.0; /// how big is the flying tracer
 			tracerStartTime = 0.00; // seconds
 			tracerEndTime = 1; // seconds

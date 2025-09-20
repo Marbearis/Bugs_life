@@ -69,8 +69,8 @@ class CfgCloudlets {
     class MAR_BugGut_Mist_Blue:MAR_BugGut_Mist_Green {
         color[]=
         {
-            {,0.6,1,0.12},
-            {,0.6,1,0.050000001}
+            {0,0.6,1,0.12},
+            {0,0.6,1,0.050000001}
         };
         emissiveColor[] = {{ 0, 0.5, 1, 1 }};
     };
@@ -78,8 +78,8 @@ class CfgCloudlets {
     class MAR_BugGuts_Blue:MAR_BugGuts_Green{
         color[]=
         {
-            {,0.6,1,0.12},
-            {,0.6,1,0.050000001}
+            {0,0.6,1,0.12},
+            {0,0.6,1,0.050000001}
         };
         emissiveColor[] = {{ 0, 0.5, 1, 1 }};
     };

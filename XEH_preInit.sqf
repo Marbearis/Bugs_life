@@ -193,7 +193,7 @@
 
 Bugzlife_SpawnAntHill = {
 
-    params ["_position",["_dropside",[east]],["_linger", false],"_AntHillHP","_spawnAmount","_antType"];
+    params ["_position",["_dropside",[[east]]],["_linger", false],"_AntHillHP","_spawnAmount","_antType"];
 
     _position= (ASLtoATL _position);
 
@@ -1226,7 +1226,10 @@ BugsLife_RangedAttack_FNC= {
 
 	params ["_mantis","_en"];
 	_mantis setVariable ["IsCanFire",1]; 
-		
+	if (_mantis isKindOf "MAR_ANTWASP") then {
+		_mantis spawn {uisleep 4; _this setVariable ["IsCanFire",nil,true];};	
+	};
+	
 	[_mantis,["ANT_Attack_Ranged", 0, 0.2, false]] remoteExec ["switchMove",0];
 	_meleeSounds = [
 		"\Bugs_life\data\AntSounds\antSpit.ogg"
@@ -1255,22 +1258,22 @@ BugsLife_RangedAttack_FNC= {
 
 			case (_mantis isKindOf "MAR_ANTWASP"):{
 				_mantis setVariable ["WBK_OPTRE_AfterContact",1];
-				_mantis spawn {uisleep selectRandom [1,2,3,4]; _this setVariable ["IsCanFire",nil];};																				
-				uiSleep 0.3;				
-				[_mantis,_mantis modelToWorldVisual [0,5,1],"B_Stinger", _en, selectRandom [[(aimPos _en select 0) - 1,aimPos _en select 1,aimPos _en select 2],[(aimPos _en select 0) + 1,aimPos _en select 1,aimPos _en select 2],[(aimPos _en select 0) - 2,aimPos _en select 1,aimPos _en select 2],[(aimPos _en select 0) + 2,aimPos _en select 1,aimPos _en select 2],[eyePos _en select 0, eyePos _en select 1,(eyePos _en select 2) + 2],[eyePos _en select 0, eyePos _en select 1,(eyePos _en select 2) + 2],[eyePos _en select 0, eyePos _en select 1,(eyePos _en select 2) + 1]], (selectRandom [40,50,55]), false, [0,0,0]] spawn Bugzz_fnc_ProjectileCreate;	
-				[_mantis,_mantis modelToWorldVisual [0,5,1],"B_Stinger", _en, selectRandom [[(aimPos _en select 0) - 1,aimPos _en select 1,aimPos _en select 2],[(aimPos _en select 0) + 1,aimPos _en select 1,aimPos _en select 2],[(aimPos _en select 0) - 2,aimPos _en select 1,aimPos _en select 2],[(aimPos _en select 0) + 2,aimPos _en select 1,aimPos _en select 2],[eyePos _en select 0, eyePos _en select 1,(eyePos _en select 2) + 2],[eyePos _en select 0, eyePos _en select 1,(eyePos _en select 2) + 2],[eyePos _en select 0, eyePos _en select 1,(eyePos _en select 2) + 1]], (selectRandom [40,50,55]), false, [0,0,0]] spawn Bugzz_fnc_ProjectileCreate;	
-				[_mantis,_mantis modelToWorldVisual [0,5,1],"B_Stinger", _en, selectRandom [[(aimPos _en select 0) - 1,aimPos _en select 1,aimPos _en select 2],[(aimPos _en select 0) + 1,aimPos _en select 1,aimPos _en select 2],[(aimPos _en select 0) - 2,aimPos _en select 1,aimPos _en select 2],[(aimPos _en select 0) + 2,aimPos _en select 1,aimPos _en select 2],[eyePos _en select 0, eyePos _en select 1,(eyePos _en select 2) + 2],[eyePos _en select 0, eyePos _en select 1,(eyePos _en select 2) + 2],[eyePos _en select 0, eyePos _en select 1,(eyePos _en select 2) + 1]], (selectRandom [40,50,55]), false, [0,0,0]] spawn Bugzz_fnc_ProjectileCreate;						
+																						
+				uiSleep 0.25;	
+				for "_i" from 1 to 3 do {
+					[_mantis,_mantis modelToWorldVisual [0,5,1],"B_Stinger", _en, selectRandom [aimPos _en,aimPos _en ,aimPos _en,aimPos _en,[eyePos _en select 0, eyePos _en select 1,(eyePos _en select 2) + 2],[eyePos _en select 0, eyePos _en select 1,(eyePos _en select 2) + 2],[eyePos _en select 0, eyePos _en select 1,(eyePos _en select 2) + 1]], (selectRandom [90,100,60]), false, [0,0,0]] spawn Bugzz_fnc_ProjectileCreate;	
+				};					
 			};
 			
 
 			case (_mantis isKindOf "MAR_ANT_QUEEN"):{
 				_mantis spawn {uisleep 35; _this setVariable ["IsCanFire",nil];};
-				for "_i" from 1 to 3 do {
+				for "_i" from 1 to 8 do {
 					
 					[_mantis,["ANT_Attack_Ranged", 0, 0.2, false]] remoteExec ["switchMove",0];	
 					uiSleep 0.3;				
 					[_mantis,((_mantis modelToWorldVisual (_mantis selectionPosition "a_butt"))),"B_Bugslife_EggMortar", _en,  [(aimPos _en select 0) + (selectRandom [0,3,4,5,-3,-4,-5]),(aimPos _en select 1)+(selectRandom [0,3,4,5,-3,-4,-5]),(aimPos _en select 2)+(20)], (15+((_mantis distance _en)/6)), false, [0,0,0]] spawn Bugzz_fnc_ProjectileCreate;		
-					uiSleep 1;
+					uiSleep 0.5;
 					[_mantis,["ANT_AssOutIdle", 0, 0.2, false]] remoteExec ["switchMove",0];	
 				};
 				uiSleep 4;
@@ -1532,35 +1535,83 @@ Bugzz_fnc_ProjectileCreate = {
 BugsLife_ColliderSpawn_FNC = {
 
 	params ["_unit"];
+	switch true do {
+		case (_unit isKindof "MAR_ANTWASP"):{
+			private _thorax = createVehicle ["collider_Rectangle",position _unit,[],0,"CAN_COLLIDE"];
+			_thorax attachTo [_unit,[0,0,0],"a_thorax",true];
 
-	private _thorax = createVehicle ["collider_Rectangle",position _unit,[],0,"CAN_COLLIDE"];
-	_thorax attachTo [_unit,[0,0,0],"a_thorax",true];
+			private _colliderArray = [_thorax];
 
-	private _colliderArray = [_thorax];
-
-	{
-		_x allowDamage false;
-		
-		_x addEventHandler ["HitPart", {
+			{
+				_x allowDamage false;
 				
-			(_this select 0) params ["_target", "_shooter", "_projectile", "_position", "_velocity", "_selection", "_ammo", "_vector", "_radius", "_surfaceType", "_isDirect"]; 
-			_pappy = attachedTo _target;
-			if (isNil "_pappy") then {deleteVehicle _target};
-			if ( ((str (side _shooter) == "CIV") and (((currentWeapon _shooter) == ""))) or (captive _shooter)) exitWith {};
-			if ( ( !([(side _shooter), (side _target)] call BIS_fnc_sideIsEnemy) and (str (side _target) != "CIV")) or (captive _target)) exitWith {};
-																								
-			private _currentHealth = _pappy getVariable ["WBK_SynthHP",MAR_BL_ANTWASPHLTTH]; 
+				_x addEventHandler ["HitPart", {
+						
+					(_this select 0) params ["_target", "_shooter", "_projectile", "_position", "_velocity", "_selection", "_ammo", "_vector", "_radius", "_surfaceType", "_isDirect"]; 
+					_pappy = attachedTo _target;
+					if (isNil "_pappy") then {deleteVehicle _target};
+					if ( ((str (side _shooter) == "CIV") and (((currentWeapon _shooter) == ""))) or (captive _shooter)) exitWith {};
+					if ( ( !([(side _shooter), (side _target)] call BIS_fnc_sideIsEnemy) and (str (side _target) != "CIV")) or (captive _target)) exitWith {};
+																										
+					private _currentHealth = _pappy getVariable ["WBK_SynthHP",MAR_BL_ANTWASPHLTTH]; 
 
-			private _ProjHit = _ammo#0;
-			private _newHealth = [_currentHealth - _ProjHit, 0, 500] call BIS_fnc_clamp;
+					private _ProjHit = _ammo#0;
+					private _newHealth = [_currentHealth - _ProjHit, 0, 500] call BIS_fnc_clamp;
 
-			_pappy setVariable ["WBK_SynthHP", _newHealth, true];
+					_pappy setVariable ["WBK_SynthHP", _newHealth, true];
+					
+
+				}];
+				
+
+			}forEach _colliderArray;
+		};
+
+		case (_unit isKindof "MAR_ANT_QUEEN"):{
+			private _thorax = createVehicle ["collider_Rectangle",position _unit,[],0,"CAN_COLLIDE"];
+			_thorax attachTo [_unit,[0,-0.6,0],"a_thorax",true];
+
+			private _mid = createVehicle ["collider_Rectangle",position _unit,[],0,"CAN_COLLIDE"];
+			_mid attachTo [_unit,[0,-0.7,0],"a_mid",true];
+
+			private _abdomen_0 = createVehicle ["collider_Rectangle",position _unit,[],0,"CAN_COLLIDE"];
+			_abdomen_0 attachTo [_unit,[0,-3,0],"a_abdomen",true];
+			_abdomen_0 setObjectScale 3;
+
+			private _abdomen_1 = createVehicle ["collider_Rectangle",position _unit,[],0,"CAN_COLLIDE"];
+			_abdomen_1 attachTo [_unit,[0,4,2],"a_abdomen.002",true];
+			_abdomen_1 setObjectScale 3;
 			
+			private _colliderArray = [_thorax,_mid,_abdomen_0,_abdomen_1];
 
-		}];
-		
+			{
+				_x allowDamage false;
+				
+				_x addEventHandler ["HitPart", {
+						
+					(_this select 0) params ["_target", "_shooter", "_projectile", "_position", "_velocity", "_selection", "_ammo", "_vector", "_radius", "_surfaceType", "_isDirect"]; 
+					_pappy = attachedTo _target;
+					if (isNil "_pappy") then {deleteVehicle _target};
+					if ( ((str (side _shooter) == "CIV") and (((currentWeapon _shooter) == ""))) or (captive _shooter)) exitWith {};
+					if ( ( !([(side _shooter), (side _target)] call BIS_fnc_sideIsEnemy) and (str (side _target) != "CIV")) or (captive _target)) exitWith {};
+																										
+					private _currentHealth = _pappy getVariable ["WBK_SynthHP",MAR_BL_ANTWASPHLTTH]; 
 
-	}forEach _colliderArray;
+					private _ProjHit = _ammo#0;
+					private _newHealth = [_currentHealth - _ProjHit, 0, 500] call BIS_fnc_clamp;
+
+					_pappy setVariable ["WBK_SynthHP", _newHealth, true];
+					
+
+				}];
+				
+
+			}forEach _colliderArray;
+		};
+
+		default{};
+	};
+	
 
 };
 
@@ -1730,7 +1781,10 @@ BugsLife_AntQueen_ReturnToOGPOS = {
 	_OGPOS = _unit getVariable "OgPos";
 	_soundArray_wonk = ["\Bugs_life\data\AntSounds\ANT_Erupt_1.ogg","\Bugs_life\data\AntSounds\ANT_Erupt_2.ogg","\Bugs_life\data\AntSounds\ANT_Erupt_3.ogg"];	
 	playSound3D [selectRandom _soundArray_wonk, _unit];
-	[_unit,["ANT_Climb_INAss", 0, 0.2, false]] remoteExec ["switchMove",0];
+	if (isNil {_unit getVariable ["underGround",nil]}) then {
+		[_unit,["ANT_Climb_INAss", 0, 0.2, false]] remoteExec ["switchMove",0];
+	};
+	
 
 	uiSleep 5;
 	_unit setPosATL _OGPOS;
@@ -1738,7 +1792,10 @@ BugsLife_AntQueen_ReturnToOGPOS = {
 	[_unit,["ANT_ClimbOut", 0, 0.2, false]] remoteExec ["switchMove",0];
 	_soundArray_wonk = ["\Bugs_life\data\AntSounds\ANT_Erupt_1.ogg","\Bugs_life\data\AntSounds\ANT_Erupt_2.ogg","\Bugs_life\data\AntSounds\ANT_Erupt_3.ogg"];	
 	playSound3D [selectRandom _soundArray_wonk, _unit];
+	uiSleep 4;
 	_unit setVariable ["assUp",nil,true];
+	_unit setVariable ["underGround",nil,true];
+	
 	
 };
 
@@ -1785,4 +1842,113 @@ BugsLife_AntQueen_FireBreath = {
 	
 	
 	
+};
+
+BugsLife_AntQueen_Volcano = {
+	params ["_unit",["_radius",15],"_en"];
+	if (isDedicated) exitWith {};
+	_unit setVariable ["underGround",1,true];
+	_unit setVariable ["isVolcanoSummon",1,true];
+	_unit spawn {uiSleep 30; _this setVariable ["isVolcanoSummon",nil,true];};
+	_Deform_in =  createVehicle ["MAR_antcraterDirt",getPosATL _unit,[],0,"CAN_COLLIDE"];
+	_groundTexture = surfaceTexture getPosATL _Deform_in;
+	_Deform_in setObjectTextureGlobal [0,_groundTexture];			
+    _Deform_in setVectorUp surfaceNormal position _Deform_in;
+	_Deform_in animateSource ['Anthill_Raised',-0.9,5];
+	_Deform_in spawn {
+			uiSleep 30;
+			_this animateSource ['Anthill_Raised',1,5];
+			uiSleep 3;
+			deleteVehicle _this;
+	};
+	[_unit,["ANT_Climb_IN", 0, 0.2, false]] remoteExec ["switchMove",0];
+	
+	_soundArray_wonk = ["\Bugs_life\data\AntSounds\ANT_Erupt_1.ogg","\Bugs_life\data\AntSounds\ANT_Erupt_2.ogg","\Bugs_life\data\AntSounds\ANT_Erupt_3.ogg"];	
+	playSound3D [selectRandom _soundArray_wonk, _unit];
+
+	_unit setVariable["OgPos",getPosATL _unit,true];
+
+	uiSleep 3;
+	_unit spawn {uisleep 35; _this setVariable ["IsCanSummon",nil];};
+	_soundArray_wonk = ["\Bugs_life\data\AntSounds\AntQueen_Screech.ogg"];
+	playSound3D [selectRandom _soundArray_wonk, _unit,false, getPosASL _unit, 5, 1, 0];
+	
+	_playersInArea = (allUnits inAreaArray [(getPos _unit), _radius, _radius, _radius, false]);
+	playercountErupt = 0;
+	{
+		_rollingCount = playercountErupt;
+		if (side _x != side _unit) then {playercountErupt = _rollingCount+1; systemChat str playercountErupt;};
+	}forEach _playersInArea;
+	systemChat str playercountErupt;
+	if (playercountErupt <= 2) then {
+		playercountErupt = 4;
+	}else {};
+
+	for "_i" from 1 to playercountErupt do {			
+		if ((alive _unit)) then 	
+		{
+			_PosOffset = getPosATL _en;
+			
+			
+			_spawn = _PosOffset;
+			_Deform =  createVehicle ["MAR_antcraterDirt",_PosOffset,[],4,"CAN_COLLIDE"];
+			_Deform setObjectScale 0.8;
+			_groundTexture = surfaceTexture getPosATL _Deform;
+			_Deform setObjectTextureGlobal [0,_groundTexture];			
+       		_Deform setVectorUp surfaceNormal position _Deform;
+			_Deform animateSource ['Anthill_Raised',-0.65,5];
+
+			_Deform spawn {
+				uiSleep 30;
+				_this animateSource ['Anthill_Raised',1,10];
+				uiSleep 3;
+				deleteVehicle _this;
+			};
+			uiSleep 1;
+			
+			
+			_soundArray = ["A3\sounds_f\sfx\explosion1.wss","A3\sounds_f\sfx\explosion2.wss","A3\sounds_f\sfx\explosion3.wss"];		
+			playSound3D [selectRandom _soundArray, _Deform];		
+			if ((player distance _unit) <= 12) then {
+				enableCamShake true; 
+				addCamShake [2, 2, 1];
+			};
+
+			_DeformPos = getPosATL _Deform;		
+			[_DeformPos,{ 
+					_fulgiOffset =_this;
+				if (isDedicated) exitWith {}; 
+				_pos = _this;
+				_dustEffect = "#particlesource" createVehicleLocal _pos; 
+				_dustEffect setParticleClass "HDustVTOL1"; 
+				_dustEffect setParticleCircle[0, [0, 0, 0]]; 
+				_rocks1 = "#particlesource" createVehicleLocal _this; 
+				_rocks1 setposASL [_this#0,_this#1,(_this#2)+2]; 
+				_rocks1 setParticleParams[["\A3\data_f\ParticleEffects\Universal\Mud.p3d", 1, 0, 1], "", "SpaceObject", 1, 12.5, [0, 0, 0], [0, 0, 5], 5, 100, 7.9, 1, [.15, .15], [ 
+                    [0.1, 0.1, 0.1, 1], 
+                    [0.25, 0.25, 0.25, 0.5], 
+                    [0.5, 0.5, 0.5, 0] 
+                ], [0.08], 1, 0, "", "", _this, 0, false, 0.3]; 
+				_rocks1 setParticleRandom[0, [0, 0, 0], [1, 1, 6], 1, 1, [0, 0, 0, 0.1], 0, 0]; 
+				_rocks1 setDropInterval 0.01; 
+				_rocks1 setParticleCircle[0, [0, 0, 0]];
+
+				_fulgi  = "#particlesource" createVehiclelocal _fulgiOffset; 
+				_fulgi setParticleRandom [0, [1, 1, 0], [0, 0, 3], 3, 3, [0.2, 0.1, 0, 0.1], 0, 0];
+				_fulgi setDropInterval 0.004;
+				_fulgi setParticleCircle [1, [0.5,0.5, 0]];
+				_fulgi setParticleParams [["\A3\data_f\cl_exp", 1, 0, 1],"","Billboard",1,2,[0,0,0],[0,0,0],0,0.7,1,0,[0.05, 0.20],[[1,0.5,0.1,1]],[1],0,0,"","",_this, 0, false, -1, [[120,100,0.005,1],[120,90,0.005,1],[120,90,0.005,1]]]; 
+				_fulgi setParticleFire [2,2,0.3];
+				   
+				uiSleep 0.5;
+				deleteVehicle _rocks1; 					
+				deleteVehicle _dustEffect; 	
+				uisleep 7;
+				deleteVehicle _fulgi;  															    
+			}] remoteExec["spawn", 0, false];		
+		};
+		
+	};
+	uiSleep 8;
+	_unit spawn BugsLife_AntQueen_ReturnToOGPOS;
 };

@@ -84,6 +84,7 @@ switch true  do {
 		_gruntBoy setVariable ["WBK_SynthHP",MAR_BL_ANTQUEENHLTTH,true];
 		_gruntBoy setVariable ["WBK_SynthHPMax",MAR_BL_ANTQUEENHLTTH,true];
 		_gruntBoy setVariable ["IMS_IsUnitInvicibleScripted",true,true];
+		_gruntBoy call BugsLife_ColliderSpawn_FNC;
 	};
 
 	case (_gruntBoy isKindOf "MAR_ANTWASP"):{
@@ -278,6 +279,7 @@ _actFr = [{
 				case ((_ins >= 0.8) and
 					(_mutant isKindOf "MAR_ANT_QUEEN") and
 					(isNil {_mutant getVariable "IsCanBreathFire"}) and
+					(isNil {_mutant getVariable "underGround"}) and
 					(isNull objectParent _mutant) and 
 					!(animationState _mutant in ["ant_attack_1","ant_roar","ant_attack_ranged","ant_climb_outassup","ant_climb_in","ant_climb_inass","ant_climbout","ant_assoutidle","ant_pkfire"]) and														
 					((_en distance _mutant) < 40) and ((_en distance _mutant) > 2.5) and
@@ -307,18 +309,20 @@ _actFr = [{
 				case (
 				(_mutant isKindOf "MAR_ANT_QUEEN") and					
 				(isNil {_mutant getVariable "assUp"}) and
-				(isNil {_mutant getVariable "IsCanFire"}) and				
+				(isNil {_mutant getVariable "IsCanFire"}) and
+				(isNil {_mutant getVariable "underGround"}) and				
 				(isNull objectParent _mutant) and 
 				!(animationState _mutant in ["ant_attack_1","ant_roar","ant_attack_ranged","ant_climb_outassup","ant_climb_in","ant_climb_inass","ant_climbout","ant_assoutidle","ant_pkfire"]) and	 								
 				((_en distance _mutant) < 60) and ((_en distance _mutant) > 6) and
 				!(isNull _en) and 
 				(alive _en)): {
-						[_mutant,24] spawn BugsLife_AntQueen_ASSUP_FNC;									
+					[_mutant,24] spawn BugsLife_AntQueen_ASSUP_FNC;									
 				};	
 
 				case (
 				(_mutant isKindOf "MAR_ANT_QUEEN") and									
 				(isNil {_mutant getVariable "IsCanSummon"}) and
+				(isNil {_mutant getVariable "underGround"})and
 				(isNull objectParent _mutant) and 
 				(count(units group _mutant)<25) and 
 				!(animationState _mutant in ["ant_attack_1","ant_roar","ant_attack_ranged","ant_climb_outassup","ant_climb_in","ant_climb_inass","ant_climbout","ant_assoutidle","ant_pkfire"]) and	 								
@@ -329,17 +333,31 @@ _actFr = [{
 				};	
 
 				case (
+				(_mutant isKindOf "MAR_ANT_QUEEN") and									
+				(isNil {_mutant getVariable "underGround"}) and
+				
+				(isNull objectParent _mutant) and 
+				(_en isKindOf "MAN") and
+				(count(units group _mutant)<25) and 
+				!(animationState _mutant in ["ant_attack_1","ant_roar","ant_attack_ranged","ant_climb_outassup","ant_climb_in","ant_climb_inass","ant_climbout","ant_assoutidle","ant_pkfire"]) and	 								
+				((_en distance _mutant) < 100) and ((_en distance _mutant) > 2) and
+				!(isNull _en) and 
+				(alive _en)): {
+					[_mutant,150,_en] spawn BugsLife_AntQueen_Volcano;
+				};
+
+				case (
 					(_mutant isKindOf "MAR_ANT_QUEEN") and
 					(isNil {_mutant getVariable "IsCanFire"}) and
 					!(isNil {_mutant getVariable "assUp"}) and
+					(isNil {_mutant getVariable "underGround"}) and
 					(isNull objectParent _mutant) and 
-					!(animationState _mutant in ["ant_attack_1","ant_roar","ant_attack_ranged","ant_climb_outassup","ant_climb_in","ant_climbout"]) and											
+					!(animationState _mutant in ["ant_attack_1","ant_roar","ant_attack_ranged","ant_climb_outassup","ant_climb_in","ant_climbout","ant_pkfire"]) and											
 					((_en distance _mutant) < 90)and 
 					!(isNull _en) and 
 					(alive _en)): {
 						
-						[_mutant,_en] spawn BugsLife_RangedAttack_FNC;
-																	
+						[_mutant,_en] spawn BugsLife_RangedAttack_FNC;																	
 				};	
 				
 			};

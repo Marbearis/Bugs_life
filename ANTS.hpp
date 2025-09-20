@@ -192,7 +192,8 @@
         class SoundEnvironExt {		
             generic[] = {
                 {"run", {"\Bugs_life\data\AntSounds\antRun.ogg", 1, 1, 40}},
-                {"idle", {"\Bugs_life\data\AntSounds\idleChitter.ogg", 1, 1, 25}},                    
+                {"idle", {"\Bugs_life\data\AntSounds\idleChitter.ogg", 1, 1, 25}}, 
+                {"fly", {"\Bugs_life\data\AntSounds\antwaspfly.ogg", 3, 1, 100}},                     
                 {"walk", {"\Bugs_life\data\AntSounds\AntWalk.ogg", 1, 1, 25}},  
                 {"meleeAttack", {"\Bugs_life\data\AntSounds\antBite.ogg", 1, 1, 25}}, 
                 {"rangedAttack", {"\Bugs_life\data\AntSounds\antSpit.ogg", 1, 1, 100}}          
@@ -201,7 +202,8 @@
         class SoundEquipment {	
             soldier[] = {
                 {"run", {"\Bugs_life\data\AntSounds\antRun.ogg", 1, 1, 40}},
-                {"idle", {"\Bugs_life\data\AntSounds\idleChitter.ogg", 1, 1, 25}},                    
+                {"idle", {"\Bugs_life\data\AntSounds\idleChitter.ogg", 1, 1, 25}}, 
+                {"fly", {"\Bugs_life\data\AntSounds\antwaspfly.ogg", 3, 1, 100}},                    
                 {"walk", {"\Bugs_life\data\AntSounds\AntWalk.ogg", 1, 1, 25}},  
                 {"meleeAttack", {"\Bugs_life\data\AntSounds\antBite.ogg", 1, 1, 25}}, 
                 {"rangedAttack", {"\Bugs_life\data\AntSounds\antSpit.ogg", 1, 1, 100}} 
