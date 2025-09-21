@@ -9,7 +9,7 @@
 [ 
     "MAR_BL_BUGEXPLODECHANCE", 
     "SLIDER", 
-    ["bug explode chance"],
+    ["bug explode chance","odds of bugs exploding when killed(NOTE: this does not effect bugs that area designed to explode when killed)"],
     ["Marbearis' Bugs & critters","General Settings"],
     [0, 100, 5, 0],
     1,
@@ -17,6 +17,20 @@
         params ["_value"];  
         
 		MAR_BL_BUGEXPLODECHANCE = _value;
+    }
+] call CBA_fnc_addSetting;
+
+[ 
+    "MAR_BL_EGGSPAWNCHANCE", 
+    "SLIDER", 
+    ["egg unit spawn chance","odds of eggs spawning bugs when destroyed"],
+    ["Marbearis' Bugs & critters","General Settings"],
+    [0, 100, 5, 0],
+    1,
+    {   
+        params ["_value"];  
+        
+		MAR_BL_EGGSPAWNCHANCE = _value;
     }
 ] call CBA_fnc_addSetting;
 
@@ -37,7 +51,7 @@
 [ 
     "MAR_BL_CANBUGSEXPLODE", 
     "CHECKBOX", 
-    ["can bugs explode"],
+    ["can bugs explode","enable/disable bug explode on death(NOTE: this does not effect bugs that area designed to explode when killed)"],
     ["Marbearis' Bugs & critters","General Settings"],
     true,
     1,
@@ -94,7 +108,7 @@
     "MAR_BL_CANEGGSSPAWNUNITS", 
     "CHECKBOX", 
     ["can eggs spawn units"],
-    ["Marbearis' Bugs & critters","ANT Settings"],
+    ["Marbearis' Bugs & critters","General Settings"],
     true,
     1,
     {   
@@ -165,7 +179,7 @@
     "EDITBOX", 
     ["AntQueen Health","She is a boss unit so it should be relatively high"],
     ["Marbearis' Bugs & critters","ANT Settings"],
-    "700",
+    "2500",
     1,
     {   
         params ["_value"];  
@@ -659,7 +673,9 @@ BugzLife_fnc_explodeBug = {
 				uiSleep 1.1;
 				[_this,["ANT_Death", 0, 0.2, false]] remoteExec ["switchMove",0];
 			};
-			case "MAR_ANTWASP": {			
+			case "MAR_ANTWASP": {	
+				[_this,[(selectRandom ["ANT_Death_1"]), 0, 0.2, false]] remoteExec ["switchMove",0];
+					uiSleep 1.1;		
 				[_this,["ANT_Death", 0, 0.2, false]] remoteExec ["switchMove",0];
 			};
 			default {
@@ -679,7 +695,8 @@ BugzLife_fnc_explodeBug = {
 			[_this,[(selectRandom ["ANT_Death_3","ANT_Death_2"]), 0, 0.2, false]] remoteExec ["switchMove",0];
 		};
 		case "MAR_ANTWASP":{
-			[_this,["ANT_Death", 0, 0.2, false]] remoteExec ["switchMove",0];
+			[_this,["ANT_Death_1", 0, 0.2, false]] remoteExec ["switchMove",0];
+			uiSleep 0.3;
 		};
 		default {[_this,[(selectRandom ["ANT_Death_3","ANT_Death_2"]), 0, 0.2, false]] remoteExec ["switchMove",0];};
 	};
@@ -749,7 +766,7 @@ BugzLife_fnc_explodeBug = {
 			case ("MAR_ImpactEffectsBugGuts_Blue"): {bloodpoolTexture = ["\Bugs_life\data\bloodpools\bloodpoolBlue_CA.paa","\Bugs_life\data\bloodpools\bloodPoolBlue.rvmat",[0,0.4,1,0.12]]};
 			default {bloodpoolTexture = ["\Bugs_life\data\bloodpools\bloodpoolOrange_CA.paa","\Bugs_life\data\bloodpools\bloodPoolOrange.rvmat",[1,0.5,0,0.12]] };
 	};
-
+	
 	[[_lamd,_this],{
 		params ["_lamd","_unit","_IceSpike"];
 			if (isDedicated) exitWith {};
@@ -758,19 +775,22 @@ BugzLife_fnc_explodeBug = {
 				enableCamShake true; 
 				addCamShake [1, 0.7, 1];
 			};
-
-			if (((_unit isKindOf "MAR_Ant_Egg")||(_unit isKindOf "MAR_Ant_Egg_Clutch")) and (MAR_BL_CANEGGSSPAWNUNITS)) then {
-				_FloodGroup = createGroup east;
-				_spawn = getPosATL _unit;
-				deleteVehicle _unit;
-				_list =  ["MAR_ANT_Guppy"];
-				if ((random 100) < 50) then {
+			
+			
+			
+			if ((_unit isKindOf "MAR_Ant_Egg")||(_unit isKindOf "MAR_Ant_Egg_Clutch")) then {
+				if ((((MAR_BL_EGGSPAWNCHANCE >= floor (random 100))||MAR_BL_EGGSPAWNCHANCE == 100))and(MAR_BL_CANEGGSSPAWNUNITS)) then {
+					_spawn = getPosATL _unit;								
+					_list =  ["MAR_ANT_Guppy"];					
+					_FloodGroup = createGroup east;
+					uiSleep 0.1;
 					_bug = _FloodGroup createUnit [(selectRandom _list), _spawn, [], 0, "CAN_COLLIDE"];
-				};
-				_FloodGroup deleteGroupWhenEmpty true;
+					_FloodGroup deleteGroupWhenEmpty true;	
+				};														
 			};
+			
 
-			_fulgi  = "#particlesource" createVehiclelocal getposaTL _lamd; 
+			_fulgi  = "#particlesource" createVehiclelocal getposATL _lamd; 
 			
 			_fulgi setDropInterval 0.001;
 			_fulgi setParticleCircle [0, [0, 0, 0]];
@@ -782,19 +802,15 @@ BugzLife_fnc_explodeBug = {
 				_fulgi setParticleParams [["\A3\data_f\cl_exp", 1, 0, 1],"","Billboard",1,5,[0,0,0],[0,0,0],0,1.7,1,0,[0.15],[bloodpoolTexture#2, bloodpoolTexture#2, bloodpoolTexture#2],[1],0,0,"","",_lamd, 0, false, 0.4, [bloodpoolTexture#2, bloodpoolTexture#2, bloodpoolTexture#2]]; 
 			};
 			
-			_gravi1 = "#particlesource" createVehicleLocal getpos _lamd;  
-			_gravi1 setParticleCircle [0.1, [1, 1, 0]];
-			_gravi1 setParticleParams [["\A3\data_f\ParticleEffects\Universal\Refract.p3d",1,0,1,0],"","Billboard",1,2,[0,0,0],[0,0,0.6],0,0.05,0.04,0.05,[1,2,5,8,12,17],[bloodpoolTexture#2, bloodpoolTexture#2, bloodpoolTexture#2],[1.5,0.5,0,0],0.4,0.09,"","","",0,false,0,[bloodpoolTexture#2, bloodpoolTexture#2, bloodpoolTexture#2]];
-			_gravi1 setParticleRandom [0, [0, 0, 0], [0, 0, 0], 0, 0.25, [0.01, 0.01, 0.01, 0.1], 0, 0];
-			_gravi1 setDropInterval 0.0004;
+	
 			_smoke2 = "#particlesource" createVehicleLocal getPos _lamd;
 			_smoke2 setposasl getPosASL _lamd;
-			_smoke2 setParticleCircle [0.5, [7,7,-4]];
+			_smoke2 setParticleCircle [0.5, [1,1,2]];
 			_smoke2 setParticleRandom [0, [0, 0, 0], [0, 0, 0], 0, 0.05, [0.01, 0.01, 0.01, 0.1], 0, 0];
-			_smoke2 setParticleParams [["\A3\data_f\cl_fireD", 1, 0, 1], "", "Billboard", 1, 1, [0, 0, 0.6], [0.2,0.5,0.2], 90, 10, 7.85, 0.375, [1, 2, 3],[bloodpoolTexture#2, bloodpoolTexture#2, bloodpoolTexture#2], [10], 1, 0, "", "", _lamd];
-			_smoke2 setDropInterval 0.0004;
+			_smoke2 setParticleParams [["\A3\data_f\cl_fireD", 1, 0, 1], "", "Billboard", 1, 1, [0, 0, 0], [0.2,0.5,2], 5, 100, 7.9, 1,[1, 2, 3],[bloodpoolTexture#2, bloodpoolTexture#2, bloodpoolTexture#2], [10], 1, 0, "", "", _lamd];
+			_smoke2 setDropInterval 0.009;
 			if ((_unit isKindOf "MAR_ANT_Spitter")||(_unit isKindOf "MAR_ANT_Ice")) then {
-				_fog1 = "#particlesource" createVehicleLocal getposaTL _lamd; 
+				_fog1 = "#particlesource" createVehicleLocal getposATL _lamd; 
 				_fog1 setParticleParams [   
 					["\A3\data_f\cl_exp", 1, 0, 1], "", "Billboard", 3, 7,   
 					[0, 0, 0], [0, 0, 0], 1, 1.27, 1, 0,   
@@ -814,7 +830,7 @@ BugzLife_fnc_explodeBug = {
 			uisleep 0.1;
 			{
 				deleteVehicle _x;
-			} forEach [_gravi1,_fulgi];
+			} forEach [_fulgi];
 			uisleep 0.2;
 		}] remoteExec ["spawn",0];
 
@@ -825,7 +841,7 @@ BugzLife_fnc_explodeBug = {
 
 	if (isDedicated) exitWith {};
 
-	if ((_this isKindOf "MAR_Ant_Egg")||(_this isKindOf "MAR_Ant_Egg_Clutch")||!(MAR_BL_CANSPAWNGIBLETS)) exitWith {deleteVehicle _this;};//bug part exclusion
+	if ((_this isKindOf "MAR_Ant_Egg")||(_this isKindOf "MAR_Ant_Egg_Clutch")||!(MAR_BL_CANSPAWNGIBLETS)) exitWith {uiSleep 1; deleteVehicle _this;};//bug part exclusion
 	switch true do {
 		case (_this isKindOf "MAR_ANT_Guppy"):{
 
@@ -867,7 +883,7 @@ BugzLife_fnc_explodeBug = {
 
 		};
 		case (_this isKindOf "MAR_ANT_BASE"):{
-			_Part_1 = "MAR_Ant_Part_Thorax" createVehicle (_this modelToWorldVisual [0,0,0]);
+			_Part_1 = selectRandomWeighted ["MAR_Ant_Part_Thorax",0.1,"MAR_Ant_Part_Thoraxseg1",0.7,"MAR_Ant_Part_Thoraxseg1",0.7] createVehicle (_this modelToWorldVisual [0,0,0]);
 			{
 				_Part_1 setObjectTextureGlobal [_x,_textures#0];
 				_Part_1 setObjectMaterialGlobal [_x,_materials#0];
@@ -875,7 +891,7 @@ BugzLife_fnc_explodeBug = {
 			_Part_1 setPosATL (_this modelToWorldVisual [0,0,0]);
 			_Part_1 setDir 180;
 			_Part_1 setVelocityModelSpace [0,-6,4];
-			_Part_2 = "MAR_Ant_Part_Head" createVehicle (_this modelToWorldVisual [0,0.5,0]);
+			_Part_2 = selectRandomWeighted ["MAR_Ant_Part_Head",0.1,"MAR_Ant_Part_Headhalf",0.7,"MAR_Ant_Part_Headhalf2",0.7,"MAR_Ant_Part_Headhalf3",0.7] createVehicle (_this modelToWorldVisual [0,0.5,0]);
 			{
 				_Part_2 setObjectTextureGlobal [_x,_textures#0];
 				_Part_2 setObjectMaterialGlobal [_x,_materials#0];
@@ -883,7 +899,7 @@ BugzLife_fnc_explodeBug = {
 			_Part_2 setPosATL (_this modelToWorldVisual [0,0.5,0]);
 			_Part_2 setDir 180;
 			_Part_2 setVelocityModelSpace [0,-6,4];
-			_PArt_3 = "MAR_Ant_Part_Abdomen" createVehicle (_this modelToWorldVisual [0,-0.5,0]);
+			_PArt_3 = selectRandomWeighted ["MAR_Ant_Part_Abdomen",0.1,"MAR_Ant_Part_Abdomenseg1",0.7,"MAR_Ant_Part_Abdomenseg2",0.7,"MAR_Ant_Part_Abdomenseg3",0.7] createVehicle (_this modelToWorldVisual [0,-0.5,0]);
 			{
 				_Part_3 setObjectTextureGlobal [_x,_textures#0];
 				_Part_3 setObjectMaterialGlobal [_x,_materials#0];
@@ -892,11 +908,11 @@ BugzLife_fnc_explodeBug = {
 			_PArt_3 setDir 180;
 			_PArt_3 setVelocityModelSpace [0,6,4];
 			
-			for "_i" from 1 to 6 do {
+			for "_i" from 1 to (selectRandom [2,3,4,5,6]) do {
 				legSide = 0.2;
 				legVelocity = 7;
 				if (_i > 3) then {legSide = -0.2; legVelocity = -7;}; 
-				_Part_4 = "MAR_Ant_Part_Leg" createVehicle (_this modelToWorldVisual [1,selectRandom [-0.5,0.5,0,0.3,-0.3],0.05]);
+				_Part_4 = (selectRandom ["MAR_Ant_Part_Legbit_0","MAR_Ant_Part_Legbit_1","MAR_Ant_Part_Legbit_2","MAR_Ant_Part_Legbit_3"]) createVehicle (_this modelToWorldVisual [1,selectRandom [-0.5,0.5,0,0.3,-0.3],0.05]);
 				{
 					_Part_4 setObjectTextureGlobal [_x,_textures#0];
 					_Part_4 setObjectMaterialGlobal [_x,_materials#0];
@@ -1031,7 +1047,10 @@ BugsLife_AntEgginit = {
 
 			_target setVariable ["gooberHealth", _newHealth, true];
 
-			if (_currentHealth == 0) then {_target allowDamage true; [_target, [1, false, _shooter]] remoteExec ["setDamage",2];};
+			if (_currentHealth == 0) then {
+				_target spawn BugzLife_fnc_explodeBug;
+				_target call BugsLife_HandleMelee;
+			};
 
 	}];
 	
@@ -1231,19 +1250,20 @@ BugsLife_RangedAttack_FNC= {
 	};
 	
 	[_mantis,["ANT_Attack_Ranged", 0, 0.2, false]] remoteExec ["switchMove",0];
-	_meleeSounds = [
-		"\Bugs_life\data\AntSounds\antSpit.ogg"
-	];
-	playSound3D [(selectRandom _meleeSounds), _mantis,false, getPosASL _mantis, 1, selectRandom [1,0.9,0.8,1.1,1.2], 0];
+	
 	if !(animationState _mantis in ["ant_attack_ranged"]) exitWith {};
 
-	uiSleep 0.3;
+	
 	if !(animationState _mantis in ["ant_attack_ranged"]) exitWith {};
 					
 		switch true do {
 	
 			case ((_mantis isKindOf "MAR_ANT_Spitter")&&(((_mantis worldToModel (_en modelToWorld [0, 0, 0])) select 0) < 7)): {
-				
+				_meleeSounds = [
+					"\Bugs_life\data\AntSounds\antSpit.ogg"
+				];
+				playSound3D [(selectRandom _meleeSounds), _mantis,false, getPosASL _mantis, 1, selectRandom [1,0.9,0.8,1.1,1.2], 0];
+				uiSleep 0.3;
 				_mantis setVariable ["WBK_OPTRE_AfterContact",1];
 				_mantis spawn {uisleep selectRandom [1,2,3,4]; _this setVariable ["IsCanFire",nil];};																				
 				uiSleep 0.3;				
@@ -1258,9 +1278,15 @@ BugsLife_RangedAttack_FNC= {
 
 			case (_mantis isKindOf "MAR_ANTWASP"):{
 				_mantis setVariable ["WBK_OPTRE_AfterContact",1];
-																						
+				_meleeSounds = [
+					"\Bugs_life\data\AntSounds\antSpit.ogg"
+				];
+				playSound3D [(selectRandom _meleeSounds), _mantis,false, getPosASL _mantis, 1, selectRandom [1,0.9,0.8,1.1,1.2], 0];
+				uiSleep 0.3;	
+				if !(animationState _mantis in ["ant_attack_ranged"]) exitWith {};																	
 				uiSleep 0.25;	
 				for "_i" from 1 to 3 do {
+					if !(animationState _mantis in ["ant_attack_ranged"]) exitWith {};
 					[_mantis,_mantis modelToWorldVisual [0,5,1],"B_Stinger", _en, selectRandom [aimPos _en,aimPos _en ,aimPos _en,aimPos _en,[eyePos _en select 0, eyePos _en select 1,(eyePos _en select 2) + 2],[eyePos _en select 0, eyePos _en select 1,(eyePos _en select 2) + 2],[eyePos _en select 0, eyePos _en select 1,(eyePos _en select 2) + 1]], (selectRandom [90,100,60]), false, [0,0,0]] spawn Bugzz_fnc_ProjectileCreate;	
 				};					
 			};
@@ -1269,6 +1295,10 @@ BugsLife_RangedAttack_FNC= {
 			case (_mantis isKindOf "MAR_ANT_QUEEN"):{
 				_mantis spawn {uisleep 35; _this setVariable ["IsCanFire",nil];};
 				for "_i" from 1 to 8 do {
+					_meleeSounds = [
+						"\Bugs_life\data\AntSounds\antSpit.ogg"
+					];
+					playSound3D [(selectRandom _meleeSounds), _mantis,false, getPosASL _mantis, 1, selectRandom [1,0.9,0.8,1.1,1.2], 0];
 					
 					[_mantis,["ANT_Attack_Ranged", 0, 0.2, false]] remoteExec ["switchMove",0];	
 					uiSleep 0.3;				

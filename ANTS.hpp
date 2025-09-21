@@ -193,7 +193,9 @@
             generic[] = {
                 {"run", {"\Bugs_life\data\AntSounds\antRun.ogg", 1, 1, 40}},
                 {"idle", {"\Bugs_life\data\AntSounds\idleChitter.ogg", 1, 1, 25}}, 
-                {"fly", {"\Bugs_life\data\AntSounds\antwaspfly.ogg", 3, 1, 100}},                     
+                {"fly", {"\Bugs_life\data\AntSounds\antwaspfly.ogg", 3, 1, 100}},  
+                {"fly", {"\Bugs_life\data\AntSounds\antwaspfly.ogg", 4, 1.1, 100}},
+                {"fly", {"\Bugs_life\data\AntSounds\antwaspfly.ogg", 3, 0.9, 100}},                     
                 {"walk", {"\Bugs_life\data\AntSounds\AntWalk.ogg", 1, 1, 25}},  
                 {"meleeAttack", {"\Bugs_life\data\AntSounds\antBite.ogg", 1, 1, 25}}, 
                 {"rangedAttack", {"\Bugs_life\data\AntSounds\antSpit.ogg", 1, 1, 100}}          
@@ -203,7 +205,9 @@
             soldier[] = {
                 {"run", {"\Bugs_life\data\AntSounds\antRun.ogg", 1, 1, 40}},
                 {"idle", {"\Bugs_life\data\AntSounds\idleChitter.ogg", 1, 1, 25}}, 
-                {"fly", {"\Bugs_life\data\AntSounds\antwaspfly.ogg", 3, 1, 100}},                    
+                {"fly", {"\Bugs_life\data\AntSounds\antwaspfly.ogg", 3, 1, 100}},
+                {"fly", {"\Bugs_life\data\AntSounds\antwaspfly.ogg", 4, 1.1, 100}},
+                {"fly", {"\Bugs_life\data\AntSounds\antwaspfly.ogg", 3, 0.9, 100}},                    
                 {"walk", {"\Bugs_life\data\AntSounds\AntWalk.ogg", 1, 1, 25}},  
                 {"meleeAttack", {"\Bugs_life\data\AntSounds\antBite.ogg", 1, 1, 25}}, 
                 {"rangedAttack", {"\Bugs_life\data\AntSounds\antSpit.ogg", 1, 1, 100}} 
@@ -283,21 +287,7 @@
         };
     };
 
-    class MAR_Ant_Part_Head:Land_Basketball_01_F
-    {
-        scope = 2;			
-		scopeCurator = 2;
-        armor = 1;
-        editorSubcategory = "MAR_Bugs_Ants";
-        editorCategory = "MAR_Bugs";
-        model = "\Bugs_life\Ants\parts\Head.p3d";
-        displayName = "Ant head";
-        hiddenSelections[] = {"camo","eyes"};
-        hiddenSelectionsTextures[] = {"\Bugs_life\Ants\textures\SpitterAnt\ANT_CO.paa","\Bugs_life\Ants\textures\SpitterAnt\ANT_CO.paa"};
-        hiddenSelectionsMaterials[] = {"\Bugs_life\Ants\textures\SpitterAnt\ANT.rvmat","\Bugs_life\Ants\textures\SpitterAnt\ANT.rvmat"};
-       
-       
-    };
+  
 
     class MAR_Ant_Part_GrubHead:Land_Basketball_01_F
     {
@@ -391,26 +381,93 @@
         displayName = "Ant webbing tall";
     };
 
+    class MAR_Ant_Part_Head:Land_Basketball_01_F
+    {
+        scope = 2;			
+		scopeCurator = 2;
+        armor = 1;
+        editorSubcategory = "MAR_Bugs_Ants_parts";
+        editorCategory = "MAR_Bugs";
+        model = "\Bugs_life\Ants\parts\Head.p3d";
+        displayName = "Ant head";
+        hiddenSelections[] = {"camo","eyes"};
+        hiddenSelectionsTextures[] = {"\Bugs_life\Ants\textures\SpitterAnt\ANT_CO.paa","\Bugs_life\Ants\textures\SpitterAnt\ANT_CO.paa"};
+        hiddenSelectionsMaterials[] = {"\Bugs_life\Ants\textures\SpitterAnt\ANT.rvmat","\Bugs_life\Ants\textures\SpitterAnt\ANT.rvmat"};
+       
+       
+    };
+    class MAR_Ant_Part_Headhalf:MAR_Ant_Part_Head
+    {
+        model = "\Bugs_life\Ants\parts\Head_half.p3d";
+        displayName = "Ant head part 1";
+    };
+    class MAR_Ant_Part_Headhalf2:MAR_Ant_Part_Head
+    {
+        model = "\Bugs_life\Ants\parts\Head_half2.p3d";
+        displayName = "Ant head part 2";
+    };
+     class MAR_Ant_Part_Headhalf3:MAR_Ant_Part_Head
+    {
+        model = "\Bugs_life\Ants\parts\Head_half3.p3d";
+        displayName = "Ant head part 3";
+    };
     class MAR_Ant_Part_Thorax:MAR_Ant_Part_Head
     {
         scope = 2;			
 		scopeCurator = 2;
-        editorSubcategory = "MAR_Bugs_Ants";
-        editorCategory = "MAR_Bugs";
+      
         model = "\Bugs_life\Ants\parts\Thorax.p3d";
         displayName = "Ant Thorax";
         hiddenSelections[] = {"camo","eyes"};
 		hiddenSelectionsTextures[] = {"\Bugs_life\Ants\textures\SpitterAnt\ANT_CO.paa","\Bugs_life\Ants\textures\SpitterAnt\ANT_CO.paa"};
     };
-
+    class MAR_Ant_Part_Thoraxseg1:MAR_Ant_Part_Thorax
+    {
+        model = "\Bugs_life\Ants\parts\Thorax_seg1.p3d";
+        displayName = "Ant Thorax segment 1";
+    };
+     class MAR_Ant_Part_Thoraxseg2:MAR_Ant_Part_Thorax
+    {
+        model = "\Bugs_life\Ants\parts\Thorax_seg2.p3d";
+        displayName = "Ant Thorax segment 2";
+    };
     class MAR_Ant_Part_Abdomen:MAR_Ant_Part_Head
     {
         scope = 2;			
 		scopeCurator = 2;
-        editorSubcategory = "MAR_Bugs_Ants";
-        editorCategory = "MAR_Bugs";
+       
         model = "\Bugs_life\Ants\parts\Abdomen.p3d";
         displayName = "Ant Abdomen";
+        hiddenSelections[] = {"camo","eyes"};
+		hiddenSelectionsTextures[] = {"\Bugs_life\Ants\textures\SpitterAnt\ANT_CO.paa","\Bugs_life\Ants\textures\SpitterAnt\ANT_CO.paa"};
+    };
+    class MAR_Ant_Part_Abdomenseg1:MAR_Ant_Part_Head
+    {
+        scope = 2;			
+		scopeCurator = 2;
+        
+        model = "\Bugs_life\Ants\parts\Abdomen_seg1.p3d";
+        displayName = "Ant Abdomen segment 1";
+        hiddenSelections[] = {"camo","eyes"};
+		hiddenSelectionsTextures[] = {"\Bugs_life\Ants\textures\SpitterAnt\ANT_CO.paa","\Bugs_life\Ants\textures\SpitterAnt\ANT_CO.paa"};
+    };
+    class MAR_Ant_Part_Abdomenseg2:MAR_Ant_Part_Head
+    {
+        scope = 2;			
+		scopeCurator = 2;
+        
+        model = "\Bugs_life\Ants\parts\Abdomen_seg2.p3d";
+        displayName = "Ant Abdomen segment 2";
+        hiddenSelections[] = {"camo","eyes"};
+		hiddenSelectionsTextures[] = {"\Bugs_life\Ants\textures\SpitterAnt\ANT_CO.paa","\Bugs_life\Ants\textures\SpitterAnt\ANT_CO.paa"};
+    };
+    class MAR_Ant_Part_Abdomenseg3:MAR_Ant_Part_Head
+    {
+        scope = 2;			
+		scopeCurator = 2;
+       
+        model = "\Bugs_life\Ants\parts\Abdomen_seg3.p3d";
+        displayName = "Ant Abdomen segment 3";
         hiddenSelections[] = {"camo","eyes"};
 		hiddenSelectionsTextures[] = {"\Bugs_life\Ants\textures\SpitterAnt\ANT_CO.paa","\Bugs_life\Ants\textures\SpitterAnt\ANT_CO.paa"};
     };
@@ -419,10 +476,48 @@
     {
         scope = 2;			
 		scopeCurator = 2;
-        editorSubcategory = "MAR_Bugs_Ants";
-        editorCategory = "MAR_Bugs";
+       
         model = "\Bugs_life\Ants\parts\Leg.p3d";
         displayName = "Ant Leg";
+        hiddenSelections[] = {"camo","eyes"};
+		hiddenSelectionsTextures[] = {"\Bugs_life\Ants\textures\SpitterAnt\ANT_CO.paa","\Bugs_life\Ants\textures\SpitterAnt\ANT_CO.paa"};
+    };
+
+    class MAR_Ant_Part_Legbit_0:MAR_Ant_Part_Head
+    {
+        scope = 2;			
+		scopeCurator = 2;
+        
+        model = "\Bugs_life\Ants\parts\leg_1.p3d";
+        displayName = "Ant Leg segment 1";
+        hiddenSelections[] = {"camo","eyes"};
+		hiddenSelectionsTextures[] = {"\Bugs_life\Ants\textures\SpitterAnt\ANT_CO.paa","\Bugs_life\Ants\textures\SpitterAnt\ANT_CO.paa"};
+    };
+
+    class MAR_Ant_Part_Legbit_1:MAR_Ant_Part_Head
+    {       
+       
+        model = "\Bugs_life\Ants\parts\leg_2.p3d";
+        displayName = "Ant Leg segment 2";
+        hiddenSelections[] = {"camo","eyes"};
+		hiddenSelectionsTextures[] = {"\Bugs_life\Ants\textures\SpitterAnt\ANT_CO.paa","\Bugs_life\Ants\textures\SpitterAnt\ANT_CO.paa"};
+    };
+
+    class MAR_Ant_Part_Legbit_2:MAR_Ant_Part_Head
+    {     
+        
+        model = "\Bugs_life\Ants\parts\leg_3.p3d";
+        displayName = "Ant Leg segment 3";
+        hiddenSelections[] = {"camo","eyes"};
+		hiddenSelectionsTextures[] = {"\Bugs_life\Ants\textures\SpitterAnt\ANT_CO.paa","\Bugs_life\Ants\textures\SpitterAnt\ANT_CO.paa"};
+    };
+
+    class MAR_Ant_Part_Legbit_3:MAR_Ant_Part_Head
+    {
+       
+        
+        model = "\Bugs_life\Ants\parts\foot.p3d";
+        displayName = "Ant Leg foot";
         hiddenSelections[] = {"camo","eyes"};
 		hiddenSelectionsTextures[] = {"\Bugs_life\Ants\textures\SpitterAnt\ANT_CO.paa","\Bugs_life\Ants\textures\SpitterAnt\ANT_CO.paa"};
     };
@@ -431,8 +526,7 @@
     {
         scope = 2;			
 		scopeCurator = 2;
-        editorSubcategory = "MAR_Bugs_Ants";
-        editorCategory = "MAR_Bugs";
+       
         model = "\Bugs_life\Ants\parts\antenne.p3d";
         displayName = "Ant antenne";
         hiddenSelections[] = {"camo","eyes"};
@@ -443,8 +537,7 @@
     {
         scope = 2;			
 		scopeCurator = 2;
-        editorSubcategory = "MAR_Bugs_Ants";
-        editorCategory = "MAR_Bugs";
+        
         model = "\Bugs_life\Ants\parts\Mandible.p3d";
         displayName = "Ant Mandible";
         hiddenSelections[] = {"camo","eyes"};

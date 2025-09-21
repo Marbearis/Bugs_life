@@ -201,7 +201,7 @@ _actFr = [{
 					(alive _en) and 
 					!((vehicle _en) isKindOf "Tank") and 
 					!((vehicle _en) isKindOf "Air")): {
-						[_unit, "Ant_Grounded"] remoteExec ["playGesture",0];
+						[_mutant, "Ant_Grounded"] remoteExec ["playGesture",0];
 						[_mutant,_en] spawn Bugslife_ANTMelee;
 						[_mutant, "WBK_Halo_Melee",[_mutant,_en]] call BIS_fnc_callScriptedEventHandler;
 				};
@@ -272,12 +272,12 @@ _loopPathfind = [{
 			]; 
 			switch (true) do {
 				 
-				case (((_unit distance _nearEnemy) > 40) and !(animationState _unit in ["ANT_Wasp_FlyF","ANT_Wasp_FlyL","ANT_Wasp_FlyR","ANT_Wasp_FlyB"])):{
-					[_unit,"ANT_Wasp_FlyF",[0,0,0]] spawn ANTZ_MoveAi;
+				case (((_unit distance _nearEnemy) > 40) and !(animationState _unit in ["ant_wasp_flyf_fast","ant_wasp_flyf","ant_wasp_flyl","ant_wasp_flyr","ant_wasp_flyb"])):{
+					[_unit,"ANT_Wasp_FlyF_Fast",[0,0,0]] spawn ANTZ_MoveAi;
 					
 				};
 
-				case (((_unit distance _nearEnemy) < 40) and !(animationState _unit in ["ANT_Wasp_FlyF","ANT_Wasp_FlyL","ANT_Wasp_FlyR","ANT_Wasp_FlyB"])):{
+				case (((_unit distance _nearEnemy) < 40) and !(animationState _unit in ["ant_wasp_flyf_fast","ant_wasp_flyf","ant_wasp_flyl","ant_wasp_flyr","ant_wasp_flyb"])):{
 					[_unit,selectRandom ["ANT_Wasp_FlyF","ANT_Wasp_FlyL","ANT_Wasp_FlyR","ANT_Wasp_FlyB"],[0,0,0]] spawn ANTZ_MoveAi;
 				};
 
@@ -306,7 +306,7 @@ _loopPathfindDoMove = [{
     _array = _this select 0;
     _unit = _array select 0;
 	if (!(animationState _unit == "ANT_Attack_1")and!(animationState _unit == "ANT_Attack_Ranged"))then {
-		[_unit,(selectRandom ["Ant_5ft","Ant_10ft"])] remoteExec ["playGesture",0];
+		[_unit,(selectRandom ["Ant_5ft","Ant_10ft","Ant_15ft","Ant_20ft"])] remoteExec ["playGesture",0];
 	};
 	
 	

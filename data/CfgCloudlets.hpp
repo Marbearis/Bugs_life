@@ -4,6 +4,7 @@ class CfgCloudlets {
     class LaptopSparks;
     class SmokeTrailEffect1;
     class ImpactEffectsWater1Med;
+	class MineStones1;
     class MAR_BugGut_Mist_Green:BloodMist {
         color[]=
         {
@@ -84,8 +85,31 @@ class CfgCloudlets {
         emissiveColor[] = {{ 0, 0.5, 1, 1 }};
     };
 
-  
-
+	class MAR_BugExplode_Bits_0:MineStones1{
+		particleShape="\Bugs_life\Ants\parts\Head_half.p3d";
+		size[]={1};
+		sizeVar=0;
+	};
+	class MAR_BugExplode_Bits_1:MineStones1{
+		particleShape="\Bugs_life\Ants\parts\leg_1.p3d";
+		size[]={1};
+		sizeVar=0;
+	};
+	class MAR_BugExplode_Bits_2:MineStones1{
+		particleShape="\Bugs_life\Ants\parts\leg_2.p3d";
+		size[]={1};
+		sizeVar=0;
+	};
+	class MAR_BugExplode_Bits_3:MineStones1{
+		particleShape="\Bugs_life\Ants\parts\leg_3.p3d";
+		size[]={1};
+		sizeVar=0;
+	};
+	class MAR_BugExplode_Bits_4:MineStones1{
+		particleShape="\Bugs_life\Ants\parts\foot.p3d";
+		size[]={1};
+		sizeVar=0;
+	};
     
 };
 
@@ -228,5 +252,18 @@ class BugsLife_AcidSpit_Orange
 		intensity=1;
 		interval=1;
 		lifeTime=1;
+	};
+};
+
+class BugsLife_Explode_BugBits
+{
+	class BugBits_0
+	{
+		simulation="particles";
+		type="MAR_BugExplode_Bits_0";
+		position[]={0,0,0};
+		intensity=1;
+		interval=1;
+		lifeTime=0.5;
 	};
 };

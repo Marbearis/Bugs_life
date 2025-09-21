@@ -335,7 +335,7 @@ _actFr = [{
 				case (
 				(_mutant isKindOf "MAR_ANT_QUEEN") and									
 				(isNil {_mutant getVariable "underGround"}) and
-				
+				(isNil {_mutant getVariable "isVolcanoSummon"}) and
 				(isNull objectParent _mutant) and 
 				(_en isKindOf "MAN") and
 				(count(units group _mutant)<25) and 

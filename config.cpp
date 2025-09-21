@@ -33,6 +33,10 @@ class CfgEditorSubcategories
 	{
 		displayName="Ants";
 	};
+    class MAR_Bugs_Ants_parts
+    {
+        displayName="Ant parts";
+    };
     class MAR_Bugs_Spiders
 	{
 		displayName="Spiders";
@@ -1608,9 +1612,9 @@ class CfgMovesBasic
                 PlayerSlowR="ANT_Wasp_FlyR";
                 PlayerSlowLB="ANT_Wasp_FlyB";
                 PlayerSlowRB="ANT_Wasp_FlyB";
-                FastF="ANT_Wasp_FlyF";
-                FastLF="ANT_Wasp_FlyF";
-                FastRF="ANT_Wasp_FlyF";
+                FastF="ANT_Wasp_FlyF_Fast";
+                FastLF="ANT_Wasp_FlyF_Fast";
+                FastRF="ANT_Wasp_FlyF_Fast";
                 FastL="ANT_Wasp_FlyL";
                 FastR="ANT_Wasp_FlyR";
                 FastLB="ANT_Wasp_FlyB";
@@ -1644,11 +1648,28 @@ class CfgMovesBasic
                     AdjustB="";
                     Stand="ANT_Death";
             }
+             class MAR_AntWasp_Death_1:MAR_ANTwasp_FLYMoves
+            {
+                  turnSpeed=0;
+                    PlayerCrouch="ANT_Death_1";
+                    Up="ANT_Death_1";
+                    Crouch="ANT_Death_1";
+                    AdjustB="";
+                    Stand="ANT_Death_1";
+            }
             class MAR_ANTWasp_Fly_F:MAR_ANTwasp_FLYMoves
             {
                 PlayerCrouch="ANT_Wasp_FlyF";
                 Up="ANT_Wasp_FlyF";
                 Crouch="ANT_Wasp_FlyF";
+                AdjustB="";
+                Stand="ANT_Wasp_Hover";
+            };
+            class MAR_ANTWasp_Fly_F_Fast:MAR_ANTwasp_FLYMoves
+            {
+                PlayerCrouch="ANT_Wasp_FlyF_Fast";
+                Up="ANT_Wasp_FlyF_Fast";
+                Crouch="ANT_Wasp_FlyF_Fast";
                 AdjustB="";
                 Stand="ANT_Wasp_Hover";
             };
@@ -1843,7 +1864,7 @@ class CfgGestures_MAR_ANT_Wasp:CfgGesturesMale{
 			weaponIK=1;
             mask = "ANT_Landcontact";
 			looped=1;
-            interpolationSpeed = 0.5;
+            interpolationSpeed = 0.2;
 			leftHandIKBeg=1;
 			leftHandIKCurve[]={1};
 			leftHandIKEnd=1;
@@ -1856,6 +1877,10 @@ class CfgGestures_MAR_ANT_Wasp:CfgGesturesMale{
                 "Ant_5ft",
                 0.01,
                 "Ant_10ft",
+                0.01,
+                "Ant_15ft",
+                0.01,
+                "Ant_20ft",
                 0.01
             };
 		};
@@ -1866,6 +1891,14 @@ class CfgGestures_MAR_ANT_Wasp:CfgGesturesMale{
         class Ant_10ft:Ant_Grounded
         {
             file = "\Bugs_life\Ants\animations\antwasp\antwasphover10ft_gesture.rtm";
+        };
+        class Ant_15ft:Ant_Grounded
+        {
+            file = "\Bugs_life\Ants\animations\antwasp\antwasphover15ft_gesture.rtm";
+        };
+        class Ant_20ft:Ant_Grounded
+        {
+            file = "\Bugs_life\Ants\animations\antwasp\antwasphover20ft_gesture.rtm";
         };
 	};
 };
@@ -2949,6 +2982,10 @@ class CfgMoves_MAR_ANT_Wasp: CfgMovesMaleSdr
                     "ANT_Wasp_attackStinger",
                     0.01,
                     "ANT_Death",
+                    0.01,
+                    "ANT_Death_1",
+                    0.01,
+                    "ANT_Wasp_FlyF_Fast",
                     0.01
                 };
             };
@@ -2957,6 +2994,13 @@ class CfgMoves_MAR_ANT_Wasp: CfgMovesMaleSdr
                 file = "\Bugs_life\Ants\animations\antwasp\antwaspflyF.rtm";
                 speed = -1.2;
                 actions = "MAR_ANTWasp_Fly_F";
+                soundOverride="fly";
+            };
+            class ANT_Wasp_FlyF_Fast:ANT_Wasp_Hover
+            {
+                file = "\Bugs_life\Ants\animations\antwasp\antwaspflyF_Fast.rtm";
+                speed = -1;
+                actions = "MAR_ANTWasp_Fly_F_Fast";
                 soundOverride="fly";
             };
             class ANT_Wasp_FlyB:ANT_Wasp_Hover
@@ -2998,6 +3042,13 @@ class CfgMoves_MAR_ANT_Wasp: CfgMovesMaleSdr
             class ANT_Death:ANT_Attack_1
             {
                 file = "\Bugs_life\Ants\animations\antwasp\antwaspdeath.rtm";
+                speed = -1.2;        
+                terminal = true;   
+                soundOverride="";                
+            };
+            class ANT_Death_1:ANT_Attack_1
+            {
+                file = "\Bugs_life\Ants\animations\antwasp\antwaspdeath_1.rtm";
                 speed = -1.2;        
                 terminal = true;   
                 soundOverride="";                
