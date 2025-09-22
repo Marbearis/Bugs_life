@@ -276,22 +276,23 @@ _actFr = [{
 						[_mutant,_en] spawn Bugslife_ANTMelee;
 						[_mutant, "WBK_Halo_Melee",[_mutant,_en]] call BIS_fnc_callScriptedEventHandler;
 				};
-				case ((_ins >= 0.8) and
+
+				case (
 					(_mutant isKindOf "MAR_ANT_QUEEN") and
-					(isNil {_mutant getVariable "IsCanBreathFire"}) and
-					(isNil {_mutant getVariable "underGround"}) and
+					(isNil {_mutant getVariable ["IsCanBreathFire",nil]}) and
+					//(isNil {_mutant getVariable "underGround"}) and
 					(isNull objectParent _mutant) and 
 					!(animationState _mutant in ["ant_attack_1","ant_roar","ant_attack_ranged","ant_climb_outassup","ant_climb_in","ant_climb_inass","ant_climbout","ant_assoutidle","ant_pkfire"]) and														
-					((_en distance _mutant) < 40) and ((_en distance _mutant) > 2.5) and
+					((_en distance _mutant) < 55) and
 					!(isNull _en) and 
 					(((_mutant worldToModel (_en modelToWorld [0, 0, 0])) select 0) < 7) and
 					(alive _en)): {
-					
+						
 						[_mutant,_en] spawn BugsLife_AntQueen_FireBreath;
 					
 				};		
 
-				case ((_ins >= 0.8) and
+				case ((_ins >= 0.3) and
 					(_mutant isKindOf "MAR_ANT_Spitter") and
 					(isNil {_mutant getVariable "IsCanFire"}) and
 					(isNull objectParent _mutant) and					
@@ -313,7 +314,7 @@ _actFr = [{
 				(isNil {_mutant getVariable "underGround"}) and				
 				(isNull objectParent _mutant) and 
 				!(animationState _mutant in ["ant_attack_1","ant_roar","ant_attack_ranged","ant_climb_outassup","ant_climb_in","ant_climb_inass","ant_climbout","ant_assoutidle","ant_pkfire"]) and	 								
-				((_en distance _mutant) < 60) and ((_en distance _mutant) > 6) and
+				((_en distance _mutant) < 60) and ((_en distance _mutant) > 20) and
 				!(isNull _en) and 
 				(alive _en)): {
 					[_mutant,24] spawn BugsLife_AntQueen_ASSUP_FNC;									
@@ -340,7 +341,7 @@ _actFr = [{
 				(_en isKindOf "MAN") and
 				(count(units group _mutant)<25) and 
 				!(animationState _mutant in ["ant_attack_1","ant_roar","ant_attack_ranged","ant_climb_outassup","ant_climb_in","ant_climb_inass","ant_climbout","ant_assoutidle","ant_pkfire"]) and	 								
-				((_en distance _mutant) < 100) and ((_en distance _mutant) > 2) and
+				((_en distance _mutant) < 100) and ((_en distance _mutant) > 10) and
 				!(isNull _en) and 
 				(alive _en)): {
 					[_mutant,150,_en] spawn BugsLife_AntQueen_Volcano;
@@ -496,8 +497,7 @@ _loopPathfindDoMove = [{
 							
 						};
 						default {};
-					};
-					
+					};					
 				};
 				case (!(isNull _nearEnemy) && (alive _nearEnemy)): {
 					_unit doMove (getPosATLVisual _nearEnemy);

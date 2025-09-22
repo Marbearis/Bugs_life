@@ -243,8 +243,8 @@
 
     class MAR_antHill: House_F
     {
-        scope = 2;			
-		scopeCurator = 2;
+        scope = 1;			
+		scopeCurator = 1;
         editorSubcategory = "MAR_Bugs_Ants";
         editorCategory = "MAR_Bugs";
         model = "\Bugs_life\Ants\Anthill.p3d";
@@ -252,6 +252,9 @@
         hiddenSelections[] = {"camo"};
 		hiddenSelectionsTextures[] = {"\Bugs_life\Ants\textures\anthill\anthill_CO.paa"};
         hiddenSelectionsMaterials[]={"\Bugs_life\Ants\textures\anthill\anthill.rvmat"};
+        class Eventhandlers {
+            init = "_trapDoor = _this#0; _groundTexture = surfaceTexture getPosATL _trapDoor;_trapDoor setObjectTextureGlobal [0,_groundTexture];_trapDoor setVectorUp surfaceNormal position _trapDoor;"
+        };
         class AnimationSources
         {
             class Anthill_Raised
@@ -265,15 +268,34 @@
         };
 
     };
-    class MAR_antcraterDirt: MAR_antHill
+    class MAR_antHill_raised:MAR_antHill
     {
         scope = 2;			
-		scopeCurator = 2;   
+		scopeCurator = 2;
+        class AnimationSources
+        {
+            class Anthill_Raised
+            {
+                source="user";
+                animPeriod=3;
+                initPhase=0;
+                sound="";
+                soundPosition="";
+            };
+        };
+    };
+    class MAR_antcraterDirt: MAR_antHill
+    {
+        scope = 1;			
+		scopeCurator = 1;   
         model = "\Bugs_life\Ants\antdirtcrater.p3d";
         displayName = "Ant dirtCrater";
         hiddenSelections[] = {"camo"};
 		hiddenSelectionsTextures[] = {"\Bugs_life\Ants\textures\dirtcrater\DefaultMaterial_CO.paa"};
         hiddenSelectionsMaterials[]={"\Bugs_life\Ants\textures\dirtcrater\DefaultMaterial.rvmat"};
+        class Eventhandlers {
+            init = "_trapDoor = _this#0; _groundTexture = surfaceTexture getPosATL _trapDoor;_trapDoor setObjectTextureGlobal [0,_groundTexture];_trapDoor setVectorUp surfaceNormal position _trapDoor;"
+        };
         class AnimationSources
         {
             class Anthill_Raised
@@ -287,7 +309,22 @@
         };
     };
 
-  
+    class MAR_antcraterDirt_raised:MAR_antcraterDirt
+    {
+        scope = 2;			
+		scopeCurator = 2;  
+        class AnimationSources
+        {
+            class Anthill_Raised
+            {
+                source="user";
+                animPeriod=3;
+                initPhase=0;
+                sound="";
+                soundPosition="";
+            };
+        };
+    };
 
     class MAR_Ant_Part_GrubHead:Land_Basketball_01_F
     {
@@ -406,7 +443,7 @@
         model = "\Bugs_life\Ants\parts\Head_half2.p3d";
         displayName = "Ant head part 2";
     };
-     class MAR_Ant_Part_Headhalf3:MAR_Ant_Part_Head
+    class MAR_Ant_Part_Headhalf3:MAR_Ant_Part_Head
     {
         model = "\Bugs_life\Ants\parts\Head_half3.p3d";
         displayName = "Ant head part 3";

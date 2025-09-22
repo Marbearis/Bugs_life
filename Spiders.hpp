@@ -47,7 +47,6 @@
         hiddenSelections[] = {"camo","eyes"};
         hiddenSelectionsTextures[] = {"\Bugs_life\Spiders\textures\spider_1\DefaultMaterial_CO.paa","\Bugs_life\Spiders\textures\spider_1\DefaultMaterial_CO.paa"};
 
-
     };
 //OPFOR END
 
@@ -63,6 +62,9 @@
         hiddenSelections[] = {"earth"};
 		hiddenSelectionsTextures[] = {"\Bugs_life\Ants\textures\anthill\anthill_CO.paa"};
         hiddenSelectionsMaterials[] = {"\Bugs_life\data\genericGround\DefaultMaterial.rvmat"};
+        class Eventhandlers {
+            init = "_trapDoor = _this#0; _groundTexture = surfaceTexture getPosATL _trapDoor;_trapDoor setObjectTextureGlobal [0,_groundTexture];_trapDoor setVectorUp surfaceNormal position _trapDoor;"
+        };
         class AnimationSources
         {
             class Spider_Open_Source

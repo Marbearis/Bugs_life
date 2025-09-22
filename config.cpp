@@ -4,9 +4,9 @@ class CfgPatches
 	{
 		units[] = {"MAR_ANT_Basic","MAR_ANT_Ice","MAR_ANT_Spitter","MAR_antHill","MAR_Spider_Burrower","MAR_TrapDoor","MAR_Ant_Egg","MAR_Ant_Egg_Clutch",
         "MAR_Ant_Part_Head","MAR_Ant_Part_Thorax","MAR_Ant_Part_Abdomen","MAR_Ant_Part_Leg","MAR_Ant_Part_Mandible","MAR_Ant_Part_Antenne","MAR_ANT_QUEEN","MAR_Ant_Webs","MAR_Ant_Webs_2","MAR_Spider_Webs",
-        "MAR_Spider_Webs_2","MAR_AntIce","MAR_ANT_Guppy","MAR_Ant_Part_GrubHead","MAR_Ant_Part_Grubbutt","MAR_antcraterDirt","MAR_ANTWASP"
+        "MAR_Spider_Webs_2","MAR_AntIce","MAR_ANT_Guppy","MAR_Ant_Part_GrubHead","MAR_Ant_Part_Grubbutt","MAR_antcraterDirt","MAR_ANTWASP","MAR_antHill_raised","MAR_antcraterDirt_raised"
         };
-		weapons[] = {};
+		weapons[] = {"MAR_BugsLife_Antidote"};
 		magazines[]={};
 		ammo[]={};
 		requiredAddons[] = {"A3_Characters_F","a3_anims_f"};
@@ -66,6 +66,7 @@ class Eventhandlers;
 
 class CfgVehicles
 { 
+    class Man;
     class Logic;
 	class Module_F : Logic
 	{
@@ -575,7 +576,27 @@ class CfgVehicles
     };
     #include "Spiders.hpp"
     #include "ANTS.hpp"
-    //Modules
+    class Man;
+	class CAManBase: Man {
+	
+		class UserActions
+        {
+            class MAR_BugsLife_Antidote
+            {
+                displayName = "<t color='#FFD366' size='1.45' font = 'PuristaSemibold'>Use Antidote</t>";
+                displayNameDefault = "<t color='#FFD366' size='1.45' font = 'PuristaSemibold'>Use Antidote</t>";
+                priority = 10;
+                radius = 5; // A too small radius might cause the action to not be visible
+                position = "camera";
+                showWindow = 0;
+                hideOnUse = 1;
+                onlyForPlayer = 0;
+                shortcut = "";
+                condition = "missionNamespace getVariable['bis_fnc_moduleRemoteControl_unit', player] == this && alive this && 'MAR_BugsLife_Antidote' in items this && this getVariable 'poisoned_B'"; // Only show if the unit is alive and is not a player
+                statement = "this spawn Bugzlife_useAntidote;";
+            };
+        };
+    };
     
 };
 
@@ -594,6 +615,7 @@ class UnderBarrelSlot;
 class ItemInfo;
 class cfgWeapons 
 {
+    class ItemCore;
 	class Pistol_Base_F; //External class reference
 	class ItemCore;	// External class reference
 	class UniformItem;	// External class reference
@@ -601,6 +623,7 @@ class cfgWeapons
 	class HeadgearItem;	// External class reference
 	class Vest_Camo_Base;	// External class reference
 	class VestItem;	// External class reference
+    class InventoryItem_Base_F;
 	class V_PlateCarrierSpec_blk;
 	class ANT_Queen_Uniform: Uniform_Base
 		{
@@ -717,9 +740,43 @@ class cfgWeapons
 				uniformmodel="-";
 			};
     };
+
+    class MAR_BugsLife_Antidote:ItemCore
+    {   
+        scope = 2;
+        scopeCurator = 2;
+        displayName = "Antidote";
+        picture="\A3\Weapons_F\Items\data\UI\gear_FirstAidKit_CA.paa";
+        model="\A3\Structures_F_EPA\Items\Medical\Antibiotic_F.p3d";
+        class ItemInfo
+		{
+            type =  620;
+			mass=1;
+		};
+    };
 };
 
+class ACE_Medical_Injuries {
+    class wounds {       
+        class poisoned {
+            bleeding = 0;
+            pain = 0.7;
+        };
+    };
+    class damageTypes {
+        thresholds[] = {{0.1, 1}};
+        selectionSpecific = 1;
 
+        class poison {
+            thresholds[] = {{0, 1}};
+            selectionSpecific = 0;
+            noBlood = 1;
+            class poisoned {
+                weighting[] = {{0, 1}};
+            };
+        };
+    };
+};
 
 class CfgMovesBasic
 {
@@ -3991,3 +4048,5 @@ class CfgGroups
 		};
 	};
 };
+
+
