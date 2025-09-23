@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+	<Project name="ACE">
+	<Package name="Medical_Damage">
+		<Key ID="STR_ACE_Medical_Damage_Poison">
+			<English>Plasma</English>
+		</Key>
+		<Key ID="STR_ACE_Medical_Damage_Poison_Minor">
+			<English>small amount Poisoned</English>
+		</Key>
+		<Key ID="STR_ACE_Medical_Damage_Poison_Medium">
+			<English>Some Poison</English>
+		</Key>
+		<Key ID="STR_ACE_Medical_Damage_Poison_Large">
+			<English>Lots of Poison</English>
+		</Key>
+	</Package>
+</Project>

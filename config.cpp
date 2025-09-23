@@ -592,7 +592,7 @@ class CfgVehicles
                 hideOnUse = 1;
                 onlyForPlayer = 0;
                 shortcut = "";
-                condition = "missionNamespace getVariable['bis_fnc_moduleRemoteControl_unit', player] == this && alive this && 'MAR_BugsLife_Antidote' in items this && this getVariable 'poisoned_B'"; // Only show if the unit is alive and is not a player
+                condition = " alive this && 'MAR_BugsLife_Antidote' in items this && this getVariable 'poisoned_B'"; // Only show if the unit is alive and is not a player
                 statement = "this spawn Bugzlife_useAntidote;";
             };
         };
@@ -748,6 +748,7 @@ class cfgWeapons
         displayName = "Antidote";
         picture="\A3\Weapons_F\Items\data\UI\gear_FirstAidKit_CA.paa";
         model="\A3\Structures_F_EPA\Items\Medical\Antibiotic_F.p3d";
+        ACE_isMedicalItem = 1;
         class ItemInfo
 		{
             type =  620;
@@ -756,27 +757,7 @@ class cfgWeapons
     };
 };
 
-class ACE_Medical_Injuries {
-    class wounds {       
-        class poisoned {
-            bleeding = 0;
-            pain = 0.7;
-        };
-    };
-    class damageTypes {
-        thresholds[] = {{0.1, 1}};
-        selectionSpecific = 1;
 
-        class poison {
-            thresholds[] = {{0, 1}};
-            selectionSpecific = 0;
-            noBlood = 1;
-            class poisoned {
-                weighting[] = {{0, 1}};
-            };
-        };
-    };
-};
 
 class CfgMovesBasic
 {

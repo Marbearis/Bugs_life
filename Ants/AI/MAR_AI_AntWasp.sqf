@@ -272,12 +272,12 @@ _loopPathfind = [{
 			]; 
 			switch (true) do {
 				 
-				case (((_unit distance _nearEnemy) > 40) and !(animationState _unit in ["ant_wasp_flyf_fast","ant_wasp_flyf","ant_wasp_flyl","ant_wasp_flyr","ant_wasp_flyb"])):{
+				case (((_unit distance _nearEnemy) > 40) and !(animationState _unit in ["ant_attack_1","ant_attack_ranged","ant_wasp_flyf_fast","ant_wasp_flyf","ant_wasp_flyl","ant_wasp_flyr","ant_wasp_flyb"])):{
 					[_unit,"ANT_Wasp_FlyF_Fast",[0,0,0]] spawn ANTZ_MoveAi;
 					
 				};
 
-				case (((_unit distance _nearEnemy) < 40) and !(animationState _unit in ["ant_wasp_flyf_fast","ant_wasp_flyf","ant_wasp_flyl","ant_wasp_flyr","ant_wasp_flyb"])):{
+				case (((_unit distance _nearEnemy) < 40) and !(animationState _unit in ["ant_attack_1","ant_attack_ranged","ant_wasp_flyf_fast","ant_wasp_flyf","ant_wasp_flyl","ant_wasp_flyr","ant_wasp_flyb"])):{
 					[_unit,selectRandom ["ANT_Wasp_FlyF","ANT_Wasp_FlyL","ANT_Wasp_FlyR","ANT_Wasp_FlyB"],[0,0,0]] spawn ANTZ_MoveAi;
 				};
 

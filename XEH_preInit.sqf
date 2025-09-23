@@ -10,7 +10,7 @@
     "MAR_BL_POISONTICKRATE", 
     "SLIDER", 
     ["Tick rate for poison damage","adjust dot of poison"],
-    ["Marbearis' Bugs & critters","General Settings"],
+    ["Marbearis' Bugs & critters","Damage Settings"],
     [1, 10, 5, 0],
     1,
     {   
@@ -24,7 +24,7 @@
     "MAR_BL_POISONTICKDAMAGE", 
     "SLIDER", 
     ["poison damage per tick","adjust damage of poison,divided by max health"],
-    ["Marbearis' Bugs & critters","General Settings"],
+    ["Marbearis' Bugs & critters","Damage Settings"],
     [1, 25, 10, 0],
     1,
     {   
@@ -34,17 +34,32 @@
     }
 ] call CBA_fnc_addSetting;
 
+
 [ 
     "MAR_BL_POISONTICKDURATION", 
     "SLIDER", 
     ["poison duration","how long will you be poisoned without antidote"],
-    ["Marbearis' Bugs & critters","General Settings"],
+    ["Marbearis' Bugs & critters","Damage Settings"],
     [1, 100, 5, 0],
     1,
     {   
         params ["_value"];  
         
 		MAR_BL_POISONTICKDURATION = _value;
+    }
+] call CBA_fnc_addSetting;
+
+[ 
+    "MAR_BL_ACIDDAMAGE", 
+    "SLIDER", 
+    ["Acid Damage","adjust how much damage taken take from acid"],
+    ["Marbearis' Bugs & critters","Damage Settings"],
+    [1, 25, 10, 0],
+    1,
+    {   
+        params ["_value"];  
+        
+		MAR_BL_ACIDDAMAGE = _value;
     }
 ] call CBA_fnc_addSetting;
 
@@ -246,11 +261,22 @@
 
 
 Bugzlife_useAntidote = {
-	params ["_unit"];
-	_unit playAction "Medic";
+	params ["_unit","_target"];
+	
+		
+	if (isNil "_target") then {
+		_target = _unit;		
+	};
+	if (_unit == _target) then {
+		[_unit,"Medic"] remoteExec ["playAction",0];
+	}else {
+		[_unit,"MedicOther"] remoteExec ["playAction",0];
+	};
 	uiSleep 2;
-	_unit setVariable ['poisoned_B',false,true]; 
-	_unit removeItem 'MAR_BugsLife_Antidote'
+	_target setVariable ['poisoned_B',false,true]; 
+	
+	(if('MAR_BugsLife_Antidote' in items _target) then{_target}else{_unit}) removeItem 'MAR_BugsLife_Antidote';
+	[_target,"poisoned"] call BugsLife_PlayerStatusBar;
 };
 
 Bugzlife_SpawnAntHill = {
@@ -277,7 +303,7 @@ Bugzlife_SpawnAntHill = {
 
 		[[_position,_DroidPodCrater],{ 
 			params ["_position","_DroidPodCrater"];
-            if (isDedicated) exitWith {}; 
+            if (isServer && !hasInterface) exitWith {};; 
 
                 _dustEffect = "#particlesource" createVehicleLocal _position; 
                 _dustEffect setParticleClass "HDustVTOL1"; 
@@ -367,7 +393,7 @@ Bugzlife_SpawnAntHill = {
 					
 					[_spawn,{ 
 					
-						if (isDedicated) exitWith {}; 
+						if (isServer && !hasInterface) exitWith {};; 
 						_pos = [_this#0,_this#1,((_this#2) + 2)];
 						_dustEffect = "#particlesource" createVehicleLocal _pos; 
 						_dustEffect setParticleClass "HDustVTOL1"; 
@@ -423,7 +449,7 @@ Bugzlife_SpawnAntHill = {
 
 							[_spawn,{ 
 					
-								if (isDedicated) exitWith {}; 
+								if (isServer && !hasInterface) exitWith {};; 
 								_pos = [_this#0,_this#1,((_this#2) + 2)];
 								_dustEffect = "#particlesource" createVehicleLocal _pos; 
 								_dustEffect setParticleClass "HDustVTOL1"; 
@@ -491,7 +517,7 @@ Bugzlife_SpawnAntHill = {
 					};
 						
 					
-					if (isDedicated) exitWith {}; 
+					if (isServer && !hasInterface) exitWith {};; 
 					_pos = [(getPosAtl _this)#0,(getPosAtl _this)#1,(((getPosAtl _this)#2) + 2)];
 					_dustEffect = "#particlesource" createVehicleLocal _pos; 
 					_dustEffect setParticleClass "HDustVTOL1"; 
@@ -562,7 +588,7 @@ Bugslife_TrapDoorAttack = {
 	[_spider,["Spider_Burrowed_Attack", 0, 0.2, false]] remoteExec ["switchMove",0];
 	[(getPosASL _home),{ 
 			
-            if (isDedicated) exitWith {}; 
+            if (isServer && !hasInterface) exitWith {};; 
 
                 _dustEffect = "#particlesource" createVehicleLocal _this; 
                 _dustEffect setParticleClass "HDustVTOL1"; 
@@ -710,7 +736,7 @@ Bugzlife_BugDeathContainer = {
 //	[[_this,_meleeSounds] ,{ params ["_player","_soundArray"];playSound3D [selectRandom _soundArray, _player];}] remoteExec ["spawn", [0,-2] select isDedicated];
 BugzLife_fnc_explodeBug = {
 
-	if (isDedicated) exitWith {};			
+	if (isServer && !hasInterface) exitWith {};;			
 	if (!(MAR_BL_CANBUGSEXPLODE)and!((_this isKindOf "MAR_Ant_Egg")||(_this isKindOf "MAR_Ant_Egg_Clutch")||(_this isKindOf "MAR_ANT_Spitter")||(_this isKindOf "MAR_Spider_Burrower")||(_this isKindOf "MAR_ANT_Ice"))) exitWith {
 		switch (typeOf _this) do {
 			case "MAR_ANT_Guppy":{
@@ -754,6 +780,7 @@ BugzLife_fnc_explodeBug = {
 
 	
 	if (_this isKindOf "MAR_Spider_Base") then {GlobalBugSoundPitch = 0.5}else {GlobalBugSoundPitch = (selectRandom [1,0.9,0.8,1.1,1.2])};
+	publicVariable "GlobalBugSoundPitch";
 	if ((_this isKindOf "MAR_Ant_Egg")||(_this isKindOf "MAR_Ant_Egg_Clutch")) then {}else {
 		_meleeSounds = [
 			"\Bugs_life\data\AntSounds\antDeath.ogg"
@@ -780,7 +807,7 @@ BugzLife_fnc_explodeBug = {
 	
 
 	[_this,{
-		if (isDedicated) exitWith {};
+		if (isServer && !hasInterface) exitWith {};;
 		if (MAR_BL_SillyMode) then {
 			_meleeSounds = [
 			"\Bugs_life\data\funnymodesounds\antparty.ogg"
@@ -814,10 +841,10 @@ BugzLife_fnc_explodeBug = {
 			case ("MAR_ImpactEffectsBugGuts_Blue"): {bloodpoolTexture = ["\Bugs_life\data\bloodpools\bloodpoolBlue_CA.paa","\Bugs_life\data\bloodpools\bloodPoolBlue.rvmat",[0,0.4,1,0.12]]};
 			default {bloodpoolTexture = ["\Bugs_life\data\bloodpools\bloodpoolOrange_CA.paa","\Bugs_life\data\bloodpools\bloodPoolOrange.rvmat",[1,0.5,0,0.12]] };
 	};
-	
+	publicVariable "bloodpoolTexture";
 	[[_lamd,_this],{
 		params ["_lamd","_unit","_IceSpike"];
-			if (isDedicated) exitWith {};
+			if (isServer && !hasInterface) exitWith {};;
 
 			if ((player distance _lamd) <= 12) then {
 				enableCamShake true; 
@@ -888,7 +915,7 @@ BugzLife_fnc_explodeBug = {
 	[_lamd] spawn {sleep 120; deleteVehicle _this;};
 
 
-	if (isDedicated) exitWith {};
+	if (isServer && !hasInterface) exitWith {};;
 
 	if ((_this isKindOf "MAR_Ant_Egg")||(_this isKindOf "MAR_Ant_Egg_Clutch")||!(MAR_BL_CANSPAWNGIBLETS)) exitWith {uiSleep 1; deleteVehicle _this;};//bug part exclusion
 	switch true do {
@@ -1022,12 +1049,12 @@ Bugslife_ANTMelee = {
 	if (_zombie getVariable ["CanMelee",true]) then {
 		_zombie setVariable ["CanMelee",false];
 		_zombie spawn {uiSleep 1; _this setVariable ["CanMelee",true];};
-		if (animationState _zombie in ["ant_attack_1"])exitWith {};
+		if (animationState _zombie in ["ant_attack_1"])exitWith {systemChat "boink";};
 	
 		[_zombie,["ANT_Attack_1", 0, 0.2, false]] remoteExec ["switchMove",0];
-		if !(animationState _zombie in ["ant_attack_1"])exitWith {};
+	
 		[_zombie,{
-			if (isDedicated) exitWith {};
+			if (isServer && !hasInterface) exitWith {};;
 			if ((_this isKindOf "MAR_ANT_Guppy")&&(MAR_BL_SillyMode)) then 
 			{
 				_meleeSounds = [
@@ -1051,12 +1078,12 @@ Bugslife_ANTMelee = {
 		
 		
 		uiSleep 0.1;
-		if !(animationState _zombie in ["ant_attack_1"])exitWith {};
+		if !(animationState _zombie == "ANT_Attack_1")exitWith {"gigaboink"};
 		
 		
 		uisleep 0.2;
 		
-		if !(animationState _zombie in ["ant_attack_1"])exitWith {};
+		if !(animationState _zombie == "ANT_Attack_1")exitWith {"gigaboink"};
 		if (_zombie isKindOf "MAR_ANT_Ice") exitWith {
 			[_zombie, [1, false, _zombie]] remoteExec ["setDamage",2];
 		};
@@ -1080,7 +1107,7 @@ ANTZ_MoveAi = {
 
 BugsLife_AntEgginit = {
 	params ["_egg"];
-	if (isDedicated) exitWith {};
+	if (isServer && !hasInterface) exitWith {};;
 	_egg allowDamage false;
 	_egg addEventHandler ["HitPart", {
 			
@@ -1285,14 +1312,15 @@ BugsLife_HandleMelee =
 
 BugsLife_HandleDamage = {
 	params ["_source",["_radius",4],"_type","_target",["_damage",0.25],"_side"];
-	if (isDedicated) exitWith {};
+	if (isServer && !hasInterface) exitWith {};;
+		
 	
 	switch _type do {
 		case "fire":{
 			
 			[_source,_radius,_damage,_side]spawn {
 				params ["_source","_radius","_damage","_side"];
-				melee_damage = _damage;
+				
 				while {alive _source} do {
 					
 					{							
@@ -1332,14 +1360,14 @@ BugsLife_HandleDamage = {
 							};											
 								switch true do {
 									case (!(isNil "ace_medical_fnc_addDamageToUnit")):{ 
-										[[_x,_source],{
-											params ["_target","_zombie"];											
+										[[_x,_source,_damage],{
+											params ["_target","_zombie","_damage"];											
 											if (!(isNil {_target getVariable "optre_suit_energy"})) then {
 												if ((_target getVariable ["optre_suit_energy",0]) <= 0) exitWith {
 													if ((alive _target) && ({_x > 0.5}forEach(_target getVariable ["ace_medical_bodypartdamage",[0]])) && !(isNil "Flamethrower_Fired_EH"))then {
 														[_target,_zombie] remoteExec ["Flame_Death_containerSpecialEH",_target];
 													}else {
-														[_target, melee_damage, selectRandom ["body","Head","LeftArm","RightArm","LeftLeg","RightLeg"], "burn"] remoteExec ["ace_medical_fnc_addDamageToUnit", _target];														
+														[_target,(_damage/4), selectRandom ["body","LeftArm","RightArm","LeftLeg","RightLeg"], "burn"] call ace_medical_fnc_addDamageToUnit;															
 													};
 												};
 												_shieldEnergy = _target getVariable ["optre_suit_energy",0];
@@ -1349,7 +1377,7 @@ BugsLife_HandleDamage = {
 												if ((alive _target) && ({_x > 0.5}forEach(_target getVariable ["ace_medical_bodypartdamage",[0]]))&& !(isNil "Flamethrower_Fired_EH"))then {
 														[_target,_zombie] remoteExec ["Flame_Death_containerSpecialEH",_target];
 													}else {
-														[_target, melee_damage, selectRandom ["body","Head","LeftArm","RightArm","LeftLeg","RightLeg"], "burn"] remoteExec ["ace_medical_fnc_addDamageToUnit", _target];																				
+														[_target,(_damage/4), selectRandom ["body","LeftArm","RightArm","LeftLeg","RightLeg"], "burn"] call ace_medical_fnc_addDamageToUnit;																					
 													};
 												
 											};
@@ -1362,7 +1390,7 @@ BugsLife_HandleDamage = {
 											
 											case (WBK_Armor_System_OnlyHP):{
 												_currentHealth = _x getVariable "WBK_AS_HP";
-												_newDamage = _currentHealth - melee_damage;
+												_newDamage = _currentHealth - _damage/100;;
 												_x setVariable ["WBK_AS_HP",_newDamage,true];
 												if ((_currentHealth > 0.8)&& !(isNil "Flamethrower_Fired_EH")) then {[_x,_source] remoteExec ["Flame_Death_containerSpecialEH",_x];};
 											}; 
@@ -1371,7 +1399,7 @@ BugsLife_HandleDamage = {
 													_currentArmor = _x getVariable "WBK_AdvancedHealth";
 													if (_currentArmor <= 0) then {
 														_currentHealth = _x getVariable "WBK_AS_HP";
-														_newDamage = _currentHealth - melee_damage;
+														_newDamage = _currentHealth - _damage/100;;
 														_x setVariable ["WBK_AS_HP",_newDamage,true];
 														if ((_currentHealth > 0.8)&& !(isNil "Flamethrower_Fired_EH")) then {[_x,_source] remoteExec ["Flame_Death_containerSpecialEH",_x];};
 													}else {
@@ -1384,12 +1412,12 @@ BugsLife_HandleDamage = {
 									
 									default {
 										if (!(isNil {_x getVariable "optre_suit_energy"})) then {
-											[[_x,_source],{
-												params ["_target","_zombie"];
+											[[_x,_source,_damage],{
+												params ["_target","_zombie","_damage"];
 												
 												if ((_target getVariable ["optre_suit_energy",0]) <= 0) exitWith {
 													private _poop = damage _target;						
-													[_target, [(melee_damage + _poop), false, _zombie]] remoteExec ["setDamage",_poop]; 
+													[_target, [(_damage + _poop), false, _zombie]] remoteExec ["setDamage",_poop]; 
 													if ((alive _target)&& (_poop > 0.8)&& !(isNil "Flamethrower_Fired_EH")) then {[_target,_zombie] remoteExec ["Flame_Death_containerSpecialEH",_target];};
 												};
 												_shieldEnergy = _target getVariable ["optre_suit_energy",0];
@@ -1399,7 +1427,7 @@ BugsLife_HandleDamage = {
 										}else{		
 											private _poop = damage _x;
 											if ((alive _x)&&(_poop > 0.8)&& !(isNil "Flamethrower_Fired_EH")) then {[_x,_source] remoteExec ["Flame_Death_containerSpecialEH",_x];}else{
-												[_x, [(melee_damage + _poop), false, _source]] remoteExec ["setDamage",_poop];
+												[_x, [(_damage + _poop), false, _source]] remoteExec ["setDamage",_poop];
 											}; 																									
 										}; 
 									};																	
@@ -1526,7 +1554,7 @@ BugsLife_HandleDamage = {
 		case "acid":{
 			[_source,_radius,_damage, _side]spawn {
 				params ["_source","_radius","_damage","_side"];
-				melee_damage = _damage;
+				
 				while {alive _source} do {					
 					{							
 						if (
@@ -1550,7 +1578,7 @@ BugsLife_HandleDamage = {
 													
 								private _chimp = _x getVariable ["WBK_SynthHP",1];
 								
-								private _newHealth = _chimp - 35 ;
+								private _newHealth = _chimp - _damage ;
 								_x setVariable ["WBK_SynthHP", _newHealth,true];
 
 								if (_newHealth <= 0) exitWith {
@@ -1565,15 +1593,15 @@ BugsLife_HandleDamage = {
 							};											
 								switch true do {
 									case (!(isNil "ace_medical_fnc_addDamageToUnit")):{ 
-										[[_x,_source],{
-											params ["_target","_zombie"];	
+										[[_x,_source,_damage],{
+											params ["_target","_zombie","_damage"];	
 									
 											if (!(isNil {_target getVariable "optre_suit_energy"})) then {
 												if ((_target getVariable ["optre_suit_energy",0]) <= 0) exitWith {
 													if ((alive _target) && ({_x > 0.5}forEach(_target getVariable ["ace_medical_bodypartdamage",[0]])) && !(isNil "WBK_PlasmaDeath_Regular"))then {
 														_target spawn WBK_MeltaDeath;
 													}else {
-														[_target, melee_damage, selectRandom ["body","LeftArm","RightArm","LeftLeg","RightLeg"], "stab"] remoteExec ["ace_medical_fnc_addDamageToUnit", _target];														
+														[_target,(_damage/4), selectRandom ["body","LeftArm","RightArm","LeftLeg","RightLeg"], selectRandom["burn","stab"]] call ace_medical_fnc_addDamageToUnit;														
 													};
 												};
 												_shieldEnergy = _target getVariable ["optre_suit_energy",0];
@@ -1583,7 +1611,7 @@ BugsLife_HandleDamage = {
 												if ((alive _target) && ({_x > 0.5}forEach(_target getVariable ["ace_medical_bodypartdamage",[0]]))&& !(isNil "WBK_PlasmaDeath_Regular"))then {
 														_target spawn WBK_MeltaDeath;
 													}else {													
-														[_target, melee_damage, selectRandom ["body","LeftArm","RightArm","LeftLeg","RightLeg"], "stab"] remoteExec ["ace_medical_fnc_addDamageToUnit", _target];																				
+														[_target,(_damage/4), selectRandom ["body","LeftArm","RightArm","LeftLeg","RightLeg"], selectRandom["burn","stab"]] call ace_medical_fnc_addDamageToUnit;																				
 													};
 												
 											};
@@ -1596,7 +1624,7 @@ BugsLife_HandleDamage = {
 											
 											case (WBK_Armor_System_OnlyHP):{
 												_currentHealth = _x getVariable "WBK_AS_HP";
-												_newDamage = _currentHealth - melee_damage;
+												_newDamage = _currentHealth - _damage/100;;
 												_x setVariable ["WBK_AS_HP",_newDamage,true];
 												if ((_currentHealth > 0.8)&& !(isNil "WBK_PlasmaDeath_Regular")) then {_x spawn WBK_MeltaDeath;};
 											}; 
@@ -1605,7 +1633,7 @@ BugsLife_HandleDamage = {
 													_currentArmor = _x getVariable "WBK_AdvancedHealth";
 													if (_currentArmor <= 0) then {
 														_currentHealth = _x getVariable "WBK_AS_HP";
-														_newDamage = _currentHealth - melee_damage;
+														_newDamage = _currentHealth - _damage/100;;
 														_x setVariable ["WBK_AS_HP",_newDamage,true];
 														if ((_currentHealth > 0.8)&& !(isNil "WBK_PlasmaDeath_Regular")) then {_x spawn WBK_MeltaDeath};
 													}else {
@@ -1618,12 +1646,12 @@ BugsLife_HandleDamage = {
 									
 									default {
 										if (!(isNil {_x getVariable "optre_suit_energy"})) then {
-											[[_x,_source],{
-												params ["_target","_zombie"];
+											[[_x,_source,_damage],{
+												params ["_target","_zombie","_damage"];	
 												
 												if ((_target getVariable ["optre_suit_energy",0]) <= 0) exitWith {
 													private _poop = damage _target;						
-													[_target, [(melee_damage + _poop), false, _zombie]] remoteExec ["setDamage",_poop]; 
+													_target setDamage ((_damage/100) + _poop);	
 													if ((alive _target)&& (_poop > 0.8)&& !(isNil "WBK_PlasmaDeath_Regular")) then {_x spawn WBK_MeltaDeath;};
 												};
 												_shieldEnergy = _target getVariable ["optre_suit_energy",0];
@@ -1633,7 +1661,7 @@ BugsLife_HandleDamage = {
 										}else{		
 												private _poop = damage _x;
 												if ((alive _x)&&(_poop > 0.8)&& !(isNil "WBK_PlasmaDeath_Regular")) then {_x spawn WBK_MeltaDeath;}else{
-													[_x, [(melee_damage + _poop), false, _source]] remoteExec ["setDamage",_poop];
+													_x setDamage ((_damage/100) + _poop);	
 												}; 																									
 										}; 
 									};																	
@@ -1648,9 +1676,35 @@ BugsLife_HandleDamage = {
 		};
 
 		case "poison":{
-			//MAR_BugsLife_Antidote
+
+			if (_target getVariable "poisoned_B") exitWith {};
+
+			_target setVariable ["poisoned_B",true,true];
+
+			_target spawn {uiSleep MAR_BL_POISONTICKDURATION; _this setVariable ["poisoned_B",false,true];};
+
+			[_target,"poisoned"] call BugsLife_PlayerStatusBar;
+			_poisonAid = _target addAction [
+					"<t color='#FF0000'>Give Antidote</t>",
+					{
+						params ["_target", "_caller", "_actionId", "_arguments"];
+						_target removeAction _actionId;
+						[_caller,_target]spawn Bugzlife_useAntidote;
+					},
+					nil,
+					1.5,
+					true,
+					true,
+					"",
+					"_this != _originalTarget &&  alive _originalTarget && (('MAR_BugsLife_Antidote' in items _originalTarget)||('MAR_BugsLife_Antidote' in items _this)) && _originalTarget getVariable 'poisoned_B' ",
+					4,
+					false,
+					"",
+					""
+			];
+			_target setVariable ["MAR_PoisonAidAction",_poisonAid,true];	
 			[_target,{
-				if (isDedicated) exitWith {};				
+				if (isServer && !hasInterface) exitWith {};;				
 				_fulgi = "#particlesource" createVehicleLocal getposATL _this; 
 				_fulgi setParticleParams [   
 					["\A3\data_f\cl_exp", 1, 0, 1], "", "Billboard", 3, 7,   
@@ -1661,62 +1715,70 @@ BugsLife_HandleDamage = {
 				_fulgi setParticleCircle [0, [0, 0, -0.12]];   
 				_fulgi setDropInterval 0.5;
 				_fulgi attachTo [_this,[0,0,0],"pelvis",true];
-				_this setVariable ["MAR_AttachedPoisonEffect",_fulgi];
-				
+				_this setVariable ["MAR_AttachedPoisonEffect",_fulgi,true];				
 			}] remoteExec ["spawn", 0];
 
 			[_target,_source,_damage] spawn 			
 			{
-				params ["_target","_source","_damage"];
+				params ["_target","_source","_damage"];								
 				while {_target getVariable "poisoned_B"; alive _target; !isNull _target;} do {
+					
 					if !(_target getVariable "poisoned_B") exitWith{
 						if(!isNil {_target getVariable "MAR_AttachedPoisonEffect"})then {
-							deleteVehicle (_target getVariable "MAR_AttachedPoisonEffect");						
-						}; 						
+							deleteVehicle (_target getVariable "MAR_AttachedPoisonEffect");											
+						}; 	
+						_isHudActive = ctrlShown ((findDisplay 46) displayCtrl 22433);
+						if (_isHudActive) then {
+							[_target,"poisoned"] call BugsLife_PlayerStatusBar;	
+						};	
+						[_target, (_target getVariable "removeAction")]remoteExec ["removeAction",0];
+											
 					};
-					switch true do {							
+					switch true do {	
+
 						case(!(isNil "ace_medical_fnc_addDamageToUnit")):{ 
 							[[_target,_source,_damage],{
-								params ["_target","_zombie","_damage"];											
+								params ["_target","_zombie","_damage"];	
+																	
 								if (!(isNil {_target getVariable "optre_suit_energy"})) then {
 									if ((_target getVariable ["optre_suit_energy",0]) <= 0) exitWith {								
-										[_target, _damage/100, "body", "poison"] remoteExec ["ace_medical_fnc_addDamageToUnit", _target];																						
+									[_target,(_damage/16), selectRandom ["body","LeftArm","RightArm","LeftLeg","RightLeg"], "falling"] call ace_medical_fnc_addDamageToUnit;																						
 									};
 									_shieldEnergy = _target getVariable ["optre_suit_energy",0];
 									_newShieldEnergy = _shieldEnergy - 25;
 									_target setVariable ["optre_suit_energy", _newShieldEnergy, true];
-								}else {		
-															
-									[_target, _damage/100, "body", "poison"] remoteExec ["ace_medical_fnc_addDamageToUnit", _target];																																					
+								}else {																								
+									[_target,(_damage/16), selectRandom ["body","LeftArm","RightArm","LeftLeg","RightLeg"], "falling"] call ace_medical_fnc_addDamageToUnit;																																		
 								};
 							}]remoteExec ["spawn",_target];										
 						};
 
 						case ((local _target) && {!(isDamageAllowed _target)}):{
-								switch true do {
+							switch true do {
+								
+								case (WBK_Armor_System_OnlyHP):{
+									_currentHealth = _target getVariable "WBK_AS_HP";
+									_newDamage = _currentHealth - _damage/100;
+									_target setVariable ["WBK_AS_HP",_newDamage,true];
 									
-									case (WBK_Armor_System_OnlyHP):{
-										_currentHealth = _target getVariable "WBK_AS_HP";
-										_newDamage = _currentHealth - _damage/100;
-										_target setVariable ["WBK_AS_HP",_newDamage,true];
-										
-									}; 
+								}; 
 
-									case !(WBK_Armor_System_OnlyHP):{
-											_currentArmor = _target getVariable "WBK_AdvancedHealth";
-											if (_currentArmor <= 0) then {
-												_currentHealth = _target getVariable "WBK_AS_HP";
-												_newDamage = _currentHealth - _damage/100;
-												_target setVariable ["WBK_AS_HP",_newDamage,true];
-												
-											}else {
-											_newDamage = _currentArmor - (15*WBK_Armor_System_DMG_Modifier);													
-											_target setVariable ["WBK_AdvancedHealth",_newDamage,true];
-										};
-									}; 
-								};
-							};			
+								case !(WBK_Armor_System_OnlyHP):{
+										_currentArmor = _target getVariable "WBK_AdvancedHealth";
+										if (_currentArmor <= 0) then {
+											_currentHealth = _target getVariable "WBK_AS_HP";
+											_newDamage = _currentHealth - _damage/100;
+											_target setVariable ["WBK_AS_HP",_newDamage,true];
+											
+										}else {
+										_newDamage = _currentArmor - (15*WBK_Armor_System_DMG_Modifier);													
+										_target setVariable ["WBK_AdvancedHealth",_newDamage,true];
+									};
+								}; 
+							};
+						};			
 							
+						
 						default {
 							if (!(isNil {_target getVariable "optre_suit_energy"})) then {
 								[[_target,_source,_damage],{
@@ -1724,16 +1786,15 @@ BugsLife_HandleDamage = {
 									
 									if ((_target getVariable ["optre_suit_energy",0]) <= 0) exitWith {
 										private _poop = damage _target;						
-										[_target, [((_damage/100) + _poop), false, _zombie]] remoteExec ["setDamage",_poop]; 
-										
+										_target setDamage ((_damage/100) + _poop);										
 									};
 									_shieldEnergy = _target getVariable ["optre_suit_energy",0];
 									_newShieldEnergy = _shieldEnergy - 25;
 									_target setVariable ["optre_suit_energy", _newShieldEnergy, true];									
 								}]remoteExec ["spawn",_target];
 							}else{		
-									private _poop = damage _target;								
-									[_target, [((_damage/100) + _poop), false, _source]] remoteExec ["setDamage",_poop];																																
+								private _poop = damage _target;	
+								_target setDamage ((_damage/100) + _poop);																																														
 							}; 
 						};	
 					}; 
@@ -1748,17 +1809,12 @@ BugsLife_HandleDamage = {
 BugsLife_RangedAttack_FNC= {
 
 	params ["_mantis","_en"];
-	_mantis setVariable ["IsCanFire",1]; 
+	_mantis setVariable ["IsCanFire",1,true]; 
 	if (_mantis isKindOf "MAR_ANTWASP") then {
 		_mantis spawn {uisleep 4; _this setVariable ["IsCanFire",nil,true];};	
 	};
 	
 	[_mantis,["ANT_Attack_Ranged", 0, 0.2, false]] remoteExec ["switchMove",0];
-	
-	if !(animationState _mantis in ["ant_attack_ranged"]) exitWith {};
-
-	
-	
 					
 		switch true do {
 	
@@ -1769,14 +1825,20 @@ BugsLife_RangedAttack_FNC= {
 				playSound3D [(selectRandom _meleeSounds), _mantis,false, getPosASL _mantis, 1, selectRandom [1,0.9,0.8,1.1,1.2], 0];
 				uiSleep 0.3;
 				_mantis setVariable ["WBK_OPTRE_AfterContact",1];
-				_mantis spawn {uisleep selectRandom [1,2,3,4]; _this setVariable ["IsCanFire",nil];};																				
-				uiSleep 0.3;				
-				[_mantis,_mantis modelToWorldVisual [0,5,1],"B_BugsLife_Acid_Spit", _en, selectRandom [[(aimPos _en select 0) - 1,aimPos _en select 1,aimPos _en select 2],[(aimPos _en select 0) + 1,aimPos _en select 1,aimPos _en select 2],[(aimPos _en select 0) - 2,aimPos _en select 1,aimPos _en select 2],[(aimPos _en select 0) + 2,aimPos _en select 1,aimPos _en select 2],[eyePos _en select 0, eyePos _en select 1,(eyePos _en select 2) + 2],[eyePos _en select 0, eyePos _en select 1,(eyePos _en select 2) + 2],[eyePos _en select 0, eyePos _en select 1,(eyePos _en select 2) + 1]], (selectRandom [40,50,55]), false, [0,0,0]] spawn Bugzz_fnc_ProjectileCreate;						
+				_mantis spawn {uisleep selectRandom [3,4,5]; _this setVariable ["IsCanFire",nil,true];};																				
+				uiSleep 0.3;
+				if !(animationState _mantis == "ANT_Attack_Ranged") exitWith {};
+				if (_mantis distance _en < 14) then {
+					[_mantis,_mantis modelToWorldVisual [0,3,1],"B_BugsLife_Acid_Spit", _en, [(aimPos _en select 0) + (selectRandom [0,1,2,0,-1,-2]),(aimPos _en select 1)+(selectRandom [0,1,2,0,-1,-2]),(aimPos _en select 2)+(0)], selectRandom[70,80,90,100] , false, [0,0,0]] spawn Bugzz_fnc_ProjectileCreate;	
+				
+				}else{
+					[_mantis,_mantis modelToWorldVisual [0,3,1],"B_BugsLife_Acid_Spit", _en, [(aimPos _en select 0) + (selectRandom [0,3,4,5,-3,-4,-5]),(aimPos _en select 1)+(selectRandom [0,3,4,5,-3,-4,-5]),(aimPos _en select 2)+(20)], (15+((_mantis distance _en)/6)), false, [0,0,0]] spawn Bugzz_fnc_ProjectileCreate;						
+				};			
 			};
 
 			case (_mantis isKindOf "MAR_ANT_Ice"): {
 				
-				_mantis spawn {uisleep selectRandom [1,2,3,4]; _this setVariable ["IsCanFire",nil];};
+				_mantis spawn {uisleep selectRandom [1,2,3,4]; _this setVariable ["IsCanFire",nil,true];};
 				[_mantis,_mantis modelToWorldVisual [0,1.2,1],"G_40mm_HE", _en, selectRandom [[(aimPos _en select 0) - 1,aimPos _en select 1,aimPos _en select 2],[(aimPos _en select 0) + 1,aimPos _en select 1,aimPos _en select 2],[(aimPos _en select 0) - 2,aimPos _en select 1,aimPos _en select 2],[(aimPos _en select 0) + 2,aimPos _en select 1,aimPos _en select 2],[eyePos _en select 0, eyePos _en select 1,(eyePos _en select 2) + 2],[eyePos _en select 0, eyePos _en select 1,(eyePos _en select 2) + 2],[eyePos _en select 0, eyePos _en select 1,(eyePos _en select 2) + 1]], (selectRandom [120,150,160]), false, [0,0,0]] spawn Bugzz_fnc_ProjectileCreate;						
 			};
 
@@ -1787,17 +1849,16 @@ BugsLife_RangedAttack_FNC= {
 				];
 				playSound3D [(selectRandom _meleeSounds), _mantis,false, getPosASL _mantis, 1, selectRandom [1,0.9,0.8,1.1,1.2], 0];
 				uiSleep 0.3;	
-																				
+				if !(animationState _mantis == "ANT_Attack_Ranged") exitWith {};																
 				uiSleep 0.1;	
-				for "_i" from 1 to 3 do {
-					
+				for "_i" from 1 to 3 do {				
 					[_mantis,_mantis modelToWorldVisual [0,2,0],"B_Stinger", _en, selectRandom [aimPos _en,aimPos _en ,aimPos _en,aimPos _en,[eyePos _en select 0, eyePos _en select 1,(eyePos _en select 2) + 2],[eyePos _en select 0, eyePos _en select 1,(eyePos _en select 2) + 2],[eyePos _en select 0, eyePos _en select 1,(eyePos _en select 2) + 1]], (selectRandom [90,100,60]), false, [0,0,0]] spawn Bugzz_fnc_ProjectileCreate;	
 				};					
 			};
 			
 
 			case (_mantis isKindOf "MAR_ANT_QUEEN"):{
-				_mantis spawn {uisleep 35; _this setVariable ["IsCanFire",nil];};
+				_mantis spawn {uisleep 35; _this setVariable ["IsCanFire",nil,true];};
 				for "_i" from 1 to 8 do {
 					_meleeSounds = [
 						"\Bugs_life\data\AntSounds\antSpit.ogg"
@@ -1822,6 +1883,7 @@ BugsLife_RangedAttack_FNC= {
 };
 
 Bugzz_fnc_ProjectileCreate = {
+	
 	params   
 	[   
 		["_shooter", objNull, [objNull]],   
@@ -1904,9 +1966,8 @@ Bugzz_fnc_ProjectileCreate = {
 				Marb_Brute_DamagedParts pushBack [_entity, _bruteSpike, _relpos, _vup, "", time + 10];
 			};
 			if !(_entity getVariable ["poisoned_B",false]) then {
-				_entity setVariable ["poisoned_B",true,true];
-				_entity spawn {uiSleep MAR_BL_POISONTICKDURATION; _this setVariable ["poisoned_B",FALSE,true];};
 				[_projectileOwner,0,"poison",_entity,MAR_BL_POISONTICKDAMAGE,side _projectileOwner] call BugsLife_HandleDamage;
+				continue
 			};
 			{
 				_selection = _x;
@@ -1940,7 +2001,7 @@ Bugzz_fnc_ProjectileCreate = {
 
 	if (_rocket isKindOf "B_BugsLife_Acid_Spit") then {
 		[_rocket, {
-			if (isDedicated) exitWith {};
+			if (isServer && !hasInterface) exitWith {};;
 			_fulgi  = "#particlesource" createVehiclelocal getposaTL _this; 
 			_fulgi setParticleRandom [0, [1, 1, 0], [0, 0, 3], 3, 0.25, [0, 0, 0, 0.1], 0, 0];
 			_fulgi setDropInterval 0.05;
@@ -1985,7 +2046,7 @@ Bugzz_fnc_ProjectileCreate = {
 			_parents = getShotParents _grenade;
 			
 			waitUntil {sleep 0.1; !(alive _grenade)};
-			if (isDedicated) exitWith {};
+			if (isServer && !hasInterface) exitWith {};;
 			_boomSounds = [
 				"\a3\sounds_f\arsenal\explosives\grenades\grenadelight_closeexp_01.wss",
 				"\a3\sounds_f\arsenal\explosives\grenades\grenadelight_closeexp_02.wss", 
@@ -2020,7 +2081,7 @@ Bugzz_fnc_ProjectileCreate = {
 			}else{
 					_lamd call BugsLife_HandleMelee;
 					[[_actualHitClass,(side (_parents select 1))], {
-					if (isDedicated) exitWith {};
+					if (isServer && !hasInterface) exitWith {};;
 						params ["_actualHitClass","_side"];
 						_fulgi  = "#particlesource" createVehiclelocal getposaTL _actualHitClass;  
 						_fulgi setParticleRandom [0, [1, 1, 0], [5, 3, 1], 3, 0.25, [0, 0, 0, 0.1], 0, 0];   
@@ -2040,7 +2101,7 @@ Bugzz_fnc_ProjectileCreate = {
 										
 						uisleep 1;
 						deleteVehicle _fulgi;
-						[_fog1,4,"acid",nil,0.18,_side] call BugsLife_HandleDamage;	
+						[_fog1,4,"acid",nil,MAR_BL_ACIDDAMAGE,_side] call BugsLife_HandleDamage;	
 						uisleep 10;
 						deleteVehicle _fog1;
 						
@@ -2202,7 +2263,7 @@ BugsLife_AntQueen_MinionSummon_FNC =
 			_ANTMinion setPosATL [_DeformPos#0,_DeformPos#1,(_DeformPos#2)-6];
 			[_DeformPos,{ 
 				_fulgiOffset =_this;
-				if (isDedicated) exitWith {}; 
+				if (isServer && !hasInterface) exitWith {};; 
 				_pos = _this;
 				_dustEffect = "#particlesource" createVehicleLocal _pos; 
 				_dustEffect setParticleClass "HDustVTOL1"; 
@@ -2271,7 +2332,7 @@ BugsLife_AntQueen_ASSUP_FNC = {
 
 	[_spawn,{ 
 				_fulgiOffset = [_this#0,(_this#1)+(selectRandom [2]),(_this#2)-6];
-				if (isDedicated) exitWith {}; 
+				if (isServer && !hasInterface) exitWith {};; 
 				_pos = _this;
 				_dustEffect = "#particlesource" createVehicleLocal _pos; 
 				_dustEffect setParticleClass "HDustVTOL1"; 
@@ -2350,7 +2411,7 @@ BugsLife_AntQueen_FireBreath = {
 	for "_i" from 0 to 3 do {
 		uiSleep 0.8;
 		[[_unit,_en], {
-			if (isDedicated) exitWith {};
+			if (isServer && !hasInterface) exitWith {};;
 			params ["_unit","_en"];
 		
 			
@@ -2379,7 +2440,7 @@ BugsLife_AntQueen_FireBreath = {
 
 BugsLife_AntQueen_Volcano = {
 	params ["_unit",["_radius",15],"_en"];
-	if (isDedicated) exitWith {};
+	if (isServer && !hasInterface) exitWith {};;
 	_unit setVariable ["underGround",1,true];
 	_unit setVariable ["isVolcanoSummon",1,true];
 	_unit spawn {uiSleep 30; _this setVariable ["isVolcanoSummon",nil,true];};
@@ -2389,11 +2450,12 @@ BugsLife_AntQueen_Volcano = {
     _Deform_in setVectorUp surfaceNormal position _Deform_in;
 	_Deform_in animateSource ['Anthill_Raised',-0.9,5];
 	_Deform_in spawn {
-			uiSleep 30;
-			_this animateSource ['Anthill_Raised',1,5];
-			uiSleep 3;
-			deleteVehicle _this;
+		uiSleep 30;
+		_this animateSource ['Anthill_Raised',1,5];
+		uiSleep 3;
+		deleteVehicle _this;
 	};
+
 	[_unit,["ANT_Climb_IN", 0, 0.2, false]] remoteExec ["switchMove",0];
 	
 	_soundArray_wonk = ["\Bugs_life\data\AntSounds\ANT_Erupt_1.ogg","\Bugs_life\data\AntSounds\ANT_Erupt_2.ogg","\Bugs_life\data\AntSounds\ANT_Erupt_3.ogg"];	
@@ -2417,12 +2479,11 @@ BugsLife_AntQueen_Volcano = {
 		playercountErupt = 4;
 	}else {};
 
-	for "_i" from 1 to (playercountErupt/2) do {			
+	for "_i" from 1 to 3 do {			
 		if ((alive _unit)) then 	
 		{
 			_PosOffset = getPosATL _en;
-			
-			
+				
 			_spawn = _PosOffset;
 			_Deform =  createVehicle ["MAR_antcraterDirt",_PosOffset,[],4,"CAN_COLLIDE"];
 			_Deform setObjectScale 0.8;
@@ -2451,7 +2512,7 @@ BugsLife_AntQueen_Volcano = {
 			[[_DeformPos,_unit],{ 
 				params ["_DeformPos","_unit"];
 				_fulgiOffset =_DeformPos;
-				if (isDedicated) exitWith {}; 
+				if (isServer && !hasInterface) exitWith {}; 
 				_pos = _DeformPos;
 				_dustEffect = "#particlesource" createVehicleLocal _pos; 
 				_dustEffect setParticleClass "HDustVTOL1"; 
@@ -2473,16 +2534,19 @@ BugsLife_AntQueen_Volcano = {
 				_fulgi setParticleCircle [1, [0.5,0.5, 0]];
 				_fulgi setParticleParams [["\A3\data_f\cl_exp", 1, 0, 1],"","Billboard",1,2,[0,0,0],[0,0,0],0,0.7,1,0,[0.05, 0.20],[[1,0.5,0.1,1]],[1],0,0,"","",_DeformPos, 0, false, -1, [[120,100,0.005,1],[120,90,0.005,1],[120,90,0.005,1]]]; 
 				_fulgi setParticleFire [2,2,0.3];
-				[[_rocks1,_dustEffect,_fulgi,_unit],{
-					params ["_rocks1","_dustEffect","_fulgi","_unit"];
-						
-					[_fulgi,4,"fire",nil,0.25,side _unit] call BugsLife_HandleDamage;				
-					uiSleep 0.5;
-					deleteVehicle _rocks1; 					
-					deleteVehicle _dustEffect; 	
-					uisleep 7;
-					deleteVehicle _fulgi;  				
-				}]remoteExec ["spawn",_fulgi];
+				
+					[_fulgi,4,"fire",nil,0.25,side _unit] call BugsLife_HandleDamage;
+					[_rocks1,_dustEffect,_fulgi,_unit]spawn 						
+					{
+						params ["_rocks1","_dustEffect","_fulgi","_unit"];
+										
+						uiSleep 0.5;
+						deleteVehicle _rocks1; 					
+						deleteVehicle _dustEffect; 	
+						uisleep 7;
+						deleteVehicle _fulgi;
+					};				
+				
 				while {alive _fulgi} do {
 					_meleeSounds = [
 						"\Bugs_life\data\effects\fire_loop.ogg"
@@ -2490,10 +2554,78 @@ BugsLife_AntQueen_Volcano = {
 					_sound = playSound3D [selectRandom _meleeSounds, _fulgi,false, getPosASL _fulgi, 1, selectRandom [1,0.9,0.8,1.1,1.2], 0,0,true];
 					waitUntil { soundParams _sound isEqualTo []};					
 				}; 																			    
-			}] remoteExec["spawn", 0, false];		
+			}] remoteExec["spawn", 0];		
 		};
 		
 	};
 	uiSleep 8;
 	_unit spawn BugsLife_AntQueen_ReturnToOGPOS;
 };
+
+BugsLife_PlayerStatusBar = {
+	params ["_unit","_status"];
+	aceMedicalActive = !(isNil "ace_medical_fnc_addDamageToUnit");
+	//({_x > 0.5}forEach(_target getVariable ["ace_medical_bodypartdamage",[0]]))
+	_isHudActive = ctrlShown ((findDisplay 46) displayCtrl 22433);
+	if (_isHudActive) then  {
+			{	
+
+				_ctrl = (findDisplay 46) displayCtrl _x;
+				_ctrl spawn {
+					_this ctrlSetFade 1;
+					_this ctrlCommit 1;
+					uiSleep 2;
+					ctrlDelete _this;
+				};
+				
+			} forEach [22431,22432,22433,22434];			
+			[(_unit getVariable "hp_micro_hud")] call CBA_fnc_removePerFrameHandler;				
+	}else{
+		//static health bar bg
+		_ctrlBackground_Health_Static = findDisplay 46 ctrlCreate ["RscBackground", 22431];
+		  
+		_ctrlBackground_Health_Static ctrlSetBackgroundColor [1,0,0,0.2];   
+		_ctrlBackground_Health_Static ctrlEnable false;		  
+		_ctrlBackground_Health_Static ctrlCommit 0;
+
+	//actual health bar
+		_TB_Health_bar = findDisplay 46 ctrlCreate ["Rscprogress", 22433];			
+		  
+		_TB_Health_bar progressSetPosition 1;	
+		_TB_Health_bar ctrlSetTextColor [0,0.5,0,1];
+		_TB_Health_bar ctrlSetBackgroundColor [0.2, 0.2, 0.2, 0.3];  
+		_TB_Health_bar ctrlCommit 0;   
+		_TB_Health_HUD = findDisplay 46 ctrlCreate ["RscStructuredText", 22434];
+		
+		_TB_Health_HUD ctrlCommit 0;
+		_TB_Health_HUD ctrlSetStructuredText parseText format["<t color='#F7E8E8' align='center' size='1.1' font = 'PuristaMedium'>%1</t>",_status];
+		{
+			_ctrl = (findDisplay 46) displayCtrl _x;
+			_ctrl ctrlSetPosition  [0.822187 * safezoneW + safezoneX, 0.0950833 * safezoneH + safezoneY, 0.12375 * safezoneW, 0.022 * safezoneH];  
+			_ctrl ctrlCommit 0; 
+		}forEach [22431,22432,22433,22434];
+		_unit setVariable ["poisonTickTimeRemaining",MAR_BL_POISONTICKDURATION];
+		
+		_Bugslife_StatusBar = [{	
+			_array = _this select 0;
+			_unit = _array select 0;			
+			_hud = _array select 1;	
+			private _PoisonTickTimeRemaining = (_unit getVariable "poisonTickTimeRemaining");			
+			_hparam = ((_PoisonTickTimeRemaining)-1);		
+			private _PoisonTickTimeRemaining = _hparam;
+			_unit setVariable ["poisonTickTimeRemaining",_hparam];
+			_hud progressSetPosition _hparam/MAR_BL_POISONTICKDURATION;	
+			if !(alive _unit) exitWith {
+				_hud progressSetPosition 0;
+				{
+					_ctrl = (findDisplay 46) displayCtrl _x;
+					ctrlDelete _ctrl;
+				} forEach [22431,22433,22434];
+				[(_unit getVariable "hp_micro_hud")] call CBA_fnc_removePerFrameHandler;
+				_unit setVariable ["hp_micro_hud",nil];				
+			};							
+		},MAR_BL_POISONTICKRATE,[_unit,_TB_Health_bar]] call CBA_fnc_addPerFrameHandler;
+		_unit setVariable ["hp_micro_hud",_Bugslife_StatusBar];
+	};
+};
+

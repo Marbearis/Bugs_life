@@ -421,18 +421,14 @@ _loopPathfind = [{
 					_unit disableAI "ANIM";
 					doStop _unit;
 					switch (typeOf _unit) do {
-						case "MAR_ANT_Guppy": {
-							[_unit,"Guppy_Inch",[0,0,0]] spawn ANTZ_MoveAi;
+						case "MAR_ANT_Guppy": {						
+							[_unit,"Guppy_Inch",[0,0,0]] spawn ANTZ_MoveAi;							
 						};
 						case "MAR_ANT_QUEEN":{
 
 						};
 						default {
-							if  ((_unit distance _nearEnemy) > 2) then {
-								[_unit,"ANT_Run",[0,0,0]] spawn ANTZ_MoveAi;
-							}else{
-								[_unit,"ANT_Walk",[0,0,0]] spawn ANTZ_MoveAi;
-							};
+							[_unit,"ANT_Run",[0,0,0]] spawn ANTZ_MoveAi;							
 						};
 					};
 				
