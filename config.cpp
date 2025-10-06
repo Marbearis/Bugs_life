@@ -4,7 +4,7 @@ class CfgPatches
 	{
 		units[] = {"MAR_ANT_Basic","MAR_ANT_Ice","MAR_ANT_Spitter","MAR_antHill","MAR_Spider_Burrower","MAR_TrapDoor","MAR_Ant_Egg","MAR_Ant_Egg_Clutch",
         "MAR_Ant_Part_Head","MAR_Ant_Part_Thorax","MAR_Ant_Part_Abdomen","MAR_Ant_Part_Leg","MAR_Ant_Part_Mandible","MAR_Ant_Part_Antenne","MAR_ANT_QUEEN","MAR_Ant_Webs","MAR_Ant_Webs_2","MAR_Spider_Webs",
-        "MAR_Spider_Webs_2","MAR_AntIce","MAR_ANT_Guppy","MAR_Ant_Part_GrubHead","MAR_Ant_Part_Grubbutt","MAR_antcraterDirt","MAR_ANTWASP","MAR_antHill_raised","MAR_antcraterDirt_raised"
+        "MAR_Spider_Webs_2","MAR_AntIce","MAR_ANT_Guppy","MAR_Ant_Part_GrubHead","MAR_Ant_Part_Grubbutt","MAR_antcraterDirt","MAR_ANTWASP","MAR_antHill_raised","MAR_antcraterDirt_raised","P_Stinger_Prop"
         };
 		weapons[] = {"MAR_BugsLife_Antidote"};
 		magazines[]={};
@@ -592,8 +592,8 @@ class CfgVehicles
                 hideOnUse = 1;
                 onlyForPlayer = 0;
                 shortcut = "";
-                condition = " alive this && 'MAR_BugsLife_Antidote' in items this && this getVariable 'poisoned_B'"; // Only show if the unit is alive and is not a player
-                statement = "this spawn Bugzlife_useAntidote;";
+                condition = "missionNamespace getVariable['bis_fnc_moduleRemoteControl_unit', player] == this && alive this && 'MAR_BugsLife_Antidote' in items this && this getVariable 'poisoned_B'"; // Only show if the unit is alive and is not a player
+                statement = "[this] spawn Bugzlife_useAntidote;";
             };
         };
     };

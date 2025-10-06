@@ -249,6 +249,7 @@ _loopPathfind = [{
 	_nearEnemy = _unit findNearestEnemy _unit; 
 
 	switch true do {
+		case (lifeState _unit == "INCAPACITATED"): {_unit setDamage 1};
 		case (!(simulationEnabled _unit) || !(isNull (remoteControlled _unit)) || (isNull _nearEnemy) or !(alive _nearEnemy) or !(alive _unit) or !(isNull attachedTo _unit) or (lifeState _unit == "INCAPACITATED") or (_unit distance _nearEnemy >= 900)): {
 			switch true do {
 				case !(isNil {_unit getVariable "WBK_IsUnitLocked"}): {_unit setVariable ["WBK_IsUnitLocked",nil];};

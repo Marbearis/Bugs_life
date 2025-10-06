@@ -147,7 +147,7 @@ class MAR_ImpactEffectsBugGuts_Green
 		intensity=1;
 		interval=1;
 		lifeTime=1;
-		MoveVelocityVar[]={0,0,0};
+		
 	};
 	class Blood
 	{
@@ -171,7 +171,7 @@ class MAR_ImpactEffectsBugGuts_Orange
 		intensity=1;
 		interval=1;
 		lifeTime=1;
-		MoveVelocityVar[]={0,0,0};
+		
 	};
 	class Blood
 	{
@@ -195,7 +195,7 @@ class MAR_ImpactEffectsBugGuts_Blue
 		intensity=1;
 		interval=1;
 		lifeTime=1;
-		MoveVelocityVar[]={0,0,0};
+		
 	};
 	class Blood
 	{
@@ -219,7 +219,7 @@ class BugsLife_AcidSpit
 		intensity=1;
 		interval=1;
 		lifeTime=1;
-		MoveVelocityVar[]={0,0,0};
+		
 	};
 	class Blood
 	{
@@ -242,7 +242,7 @@ class BugsLife_AcidSpit_Orange
 		intensity=1;
 		interval=1;
 		lifeTime=1;
-		MoveVelocityVar[]={0,0,0};
+		
 	};
 	class Blood
 	{

@@ -14,6 +14,7 @@ if ((isPlayer _gruntBoy) or !(alive _gruntBoy) or !(isNil {_gruntBoy getVariable
 			
 			_gruntBoy setVariable ["WBK_SynthHP",MAR_BL_ANTSPITTERHLTTH,true];
 			_gruntBoy setVariable ["WBK_SynthHPMax",MAR_BL_ANTSPITTERHLTTH,true];
+			_gruntBoy setVariable ["isImmuneAcid",true,true];
 		};
 		
 		case (_gruntBoy isKindOf "MAR_ANT_Guppy"):{
@@ -64,6 +65,7 @@ switch true  do {
 		
 		_gruntBoy setVariable ["WBK_SynthHP",MAR_BL_ANTSPITTERHLTTH,true];
 		_gruntBoy setVariable ["WBK_SynthHPMax",MAR_BL_ANTSPITTERHLTTH,true];
+		_gruntBoy setVariable ["isImmuneAcid",true,true];
 	};
 	
 	case (_gruntBoy isKindOf "MAR_ANT_Guppy"):{
@@ -388,6 +390,7 @@ _loopPathfind = [{
 			};
 	};
 	switch true do {
+		case (lifeState _unit == "INCAPACITATED"): {_unit setDamage 1};
 		case (!(simulationEnabled _unit) || !(isNull (remoteControlled _unit)) || (isNull _nearEnemy) or !(alive _nearEnemy) or !(alive _unit) or !(isNull attachedTo _unit) or (lifeState _unit == "INCAPACITATED") or (_unit distance _nearEnemy >= 500)): {
 			switch true do {
 				case !(isNil {_unit getVariable "WBK_IsUnitLocked"}): {_unit setVariable ["WBK_IsUnitLocked",nil];};
