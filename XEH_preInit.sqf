@@ -34,6 +34,19 @@
     }
 ] call CBA_fnc_addSetting;
 
+[ 
+    "MAR_BL_POISONBOOL", 
+    "CHECKBOX", 
+    ["Poison on/off ","enable/disable poison damage"],
+    ["Marbearis' Bugs & critters","Damage Settings"],
+    true,
+    1,
+    {   
+        params ["_value"];  
+		MAR_BL_POISONBOOL = _value;
+		
+    }
+] call CBA_fnc_addSetting;
 
 [ 
     "MAR_BL_POISONTICKDURATION", 
@@ -783,7 +796,7 @@ BugzLife_fnc_explodeBug = {
 	
 	if (_this isKindOf "MAR_Spider_Base") then {GlobalBugSoundPitch = 0.5}else {GlobalBugSoundPitch = (selectRandom [1,0.9,0.8,1.1,1.2])};
 	publicVariable "GlobalBugSoundPitch";
-	if ((_this isKindOf "MAR_Ant_Egg")||(_this isKindOf "MAR_Ant_Egg_Clutch")) then {}else {
+	if ((_this isKindOf "MAR_Ant_Egg")||(_this isKindOf "MAR_Ant_Egg_Clutch")) then {}e lse {
 		_meleeSounds = [
 			"\Bugs_life\data\AntSounds\antDeath.ogg"
 		];
@@ -1166,7 +1179,7 @@ BugsLife_HandleMelee =
 {
 	params ["_zombie"];
 	
-	
+	if (isServer && !hasInterface) exitWith {}; 
 	if (_zombie isKindOf "MAR_ANT_Ice") then {
 		_zombie setVariable ["biteParams",[4,getPosASL _zombie,0.35],true];	
 		melee_objectLoc= _zombie;
@@ -1184,7 +1197,7 @@ BugsLife_HandleMelee =
 		melee_damage = 	35;
 	};
 	if (_zombie isKindOf "MAR_acidCrater") then {
-		//_zombie setVariable ["biteParams",[2,(_zombie modelToWorldVisual(_zombie selectionPosition ["a_spitPoint","Memory"])),0.40],true];		
+		
 		melee_objectLoc = _zombie;
 		melee_radius = 2;
 		melee_damage = 	0.35;
@@ -1192,16 +1205,8 @@ BugsLife_HandleMelee =
 	
 	{	
 		
-			_meleeSounds = [
+		
 			
-			];
-
-	
-		//playSound3D [selectRandom _meleeSounds, _x];
-		
-
-		
-		
 		if (
 				(_x != _zombie) and  	
 				(side _x != side _zombie) and 					
@@ -1807,21 +1812,7 @@ BugsLife_HandleDamage = {
 		default {};
 	};
 };
-	/*
-				[_target,{
-					if (isServer && !hasInterface) exitWith {};				
-					_fulgi = "#particlesource" createVehicleLocal getposATL _this; 							
-					_fulgi setParticleParams [   
-						["\A3\data_f\cl_exp", 1, 0, 1], "", "Billboard", 3, 7,   
-						[0, 0, 0], [0, 0, 0], 1, 1.27, 1, 0,   
-						[0,0.5,0],[[0.01,0.5,0.1,1]], [1000], 1, 0, "", "", _fulgi, 0, false, -1, [[0.01,0.5,0.1,1]]  
-					];   
-					_fulgi setParticleRandom [3, [1, 1, 0.3], [0, 0, -0.1], 2, 0.15, [0, 0, 0, 0.1], 0, 0];   
-					_fulgi setParticleCircle [0, [0, 0, -0.12]];   
-					_fulgi setDropInterval 0.5;
-					_fulgi attachTo [_this,[0,0,0],"pelvis",true];												
-				}] remoteExec ["spawn", 0];
-			*/
+
 BugsLife_RangedAttack_FNC= {
 
 	params ["_mantis","_en"];
@@ -2090,7 +2081,7 @@ Bugzz_fnc_ProjectileCreate = {
 			_lamd spawn {sleep 30; deleteVehicle _this;};
 
 			if (_typeOf == "B_Bugslife_EggMortar")then{	
-
+				if (isServer && !hasInterface) exitWith {};
 				_lamd setObjectTextureGlobal [0,"\Bugs_life\data\bloodpools\bloodpoolOrange_CA.paa"];
 				_lamd setObjectMaterialGlobal [0,"\Bugs_life\data\bloodpools\bloodPoolOrange.rvmat"];
 				
@@ -2240,8 +2231,9 @@ BugsLife_ColliderSpawn_FNC = {
 
 BugsLife_AntQueen_MinionSummon_FNC = 
 {
+	
 	params ["_unit",["_radius",15],["_minionCount",3],"_en"];
-
+	if (isServer && !hasInterface) exitWith {};
 	[_unit,["ANT_Roar", 0, 0.2, false]] remoteExec ["switchMove",0];
 	_unit setVariable ["IsCanSummon",1];
 	_unit spawn {uisleep 35; _this setVariable ["IsCanSummon",nil];};
