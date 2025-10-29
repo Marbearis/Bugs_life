@@ -796,7 +796,7 @@ BugzLife_fnc_explodeBug = {
 	
 	if (_this isKindOf "MAR_Spider_Base") then {GlobalBugSoundPitch = 0.5}else {GlobalBugSoundPitch = (selectRandom [1,0.9,0.8,1.1,1.2])};
 	publicVariable "GlobalBugSoundPitch";
-	if ((_this isKindOf "MAR_Ant_Egg")||(_this isKindOf "MAR_Ant_Egg_Clutch")) then {}e lse {
+	if ((_this isKindOf "MAR_Ant_Egg")||(_this isKindOf "MAR_Ant_Egg_Clutch")) then {} else{
 		_meleeSounds = [
 			"\Bugs_life\data\AntSounds\antDeath.ogg"
 		];
@@ -1976,7 +1976,7 @@ Bugzz_fnc_ProjectileCreate = {
 					deleteVehicle _projectile;
 					Marb_Brute_DamagedParts pushBack [_entity, _bruteSpike, _relpos, _vup, "", time + 10];
 				};
-				if !(_entity getVariable ["poisoned_B",false]) then {
+				if (!(_entity getVariable ["poisoned_B",false])&&(MAR_BL_POISONBOOL)) then {
 					[_projectileOwner,0,"poison",_entity,MAR_BL_POISONTICKDAMAGE,side _projectileOwner] call BugsLife_HandleDamage;			
 				};
 				{
@@ -2097,7 +2097,7 @@ Bugzz_fnc_ProjectileCreate = {
 								
 			}else{
 					_lamd call BugsLife_HandleMelee;
-					[[_actualHitClass,(side (_parents select 1))], {
+					[[_actualHitClass,(side _parents)], {
 					if (isServer && !hasInterface) exitWith {};
 						params ["_actualHitClass","_side"];
 						_fulgi  = "#particlesource" createVehiclelocal getposaTL _actualHitClass;  
