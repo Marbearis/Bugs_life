@@ -318,7 +318,7 @@ Bugzlife_SpawnAntHill = {
 
 		[[_position,_DroidPodCrater],{ 
 			params ["_position","_DroidPodCrater"];
-            if (isServer && !hasInterface) exitWith {}; 
+            if (isDedicated || !hasInterface) exitWith {}; 
 
                 _dustEffect = "#particlesource" createVehicleLocal _position; 
                 _dustEffect setParticleClass "HDustVTOL1"; 
@@ -408,7 +408,7 @@ Bugzlife_SpawnAntHill = {
 					
 					[_spawn,{ 
 					
-						if (isServer && !hasInterface) exitWith {}; 
+						if (isDedicated || !hasInterface) exitWith {}; 
 						_pos = [_this#0,_this#1,((_this#2) + 2)];
 						_dustEffect = "#particlesource" createVehicleLocal _pos; 
 						_dustEffect setParticleClass "HDustVTOL1"; 
@@ -464,7 +464,7 @@ Bugzlife_SpawnAntHill = {
 
 							[_spawn,{ 
 					
-								if (isServer && !hasInterface) exitWith {}; 
+								if (isDedicated || !hasInterface) exitWith {}; 
 								_pos = [_this#0,_this#1,((_this#2) + 2)];
 								_dustEffect = "#particlesource" createVehicleLocal _pos; 
 								_dustEffect setParticleClass "HDustVTOL1"; 
@@ -532,7 +532,7 @@ Bugzlife_SpawnAntHill = {
 					};
 						
 					
-					if (isServer && !hasInterface) exitWith {}; 
+					if (isDedicated || !hasInterface) exitWith {}; 
 					_pos = [(getPosAtl _this)#0,(getPosAtl _this)#1,(((getPosAtl _this)#2) + 2)];
 					_dustEffect = "#particlesource" createVehicleLocal _pos; 
 					_dustEffect setParticleClass "HDustVTOL1"; 
@@ -603,7 +603,7 @@ Bugslife_TrapDoorAttack = {
 	[_spider,["Spider_Burrowed_Attack", 0, 0.2, false]] remoteExec ["switchMove",0];
 	[(getPosASL _home),{ 
 			
-            if (isServer && !hasInterface) exitWith {}; 
+            if (isDedicated || !hasInterface) exitWith {}; 
 
                 _dustEffect = "#particlesource" createVehicleLocal _this; 
                 _dustEffect setParticleClass "HDustVTOL1"; 
@@ -749,10 +749,250 @@ Bugzlife_BugDeathContainer = {
 	};
 };
 //	[[_this,_meleeSounds] ,{ params ["_player","_soundArray"];playSound3D [selectRandom _soundArray, _player];}] remoteExec ["spawn", [0,-2] select isDedicated];
-BugzLife_fnc_explodeBug = {
 
-	if (isServer && !hasInterface) exitWith {};			
-	if (!(MAR_BL_CANBUGSEXPLODE)and!((_this isKindOf "MAR_Ant_Egg")||(_this isKindOf "MAR_Ant_Egg_Clutch")||(_this isKindOf "MAR_ANT_Spitter")||(_this isKindOf "MAR_Spider_Burrower")||(_this isKindOf "MAR_ANT_Ice"))) exitWith {
+BugzLife_fnc_explodeBugInstant = {
+
+	if (isDedicated || !hasInterface) exitWith {};	
+	if (_this getVariable ["oshitImDead",false]) exitWith {};
+
+	_this setVariable ["oshitImDead",true];
+
+	if (_this isKindOf "MAR_Spider_Base") then {GlobalBugSoundPitch = 0.5}else {GlobalBugSoundPitch = (selectRandom [1,0.9,0.8,1.1,1.2])};
+	publicVariable "GlobalBugSoundPitch";
+	if ((_this isKindOf "MAR_Ant_Egg")||(_this isKindOf "MAR_Ant_Egg_Clutch")) then {} else{
+		_meleeSounds = [
+			"\Bugs_life\data\AntSounds\antDeath.ogg"
+		];
+		playSound3D [selectRandom _meleeSounds, _this,false,_this,0.8,GlobalBugSoundPitch,500];
+	};
+	
+	
+	
+
+	_this hideObjectGlobal true;
+	_this hideObject true;
+	
+	_textures = getObjectTextures _this;	
+	_materials = getObjectMaterials _this;
+	_boomSounds = [
+		"\a3\sounds_f\arsenal\explosives\grenades\grenadelight_closeexp_01.wss",
+		"\a3\sounds_f\arsenal\explosives\grenades\grenadelight_closeexp_02.wss", 
+		"\a3\sounds_f\arsenal\explosives\grenades\grenadelight_closeexp_03.wss", 
+		"\a3\sounds_f\arsenal\explosives\grenades\grenadelight_closeexp_04.wss"  
+	];
+
+	[_this,{
+		if (isDedicated || !hasInterface) exitWith {};
+		if (MAR_BL_SillyMode) then {
+			_meleeSounds = [
+			"\Bugs_life\data\funnymodesounds\antparty.ogg"
+			];
+			playSound3D [selectRandom _meleeSounds, _this,false,_this,1,1,500,0,true];
+		}else{
+			_meleeSounds = [
+				"\Bugs_life\data\AntSounds\ant_explode.ogg",
+				"\Bugs_life\data\AntSounds\ant_explode_1.ogg",
+				"\Bugs_life\data\AntSounds\ant_explode_2.ogg"
+			];
+			playSound3D [selectRandom _meleeSounds, _this,false,_this,1,GlobalBugSoundPitch,500,0,true];
+		};
+	}]remoteExec ["call",[0,-2]select isDedicated];
+		
+	
+	
+	private _lamd = createVehicle ["MAR_acidCrater",position _this, [], 0, "CAN_COLLIDE"];
+
+	_lamd setDir (random 360);
+	_lamd setObjectScale (selectRandom [0.8,0.9,0.6,0.7,0.5]);
+	
+	_case = ((configFile >> "CfgVehicles" >> typeOf _this >> "impactEffectsBlood") call BIS_fnc_getCfgData);
+	if (isNil "_case") then {_case = "MAR_ImpactEffectsBugGuts_Orange"};
+	switch _case do {
+			case ("MAR_ImpactEffectsBugGuts_Orange"): {bloodpoolTexture = ["\Bugs_life\data\bloodpools\bloodpoolOrange_CA.paa","\Bugs_life\data\bloodpools\bloodPoolOrange.rvmat",[1,0.5,0,0.12]]};
+			case ("MAR_ImpactEffectsBugGuts_Green"): {bloodpoolTexture = ["\Bugs_life\data\bloodpools\bloodpoolGreen_CA.paa","\Bugs_life\data\bloodpools\bloodPoolGreen.rvmat",[0,1,0,0.12]]};
+			case ("MAR_ImpactEffectsBugGuts_Blue"): {bloodpoolTexture = ["\Bugs_life\data\bloodpools\bloodpoolBlue_CA.paa","\Bugs_life\data\bloodpools\bloodPoolBlue.rvmat",[0,0.4,1,0.12]]};
+			default {bloodpoolTexture = ["\Bugs_life\data\bloodpools\bloodpoolOrange_CA.paa","\Bugs_life\data\bloodpools\bloodPoolOrange.rvmat",[1,0.5,0,0.12]] };
+	};
+	publicVariable "bloodpoolTexture";
+	[[_lamd,_this],{
+		params ["_lamd","_unit","_IceSpike"];
+			if (isDedicated || !hasInterface) exitWith {};
+
+			if ((player distance _lamd) <= 12) then {
+				enableCamShake true; 
+				addCamShake [1, 0.7, 1];
+			};
+			
+			_fulgi  = "#particlesource" createVehiclelocal getposATL _lamd; 
+			
+			_fulgi setDropInterval 0.001;
+			_fulgi setParticleCircle [0, [0, 0, 0]];
+			if (MAR_BL_SillyMode) then {
+				_fulgi setParticleRandom [0.12, [1, 1, 0], [8, 8, 5], 3, 0.25, [255, 255, 255, 1], 0, 0];
+				_fulgi setParticleParams [["\A3\data_f\cl_basic", 1, 0, 1],"","Billboard",1,5,[0,0,0],[0,0,0],0,1.7,1,0,[0.15],[[0,1,0,1],[1,0,0,1],[0,0,1,1],[0,1,1,1],[1,1,0,1]],[1],0,0,"","",_lamd, 0, false, 0.4, [[0,1,0,1],[1,0,0,1],[0,0,1,1],[0,1,1,1],[1,1,0,1]]]; 
+			}else {
+				_fulgi setParticleRandom [0, [1, 1, 0], [8, 8, 5], 3, 0.25, [0, 0, 0, 0.1], 0, 0];
+				_fulgi setParticleParams [["\A3\data_f\cl_exp", 1, 0, 1],"","Billboard",1,5,[0,0,0],[0,0,0],0,1.7,1,0,[0.15],[bloodpoolTexture#2, bloodpoolTexture#2, bloodpoolTexture#2],[1],0,0,"","",_lamd, 0, false, 0.4, [bloodpoolTexture#2, bloodpoolTexture#2, bloodpoolTexture#2]]; 
+			};
+			
+	
+			_smoke2 = "#particlesource" createVehicleLocal getPos _lamd;
+			_smoke2 setposasl getPosASL _lamd;
+			_smoke2 setParticleCircle [0.5, [1,1,2]];
+			_smoke2 setParticleRandom [0, [0, 0, 0], [0, 0, 0], 0, 0.05, [0.01, 0.01, 0.01, 0.1], 0, 0];
+			_smoke2 setParticleParams [["\A3\data_f\cl_fireD", 1, 0, 1], "", "Billboard", 1, 1, [0, 0, 0], [0.2,0.5,2], 5, 100, 7.9, 1,[1, 2, 3],[bloodpoolTexture#2, bloodpoolTexture#2, bloodpoolTexture#2], [10], 1, 0, "", "", _lamd];
+			_smoke2 setDropInterval 0.009;
+			_side = side _unit;
+			if ((_unit isKindOf "MAR_ANT_Spitter")||(_unit isKindOf "MAR_ANT_Ice")) then {
+				_fog1 = "#particlesource" createVehicleLocal getposATL _lamd; 
+				_fog1 setParticleParams [   
+					["\A3\data_f\cl_exp", 1, 0, 1], "", "Billboard", 3, 7,   
+					[0, 0, 0], [0, 0, 0], 1, 1.27, 1, 0,   
+					[0,0.5,0],[bloodpoolTexture#2, bloodpoolTexture#2, bloodpoolTexture#2 ], [1000], 1, 0, "", "", _lamd, 0, false, -1, [bloodpoolTexture#2, bloodpoolTexture#2, bloodpoolTexture#2]  
+				];   
+				_fog1 setParticleRandom [3, [1, 1, 0.3], [0, 0, -0.1], 2, 0.15, [0, 0, 0, 0.1], 0, 0];   
+				_fog1 setParticleCircle [1, [0, 0, -0.12]];   
+				_fog1 setDropInterval 1;
+				if (_unit isKindOf "MAR_ANT_Spitter") then {
+					[_fog1,4,"acid",nil,0.18,_side] call BugsLife_HandleDamage;	
+				};   
+				if (_unit isKindOf "MAR_ANT_Ice")then{_unit call BugsLife_HandleMelee;};
+				_fog1 spawn {uiSleep 32; deleteVehicle _this};
+			};
+			uisleep 0.1;
+			deleteVehicle _smoke2;
+			uisleep 0.1;
+			{
+				deleteVehicle _x;
+			} forEach [_fulgi];
+			uisleep 0.2;
+		}] remoteExec ["spawn",0];
+
+	_lamd setObjectTextureGlobal [0,bloodpoolTexture#0];
+	_lamd setObjectMaterialGlobal [0,bloodpoolTexture#1];
+	[_lamd] spawn {sleep 120; deleteVehicle _this;};
+	if (isDedicated || !hasInterface) exitWith {};
+	//bug part exclusion
+	switch true do {
+		case (_this isKindOf "MAR_ANT_Guppy"):{
+
+			_Part_1 = "MAR_Ant_Part_GrubHead" createVehicle (_this modelToWorldVisual [0,0,0]);
+			_PArt_2 = "MAR_Ant_Part_Grubbutt" createVehicle (_this modelToWorldVisual [0,-0.5,0]);
+			if (MAR_BL_SillyMode) then {
+				{
+					_Part_1 setObjectTexture [_x,"\Bugs_life\Ants\textures\antguppy\anggupsilly_CO.paa"];
+					
+				}forEach (_Part_1 selectionNames 1);
+				{
+					_Part_2 setObjectTexture [_x,"\Bugs_life\Ants\textures\antguppy\anggupsilly_CO.paa"];
+					
+				}forEach (_Part_2 selectionNames 1);
+			}else{
+				{
+					_Part_1 setObjectTexture [_x,_textures#0];
+					_Part_1 setObjectMaterial [_x,_materials#0];
+				}forEach (_Part_1 selectionNames 1);
+				{
+					_Part_2 setObjectTexture [_x,_textures#0];
+					_Part_2 setObjectMaterial [_x,_materials#0];
+				}forEach (_Part_2 selectionNames 1);
+			};
+			
+			_Part_1 setPosATL (_this modelToWorldVisual [0,0,0]);
+			_Part_1 setDir 180;
+			_Part_1 setVelocityModelSpace [0,-6,4];
+
+			
+			
+			_PArt_2 setPosATL (_this modelToWorldVisual [0,-0.5,0]);
+			_PArt_2 setDir 180;
+			_PArt_2 setVelocityModelSpace [0,6,4];
+			deleteVehicle _this;
+			{
+				_x spawn {sleep MAR_BL_BUGPRT_DSPAWN; [_this,true,1] call BIS_fnc_VREffectKilled;};
+			}forEach [_Part_1,_Part_2];
+
+		};
+		case (_this isKindOf "MAR_ANT_BASE"):{
+			_Part_1 = selectRandomWeighted ["MAR_Ant_Part_Thorax",0.1,"MAR_Ant_Part_Thoraxseg1",0.7,"MAR_Ant_Part_Thoraxseg1",0.7] createVehicle (_this modelToWorldVisual [0,0,0]);
+			{
+				_Part_1 setObjectTextureGlobal [_x,_textures#0];
+				_Part_1 setObjectMaterialGlobal [_x,_materials#0];
+			}forEach (_Part_1 selectionNames 1);
+			_Part_1 setPosATL (_this modelToWorldVisual [0,0,0]);
+			_Part_1 setDir 180;
+			_Part_1 setVelocityModelSpace [0,-6,4];
+			_Part_2 = selectRandomWeighted ["MAR_Ant_Part_Head",0.1,"MAR_Ant_Part_Headhalf",0.7,"MAR_Ant_Part_Headhalf2",0.7,"MAR_Ant_Part_Headhalf3",0.7] createVehicle (_this modelToWorldVisual [0,0.5,0]);
+			{
+				_Part_2 setObjectTextureGlobal [_x,_textures#0];
+				_Part_2 setObjectMaterialGlobal [_x,_materials#0];
+			}forEach (_Part_2 selectionNames 1);
+			_Part_2 setPosATL (_this modelToWorldVisual [0,0.5,0]);
+			_Part_2 setDir 180;
+			_Part_2 setVelocityModelSpace [0,-6,4];
+			_PArt_3 = selectRandomWeighted ["MAR_Ant_Part_Abdomen",0.1,"MAR_Ant_Part_Abdomenseg1",0.7,"MAR_Ant_Part_Abdomenseg2",0.7,"MAR_Ant_Part_Abdomenseg3",0.7] createVehicle (_this modelToWorldVisual [0,-0.5,0]);
+			{
+				_Part_3 setObjectTextureGlobal [_x,_textures#0];
+				_Part_3 setObjectMaterialGlobal [_x,_materials#0];
+			}forEach (_Part_3 selectionNames 1);
+			_PArt_3 setPosATL (_this modelToWorldVisual [0,-0.5,0]);
+			_PArt_3 setDir 180;
+			_PArt_3 setVelocityModelSpace [0,6,4];
+			
+			for "_i" from 1 to (selectRandom [2,3,4,5,6]) do {
+				legSide = 0.2;
+				legVelocity = 7;
+				if (_i > 3) then {legSide = -0.2; legVelocity = -7;}; 
+				_Part_4 = (selectRandom ["MAR_Ant_Part_Legbit_0","MAR_Ant_Part_Legbit_1","MAR_Ant_Part_Legbit_2","MAR_Ant_Part_Legbit_3"]) createVehicle (_this modelToWorldVisual [1,selectRandom [-0.5,0.5,0,0.3,-0.3],0.05]);
+				{
+					_Part_4 setObjectTextureGlobal [_x,_textures#0];
+					_Part_4 setObjectMaterialGlobal [_x,_materials#0];
+				}forEach (_Part_4 selectionNames 1);
+				_Part_4 setPosATL (_this modelToWorldVisual [0,selectRandom [legSide,1,0.5],0.05]);
+				
+				_Part_4 setVelocityModelSpace [selectRandom [legVelocity,legVelocity],0,6];
+				_Part_4 spawn {sleep MAR_BL_BUGPRT_DSPAWN; [_this,true,1] call BIS_fnc_VREffectKilled;};
+			};
+			
+			
+			_Part_5 = "MAR_Ant_Part_Mandible" createVehicle (_this modelToWorldVisual [-1,-0.1,0.05]);
+			{
+				_Part_5 setObjectTextureGlobal [_x,_textures#0];
+				_Part_5 setObjectMaterialGlobal [_x,_materials#0];
+			}forEach (_Part_5 selectionNames 1);
+			_Part_5 setPosATL (_this modelToWorldVisual [-1,0,0.05]);
+			_Part_5 setDir ((getDir _this) - 180);
+			_Part_5 setVelocityModelSpace [7,0,0];
+			_Part_6 = "MAR_Ant_Part_Mandible" createVehicle (_this modelToWorldVisual [-1,-0.1,0.05]);
+			{
+				_Part_6 setObjectTextureGlobal [_x,_textures#0];
+				_Part_6 setObjectMaterialGlobal [_x,_materials#0];
+			}forEach (_Part_6 selectionNames 1);
+			_Part_6 setPosATL (_this modelToWorldVisual [1,0,0.05]);
+			_Part_6 setDir ((getDir _this) - 180);
+			_Part_6 setVelocityModelSpace [-7,0,0];
+			deleteVehicle _this;
+			{
+				_x spawn {sleep 3; [_this,true,1] call BIS_fnc_VREffectKilled;};
+			}forEach [_Part_1,_Part_2,_Part_3,_Part_5,_Part_6];
+		};
+		
+		default {};
+	};
+	
+	deleteVehicle _this;
+};
+
+BugzLife_fnc_explodeBug = {
+	if (isDedicated || !hasInterface) exitWith {};	
+
+	if (!(MAR_BL_CANBUGSEXPLODE) &&
+	!((_this isKindOf "MAR_Ant_Egg")||
+	(_this isKindOf "MAR_Ant_Egg_Clutch")||
+	(_this isKindOf "MAR_ANT_Spitter")||
+	(_this isKindOf "MAR_Spider_Burrower")||
+	(_this isKindOf "MAR_ANT_Ice"))) exitWith 
+	{		
 		switch (typeOf _this) do {
 			case "MAR_ANT_Guppy":{
 				[_this,["ANT_Death", 0, 0.2, false]] remoteExec ["switchMove",0];
@@ -772,10 +1012,9 @@ BugzLife_fnc_explodeBug = {
 					uiSleep 1.1;
 					[_this,["ANT_Death", 0, 0.2, false]] remoteExec ["switchMove",0];
 			};
-		};
-		
-	
+		};	
 	};
+
 	switch (typeOf _this) do {
 		case "MAR_ANT_Guppy":{
 			[_this,["ANT_Death", 0, 0.2, false]] remoteExec ["switchMove",0];
@@ -789,10 +1028,6 @@ BugzLife_fnc_explodeBug = {
 		};
 		default {[_this,[(selectRandom ["ANT_Death_3","ANT_Death_2"]), 0, 0.2, false]] remoteExec ["switchMove",0];};
 	};
-	
-	
-	
-
 	
 	if (_this isKindOf "MAR_Spider_Base") then {GlobalBugSoundPitch = 0.5}else {GlobalBugSoundPitch = (selectRandom [1,0.9,0.8,1.1,1.2])};
 	publicVariable "GlobalBugSoundPitch";
@@ -822,7 +1057,7 @@ BugzLife_fnc_explodeBug = {
 	
 
 	[_this,{
-		if (isServer && !hasInterface) exitWith {};
+		if (isDedicated || !hasInterface) exitWith {};
 		if (MAR_BL_SillyMode) then {
 			_meleeSounds = [
 			"\Bugs_life\data\funnymodesounds\antparty.ogg"
@@ -859,7 +1094,7 @@ BugzLife_fnc_explodeBug = {
 	publicVariable "bloodpoolTexture";
 	[[_lamd,_this],{
 		params ["_lamd","_unit","_IceSpike"];
-			if (isServer && !hasInterface) exitWith {};
+			if (isDedicated || !hasInterface) exitWith {};
 
 			if ((player distance _lamd) <= 12) then {
 				enableCamShake true; 
@@ -930,7 +1165,7 @@ BugzLife_fnc_explodeBug = {
 	[_lamd] spawn {sleep 120; deleteVehicle _this;};
 
 
-	if (isServer && !hasInterface) exitWith {};
+	if (isDedicated || !hasInterface) exitWith {};
 
 	if ((_this isKindOf "MAR_Ant_Egg")||(_this isKindOf "MAR_Ant_Egg_Clutch")||!(MAR_BL_CANSPAWNGIBLETS)) exitWith {uiSleep 1; deleteVehicle _this;};//bug part exclusion
 	switch true do {
@@ -1069,7 +1304,7 @@ Bugslife_ANTMelee = {
 		[_zombie,["ANT_Attack_1", 0, 0.2, false]] remoteExec ["switchMove",0];
 	
 		[_zombie,{
-			if (isServer && !hasInterface) exitWith {};
+			if (isDedicated || !hasInterface) exitWith {};
 			if ((_this isKindOf "MAR_ANT_Guppy")&&(MAR_BL_SillyMode)) then 
 			{
 				_meleeSounds = [
@@ -1100,7 +1335,7 @@ Bugslife_ANTMelee = {
 		
 		if !(animationState _zombie == "ANT_Attack_1")exitWith {};
 		if (_zombie isKindOf "MAR_ANT_Ice") exitWith {
-			[_zombie, [1, false, _zombie]] remoteExec ["setDamage",2];
+			[_zombie, [1, false, _zombie]] remoteExec ["setDamage",0];
 		};
 		
 		_zombie remoteExecCall ["BugsLife_HandleMelee",0];
@@ -1123,7 +1358,7 @@ ANTZ_MoveAi = {
 
 BugsLife_AntEgginit = {
 	params ["_egg"];
-	if (isServer && !hasInterface) exitWith {};
+	if (isDedicated || !hasInterface) exitWith {};
 	_egg allowDamage false;
 	_egg addEventHandler ["HitPart", {
 			
@@ -1179,7 +1414,8 @@ BugsLife_HandleMelee =
 {
 	params ["_zombie"];
 	
-	if (isServer && !hasInterface) exitWith {}; 
+	if (isDedicated || !hasInterface) exitWith {}; 
+	
 	if (_zombie isKindOf "MAR_ANT_Ice") then {
 		_zombie setVariable ["biteParams",[4,getPosASL _zombie,0.35],true];	
 		melee_objectLoc= _zombie;
@@ -1232,7 +1468,7 @@ BugsLife_HandleMelee =
 				_x setVariable ["WBK_SynthHP", _newHealth,true];
 
 				if (_newHealth <= 0) exitWith {
-					[_x, [1, false, _zombie]] remoteExec ["setDamage",2];			
+					[_x, [1, false, _zombie]] remoteExec ["setDamage",_zombie];			
 				};			
 				if (((_x worldToModel (_zombie modelToWorld [0, 0, 0])) select 1) < 0) then {
 					[_x,["ANT_Hit_B", 0, 0.7, false]] remoteExec ["switchMove",0];
@@ -1304,13 +1540,62 @@ BugsLife_HandleMelee =
 					};																	
 				};		
 																							
-				if ((_zombie isKindOf "MAR_ANT_Ice")&& ((_zombie distance _x) < 3)) then {					
+				if ((_zombie isKindOf "MAR_ANT_Ice")&& ((_zombie distance _x) < 3) && alive _x) then {					
 					[_x,_zombie] spawn {
-						params ["_victim","_zombie"];																	
-						_victim enableSimulation false;	
-						if !(isPlayer _victim) exitWith {[_victim, [1, false, _zombie]] remoteExec ["setDamage",2];};					
-						uiSleep 5;						
-						_victim enableSimulation true;											
+						params ["_victim","_zombie"];	
+						//if (isServer||!hasInterface || !alive _victim) exitWith {};
+
+						if !(isNil "WBK_FreezeDeath") then {
+							switch true do  {
+								case (!(isPlayer _victim)&&(alive _victim)) : {										
+									_victim setDir ([_victim, _zombie] call BIS_fnc_dirTo); 
+									[_victim, [1, false, _zombie]] remoteExec ["setDamage",_victim];
+									_victim remoteExecCall ["WBK_FreezeDeath",_victim]; 	
+								};
+								case ((isPlayer _victim)&&(alive _victim)) : {
+									if (_victim getVariable ["b_Frozen",false]) exitWith {	
+										
+										_victim enableSimulation true;	
+										_victim setVariable ["b_Frozen",false,true];						
+										_victim setDir ([_victim, _zombie] call BIS_fnc_dirTo); 
+										_victim remoteExecCall ["WBK_FreezeDeath",_victim];
+															
+									};
+									_victim setVariable ["b_Frozen",true,true];
+									_victim enableSimulation false;						
+									uiSleep 5;		
+									_victim setVariable ["b_Frozen",false,true];				
+									_victim enableSimulation true;				
+								};
+
+								default {};
+							};
+						}else {
+							switch true do  {
+								case (!(isPlayer _victim)&&(alive _victim)) : {										
+									_victim setDir ([_victim, _zombie] call BIS_fnc_dirTo); 
+									[_victim, [1, false, _zombie]] remoteExec ["setDamage",_victim];
+									_victim enableSimulationGlobal false;	
+								};
+
+								case ((isPlayer _victim)&&(alive _victim)) : {
+									if (_victim getVariable ["b_Frozen",false]) exitWith {	
+										_victim enableSimulation true;							
+										_victim setDir ([_victim, _zombie] call BIS_fnc_dirTo); 
+										_victim setVariable ["b_Frozen",false,true];
+										[_victim, [1, false, _zombie]] remoteExec ["setDamage",_victim];				
+									};
+									_victim setVariable ["b_Frozen",true,true];
+									_victim enableSimulation false;						
+									uiSleep 5;		
+									_victim setVariable ["b_Frozen",false,true];				
+									_victim enableSimulation true;				
+								};
+
+								default {};
+							};	
+
+						};										
 					};									
 				};
 			};	
@@ -1320,7 +1605,7 @@ BugsLife_HandleMelee =
 
 BugsLife_HandleDamage = {
 	params ["_source",["_radius",4],"_type","_target",["_damage",0.25],["_side",east]];
-	if (isServer && !hasInterface) exitWith {};
+	if (isDedicated || !hasInterface) exitWith {};
 		
 	
 	switch _type do {
@@ -1600,86 +1885,95 @@ BugsLife_HandleDamage = {
 								{
 									[_x,["ANT_Hit_F", 0, 0.7, false]] remoteExec ["switchMove",0];
 								};															
-							};											
-								switch true do {
-									case (!(isNil "ace_medical_fnc_addDamageToUnit")):{ 
+							};	
+							if (_x isKindOf "CAR") then {
+								private _currentHealth = (damage _x);
+								_x setDamage ((_damage/100)+_currentHealth);
+							};
+							if (_x isKindOf "tank") then {
+								private _currentHealth = (damage _x);
+								_x setDamage ((_damage/150)+_currentHealth);
+							};
+
+							switch true do {
+								case (!(isNil "ace_medical_fnc_addDamageToUnit")):{ 
+									[[_x,_source,_damage],{
+										params ["_target","_zombie","_damage"];	
+								
+										if (!(isNil {_target getVariable "optre_suit_energy"})) then {
+											if ((_target getVariable ["optre_suit_energy",0]) <= 0) exitWith {
+												if ((alive _target) && ({_x > 0.8}forEach(_target getVariable ["ace_medical_bodypartdamage",[0]])) && !(isNil "WBK_PlasmaDeath_Regular"))then {
+													_target spawn WBK_MeltaDeath;
+												}else {
+													[_target,(_damage/4), selectRandom ["body","LeftArm","RightArm","LeftLeg","RightLeg"], selectRandom["burn","stab"]] call ace_medical_fnc_addDamageToUnit;														
+												};
+											};
+											_shieldEnergy = _target getVariable ["optre_suit_energy",0];
+											_newShieldEnergy = _shieldEnergy - 25;
+											_target setVariable ["optre_suit_energy", _newShieldEnergy, true];
+										}else {
+											if ((alive _target) && ({_x > 0.8}forEach(_target getVariable ["ace_medical_bodypartdamage",[0]]))&& !(isNil "WBK_PlasmaDeath_Regular"))then {
+													_target spawn WBK_MeltaDeath;
+												}else {													
+													[_target,(_damage/4), selectRandom ["body","LeftArm","RightArm","LeftLeg","RightLeg"], selectRandom["burn","stab"]] call ace_medical_fnc_addDamageToUnit;																				
+												};
+											
+										};
+									}]remoteExec ["spawn",_x];
+									
+								};
+
+								case ((local _x) && {!(isDamageAllowed _x)}):{
+									switch true do {
+										
+										case (WBK_Armor_System_OnlyHP):{
+											_currentHealth = _x getVariable "WBK_AS_HP";
+											_newDamage = _currentHealth - _damage/100;
+											_x setVariable ["WBK_AS_HP",_newDamage,true];
+											if ((_currentHealth < 0.8)&& !(isNil "WBK_PlasmaDeath_Regular")) then {_x spawn WBK_MeltaDeath;};
+										}; 
+
+										case !(WBK_Armor_System_OnlyHP):{
+												_currentArmor = _x getVariable "WBK_AdvancedHealth";
+												if (_currentArmor <= 0) then {
+													_currentHealth = _x getVariable "WBK_AS_HP";
+													_newDamage = _currentHealth - _damage/100;
+													_x setVariable ["WBK_AS_HP",_newDamage,true];
+													if ((_currentHealth < 0.8)&& !(isNil "WBK_PlasmaDeath_Regular")) then {_x spawn WBK_MeltaDeath};
+												}else {
+												_newDamage = _currentArmor - (15*WBK_Armor_System_DMG_Modifier);													
+												_x setVariable ["WBK_AdvancedHealth",_newDamage,true];
+											};
+										}; 
+									};
+								};			
+								
+								default {
+									if (!(isNil {_x getVariable "optre_suit_energy"})) then {
 										[[_x,_source,_damage],{
 											params ["_target","_zombie","_damage"];	
-									
-											if (!(isNil {_target getVariable "optre_suit_energy"})) then {
-												if ((_target getVariable ["optre_suit_energy",0]) <= 0) exitWith {
-													if ((alive _target) && ({_x > 0.5}forEach(_target getVariable ["ace_medical_bodypartdamage",[0]])) && !(isNil "WBK_PlasmaDeath_Regular"))then {
-														_target spawn WBK_MeltaDeath;
-													}else {
-														[_target,(_damage/4), selectRandom ["body","LeftArm","RightArm","LeftLeg","RightLeg"], selectRandom["burn","stab"]] call ace_medical_fnc_addDamageToUnit;														
-													};
-												};
-												_shieldEnergy = _target getVariable ["optre_suit_energy",0];
-												_newShieldEnergy = _shieldEnergy - 25;
-												_target setVariable ["optre_suit_energy", _newShieldEnergy, true];
-											}else {
-												if ((alive _target) && ({_x > 0.5}forEach(_target getVariable ["ace_medical_bodypartdamage",[0]]))&& !(isNil "WBK_PlasmaDeath_Regular"))then {
-														_target spawn WBK_MeltaDeath;
-													}else {													
-														[_target,(_damage/4), selectRandom ["body","LeftArm","RightArm","LeftLeg","RightLeg"], selectRandom["burn","stab"]] call ace_medical_fnc_addDamageToUnit;																				
-													};
-												
-											};
-										}]remoteExec ["spawn",_x];
-										
-									};
-
-									case ((local _x) && {!(isDamageAllowed _x)}):{
-										switch true do {
 											
-											case (WBK_Armor_System_OnlyHP):{
-												_currentHealth = _x getVariable "WBK_AS_HP";
-												_newDamage = _currentHealth - _damage/100;
-												_x setVariable ["WBK_AS_HP",_newDamage,true];
-												if ((_currentHealth > 0.8)&& !(isNil "WBK_PlasmaDeath_Regular")) then {_x spawn WBK_MeltaDeath;};
-											}; 
-
-											case !(WBK_Armor_System_OnlyHP):{
-													_currentArmor = _x getVariable "WBK_AdvancedHealth";
-													if (_currentArmor <= 0) then {
-														_currentHealth = _x getVariable "WBK_AS_HP";
-														_newDamage = _currentHealth - _damage/100;
-														_x setVariable ["WBK_AS_HP",_newDamage,true];
-														if ((_currentHealth > 0.8)&& !(isNil "WBK_PlasmaDeath_Regular")) then {_x spawn WBK_MeltaDeath};
-													}else {
-													_newDamage = _currentArmor - (15*WBK_Armor_System_DMG_Modifier);													
-													_x setVariable ["WBK_AdvancedHealth",_newDamage,true];
-												};
-											}; 
-										};
-									};			
-									
-									default {
-										if (!(isNil {_x getVariable "optre_suit_energy"})) then {
-											[[_x,_source,_damage],{
-												params ["_target","_zombie","_damage"];	
-												
-												if ((_target getVariable ["optre_suit_energy",0]) <= 0) exitWith {
-													private _poop = damage _target;						
-													_target setDamage ((_damage/100) + _poop);	
-													if ((alive _target)&& (_poop > 0.8)&& !(isNil "WBK_PlasmaDeath_Regular")) then {_x spawn WBK_MeltaDeath;};
-												};
-												_shieldEnergy = _target getVariable ["optre_suit_energy",0];
-												_newShieldEnergy = _shieldEnergy - 25;
-												_target setVariable ["optre_suit_energy", _newShieldEnergy, true];									
-											}]remoteExec ["spawn",_x];
-										}else{		
-												private _poop = damage _x;
-												if ((alive _x)&&(_poop > 0.8)&& !(isNil "WBK_PlasmaDeath_Regular")) then {_x spawn WBK_MeltaDeath;}else{
-													_x setDamage ((_damage/100) + _poop);	
-												}; 																									
-										}; 
-									};																	
-								};		
+											if ((_target getVariable ["optre_suit_energy",0]) <= 0) exitWith {
+												private _poop = damage _target;						
+												_target setDamage ((_damage/100) + _poop);	
+												if ((alive _target)&& (_poop > 0.8)&& !(isNil "WBK_PlasmaDeath_Regular")) then {_x spawn WBK_MeltaDeath;};
+											};
+											_shieldEnergy = _target getVariable ["optre_suit_energy",0];
+											_newShieldEnergy = _shieldEnergy - 25;
+											_target setVariable ["optre_suit_energy", _newShieldEnergy, true];									
+										}]remoteExec ["spawn",_x];
+									}else{		
+											private _poop = damage _x;
+											if ((alive _x)&&(_poop > 0.8)&& !(isNil "WBK_PlasmaDeath_Regular")) then {_x spawn WBK_MeltaDeath;}else{
+												_x setDamage ((_damage/100) + _poop);	
+											}; 																									
+									}; 
+								};																	
+							};		
 																																		
 						};
 
-					}forEach nearestObjects [_source,["MAN","CAR","TRUCK"],_radius];
+					}forEach nearestObjects [_source,["MAN","CAR","tank"],_radius];
 					uiSleep 0.5;
 				};
 			};	
@@ -1835,7 +2129,7 @@ BugsLife_RangedAttack_FNC= {
 				_mantis spawn {uisleep selectRandom [3,4,5]; _this setVariable ["IsCanFire",nil,true];};																				
 				uiSleep 0.3;
 				if !(animationState _mantis == "ANT_Attack_Ranged") exitWith {};
-				if (_mantis distance _en < 14) then {
+				if (_mantis distance _en < 25) then {
 					[_mantis,_mantis modelToWorldVisual [0,3,1],"B_BugsLife_Acid_Spit", _en, [(aimPos _en select 0) + (selectRandom [0,1,2,0,-1,-2]),(aimPos _en select 1)+(selectRandom [0,1,2,0,-1,-2]),(aimPos _en select 2)+(0)], selectRandom[70,80,90,100] , false, [0,0,0]] spawn Bugzz_fnc_ProjectileCreate;	
 				
 				}else{
@@ -1959,7 +2253,7 @@ Bugzz_fnc_ProjectileCreate = {
 			};
 		
 				
-				_rocket addEventHandler ["HitPart", {
+			_rocket addEventHandler ["HitPart", {
 				
 				params [ "_projectile", "_entity", "_projectileOwner", "_pos", "_velocity", "_normal", "_components", "_radius", "_surfaceType"];
 				
@@ -2013,7 +2307,7 @@ Bugzz_fnc_ProjectileCreate = {
 	if (_rocket isKindOf "B_BugsLife_Acid_Spit") then {
 		[_rocket, {
 			
-			if (isServer && !hasInterface) exitWith {};
+			if (isDedicated || !hasInterface) exitWith {};
 			_fulgi  = "#particlesource" createVehiclelocal getposaTL _this; 
 			_fulgi setParticleRandom [0, [1, 1, 0], [0, 0, 3], 3, 0.25, [0, 0, 0, 0.1], 0, 0];
 			_fulgi setDropInterval 0.05;
@@ -2081,7 +2375,7 @@ Bugzz_fnc_ProjectileCreate = {
 			_lamd spawn {sleep 30; deleteVehicle _this;};
 
 			if (_typeOf == "B_Bugslife_EggMortar")then{	
-				if (isServer && !hasInterface) exitWith {};
+				if (isDedicated || !hasInterface) exitWith {};
 				_lamd setObjectTextureGlobal [0,"\Bugs_life\data\bloodpools\bloodpoolOrange_CA.paa"];
 				_lamd setObjectMaterialGlobal [0,"\Bugs_life\data\bloodpools\bloodPoolOrange.rvmat"];
 				
@@ -2098,29 +2392,36 @@ Bugzz_fnc_ProjectileCreate = {
 			}else{
 					_lamd call BugsLife_HandleMelee;
 					[[_actualHitClass,(side _parents)], {
-					if (isServer && !hasInterface) exitWith {};
+					if (isDedicated || !hasInterface) exitWith {};
 						params ["_actualHitClass","_side"];
-						_fulgi  = "#particlesource" createVehiclelocal getposaTL _actualHitClass;  
+						_fulgi  = "#particlesource" createVehiclelocal getposATL _actualHitClass;  
 						_fulgi setParticleRandom [0, [1, 1, 0], [5, 3, 1], 3, 0.25, [0, 0, 0, 0.1], 0, 0];   
 						_fulgi setDropInterval 0.1;   
 						_fulgi setParticleCircle [1, [0, 0, 0]];   
 						_fulgi setParticleParams [["\A3\data_f\cl_exp", 1, 0, 1],"","Billboard",1,15,[0,0,0],[0,0,0],0,1.7,1,0,[0.15],[[0.01,0.5,0.1,1]],[1],0,0,"","", _actualHitClass, 0, false, 0.4, [[0.01,3,0.005,1],[0.01,5,0.005,1],[0.01,7,0.005,1]]]; 
-
-						_fog1 = "#particlesource" createVehicleLocal getposaTL _actualHitClass; 
+						_WBK_AmbientFog = "#particlesource" createVehicleLocal getposATL _actualHitClass; 
+						_WBK_AmbientFog setParticleParams [ 
+							["\A3\Data_F\ParticleEffects\Universal\universal.p3d" , 16, 12, 13, 0], "", "Billboard", 1, 10, 
+							[0, 0, -3], [0, 0, 0.01], 1, 1.275, 1, 0, 
+							[2,3], [[0.1, 1, 0.1, 0], [0.1, 1, 0.1, 0.02], [0.1, 1, 0.1, 0]], [1000], 1, 0, "", "", _this 
+						]; 
+						_WBK_AmbientFog setParticleRandom [3, [2,2,0.3], [0, 0, -0.1], 2, 0.45, [0, 0, 0, 0.1], 0, 0]; 
+						_WBK_AmbientFog setParticleCircle [0.001, [0, 0, -0.12]]; 
+						_WBK_AmbientFog setDropInterval 0.03;
+						_fog1 = "#particlesource" createVehicleLocal getposATL _actualHitClass; 
 						_fog1 setParticleParams [   
 							["\A3\data_f\cl_exp", 1, 0, 1], "", "Billboard", 3, 7,   
 							[0, 0, 0], [0, 0, 0], 1, 1.27, 1, 0,   
-							[0,0.5,0],[[0.01,1,0.1,1]], [1000], 1, 0, "", "", _actualHitClass, 0, false, -1, [[0.01,25,0.005,1],[0.01,25,0.005,1],[0.01,25,0.005,1]]  
+							[0,0.5,0],[[0.01,1,0.1,1]], [1000], 1, 0, "", "", _this, 0, false, -1, [[0.01,25,0.005,1],[0.01,25,0.005,1],[0.01,25,0.005,1]]  
 						];   
 						_fog1 setParticleRandom [3, [1, 1, 0.3], [0, 0, -0.1], 2, 0.15, [0, 0, 0, 0.1], 0, 0];   
 						_fog1 setParticleCircle [1, [0, 0, -0.12]];   
 						_fog1 setDropInterval 1;   
-										
-						uisleep 1;
-						deleteVehicle _fulgi;
 						[_fog1,4,"acid",nil,MAR_BL_ACIDDAMAGE,_side] call BugsLife_HandleDamage;	
 						uisleep 10;
 						deleteVehicle _fog1;
+						deleteVehicle _fulgi;
+						deleteVehicle _WBK_AmbientFog;
 						
 				}] remoteExec ["spawn", 0];
 
@@ -2233,7 +2534,7 @@ BugsLife_AntQueen_MinionSummon_FNC =
 {
 	
 	params ["_unit",["_radius",15],["_minionCount",3],"_en"];
-	if (isServer && !hasInterface) exitWith {};
+	if (isDedicated || !hasInterface) exitWith {};
 	[_unit,["ANT_Roar", 0, 0.2, false]] remoteExec ["switchMove",0];
 	_unit setVariable ["IsCanSummon",1];
 	_unit spawn {uisleep 35; _this setVariable ["IsCanSummon",nil];};
@@ -2282,7 +2583,7 @@ BugsLife_AntQueen_MinionSummon_FNC =
 			_ANTMinion setPosATL [_DeformPos#0,_DeformPos#1,(_DeformPos#2)-6];
 			[_DeformPos,{ 
 				_fulgiOffset =_this;
-				if (isServer && !hasInterface) exitWith {}; 
+				if (isDedicated || !hasInterface) exitWith {}; 
 				_pos = _this;
 				_dustEffect = "#particlesource" createVehicleLocal _pos; 
 				_dustEffect setParticleClass "HDustVTOL1"; 
@@ -2351,7 +2652,7 @@ BugsLife_AntQueen_ASSUP_FNC = {
 
 	[_spawn,{ 
 				_fulgiOffset = [_this#0,(_this#1)+(selectRandom [2]),(_this#2)-6];
-				if (isServer && !hasInterface) exitWith {}; 
+				if (isDedicated || !hasInterface) exitWith {}; 
 				_pos = _this;
 				_dustEffect = "#particlesource" createVehicleLocal _pos; 
 				_dustEffect setParticleClass "HDustVTOL1"; 
@@ -2429,7 +2730,7 @@ BugsLife_AntQueen_FireBreath = {
 	for "_i" from 0 to 3 do {
 		uiSleep 0.8;
 		[[_unit,_en], {
-			if (isServer && !hasInterface) exitWith {};
+			if (isDedicated || !hasInterface) exitWith {};
 			params ["_unit","_en"];
 		
 			
@@ -2458,7 +2759,7 @@ BugsLife_AntQueen_FireBreath = {
 
 BugsLife_AntQueen_Volcano = {
 	params ["_unit",["_radius",15],"_en"];
-	if (isServer && !hasInterface) exitWith {};
+	if (isDedicated || !hasInterface) exitWith {};
 	_unit setVariable ["underGround",1,true];
 	_unit setVariable ["isVolcanoSummon",1,true];
 	_unit spawn {uiSleep 30; _this setVariable ["isVolcanoSummon",nil,true];};
@@ -2530,7 +2831,7 @@ BugsLife_AntQueen_Volcano = {
 			[[_DeformPos,_unit],{ 
 				params ["_DeformPos","_unit"];
 				_fulgiOffset =_DeformPos;
-				if (isServer && !hasInterface) exitWith {}; 
+				if (isDedicated || !hasInterface) exitWith {}; 
 				_pos = _DeformPos;
 				_dustEffect = "#particlesource" createVehicleLocal _pos; 
 				_dustEffect setParticleClass "HDustVTOL1"; 
@@ -2646,4 +2947,3 @@ BugsLife_PlayerStatusBar = {
 		_unit setVariable ["hp_micro_hud",_Bugslife_StatusBar];
 	};
 };
-

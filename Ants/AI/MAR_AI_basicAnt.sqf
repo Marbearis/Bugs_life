@@ -159,7 +159,17 @@ _gruntBoy addEventHandler ["Killed", {
 	};
 }];
 
+_gruntBoy addEventHandler ["HandleDamage", {
+	params ["_unit", "_selection", "_damage", "_source", "_projectile", "_hitPartIndex", "_instigator", "_hitPoint", "_directHit", "_context"];
 
+	if ((_source isKindOf "car")||(_source isKindOf "tank")) then {
+		if ((((velocityModelSpace _source  select 1) > 2) && ((_source worldToModel (_unit modelToWorld [0, 0, 0])) select 1) > 1) || (((velocityModelSpace _source  select 1) < -2) && ((_source worldToModel (_unit modelToWorld [0, 0, 0])) select 1) > 1)) exitWith {
+		
+			_unit call BugzLife_fnc_explodeBugInstant;
+		};
+	}; 
+	
+}];
 
 _gruntBoy setVariable ["IMS_EventHandler_Hit",{
 	_victim = _this select 0;
@@ -237,16 +247,21 @@ _actFr = [{
 			_mutant enableAI "AUTOCOMBAT";
 			_mutant enableAI "WEAPONAIM";
 		};
-		
-		case (!(alive _mutant) || (animationState _mutant in [
+		case (!(_mutant getVariable ["oshitImDead",false]) && (animationState _mutant in ["ant_death","ant_death_static"])): {
+			_mutant call BugzLife_fnc_explodeBugInstant;
+		};
+		case (!(alive _mutant) || (_mutant getVariable ["oshitImDead",false]) || (animationState _mutant in [
 				"ant_attack_1",
 				"ant_attack_ranged",
-				"ant_death",
-				"ant_death_static",
 				"ant_inair",
 				"ant_hit_f",
+				"ant_death",
+				"ant_death_static",
 				"ant_hit_b"
-			])): {};
+			])): {
+
+			};
+
 		default {
 			_mutant action ["SwitchWeapon", _mutant, _mutant, 100]; 
 			removeAllWeapons _mutant;
@@ -372,6 +387,7 @@ _loopPathfind = [{
     _array = _this select 0;
     _unit = _array select 0;
 	_nearEnemy = _unit findNearestEnemy _unit; 
+	if ((velocity _unit)#2 > 3) then {_unit setVelocity [(velocity _unit) select 0, (velocity _unit) select 1, 0]};
 	if (_unit isKindOf "MAR_ANT_QUEEN")exitWith{
 		if (animationState _unit in ["ant_pkfire"]) then
 			{
@@ -391,6 +407,18 @@ _loopPathfind = [{
 	};
 	switch true do {
 		case (lifeState _unit == "INCAPACITATED"): {_unit setDamage 1};
+
+		case (!(alive _unit) || (_unit getVariable ["oshitImDead",false]) || (animationState _unit in [
+				"ant_attack_1",
+				"ant_attack_ranged",
+				"ant_death",
+				"ant_death_static",
+				"ant_inair",
+				"ant_hit_f",
+				"ant_hit_b"
+			])): {
+
+			};
 		case (!(simulationEnabled _unit) || !(isNull (remoteControlled _unit)) || (isNull _nearEnemy) or !(alive _nearEnemy) or !(alive _unit) or !(isNull attachedTo _unit) or (lifeState _unit == "INCAPACITATED") or (_unit distance _nearEnemy >= 500)): {
 			switch true do {
 				case !(isNil {_unit getVariable "WBK_IsUnitLocked"}): {_unit setVariable ["WBK_IsUnitLocked",nil];};
@@ -479,8 +507,19 @@ _loopPathfindDoMove = [{
     _array = _this select 0;
     _unit = _array select 0;
 		if (_unit isKindOf "MAR_ANT_QUEEN")exitWith{};
-	switch true do {
 		
+	switch true do {
+		case (!(alive _unit) || (_unit getVariable ["oshitImDead",false]) || (animationState _unit in [
+				"ant_attack_1",
+				"ant_attack_ranged",
+				"ant_death",
+				"ant_death_static",
+				"ant_inair",
+				"ant_hit_f",
+				"ant_hit_b"
+			])): {
+
+		};
 		default {
 			_nearEnemy = _unit findNearestEnemy _unit; 
 			_unit enableAI "MOVE";

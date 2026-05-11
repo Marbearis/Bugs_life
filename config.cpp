@@ -1986,16 +1986,16 @@ class CfgMoves_MAR_ANT: CfgMovesMaleSdr
     {
         actions = "MAR_ANT_Moves";
 		file = "\Bugs_life\Ants\animations\idle_1.rtm";
-		collisionShape = "A3\anims_f\Data\Geom\Sdr\Perc_Wrfl.p3d";
-		collisionShapeSafe = "A3\anims_f\Data\Geom\Sdr\Perc_Wrfl.p3d";
+		collisionShape = "Bugs_life\Colliders\bugbox.p3d";
+		collisionShapeSafe = "Bugs_life\Colliders\bugbox.p3d";
     };
 	class StandBase: StandBase
     {
         actions = "MAR_ANT_Moves";
         //ragdoll=0;
 		file = "\Bugs_life\Ants\animations\idle_1.rtm";
-		collisionShape = "A3\anims_f\Data\Geom\Sdr\Perc_Wrfl.p3d";
-		collisionShapeSafe = "A3\anims_f\Data\Geom\Sdr\Perc_Wrfl.p3d";
+		collisionShape = "Bugs_life\Colliders\bugbox.p3d";
+		collisionShapeSafe = "Bugs_life\Colliders\bugbox.p3d";
     };
 	class DefaultDie: Default
 	{
@@ -2014,8 +2014,8 @@ class CfgMoves_MAR_ANT: CfgMovesMaleSdr
 	{
 		class ANT_Idle: StandBase
 		{
-			collisionShape = "A3\anims_f\Data\Geom\Sdr\Perc_Wrfl.p3d";
-		    collisionShapeSafe = "A3\anims_f\Data\Geom\Sdr\Perc_Wrfl.p3d";			
+			collisionShape = "Bugs_life\Colliders\bugbox.p3d";
+		    collisionShapeSafe = "Bugs_life\Colliders\bugbox.p3d";			
 			file = "\Bugs_life\Ants\animations\idle_1.rtm";
             actions = "MAR_ANT_Moves";
 			duty = 0.1;
@@ -2396,16 +2396,16 @@ class CfgMoves_MAR_ANT_Guppy: CfgMovesMaleSdr
     {
         actions = "MAR_ANTGuppy_Moves";
 		file = "\Bugs_life\Ants\animations\antGuppyIdle.rtm";
-		collisionShape = "A3\anims_f\Data\Geom\Sdr\Perc_Wrfl.p3d";
-		collisionShapeSafe = "A3\anims_f\Data\Geom\Sdr\Perc_Wrfl.p3d";
+		collisionShape = "Bugs_life\Colliders\bugbox.p3d";
+		collisionShapeSafe = "Bugs_life\Colliders\bugbox.p3d";
     };
 	class StandBase: StandBase
     {
         actions = "MAR_ANTGuppy_Moves";
         //ragdoll=0;
 		file = "\Bugs_life\Ants\animations\antGuppyIdle.rtm";
-		collisionShape = "A3\anims_f\Data\Geom\Sdr\Perc_Wrfl.p3d";
-		collisionShapeSafe = "A3\anims_f\Data\Geom\Sdr\Perc_Wrfl.p3d";
+		collisionShape = "Bugs_life\Colliders\bugbox.p3d";
+		collisionShapeSafe = "Bugs_life\Colliders\bugbox.p3d";
     };
 	class DefaultDie: Default
 	{
@@ -2424,8 +2424,8 @@ class CfgMoves_MAR_ANT_Guppy: CfgMovesMaleSdr
 	{
 		class Guppy_Idle: StandBase
 		{
-			collisionShape = "A3\anims_f\Data\Geom\Sdr\Perc_Wrfl.p3d";
-		    collisionShapeSafe = "A3\anims_f\Data\Geom\Sdr\Perc_Wrfl.p3d";			
+			collisionShape = "Bugs_life\Colliders\bugbox.p3d";
+		    collisionShapeSafe = "Bugs_life\Colliders\bugbox.p3d";			
 			file = "\Bugs_life\Ants\animations\antGuppyIdle.rtm";
             actions = "MAR_ANTGuppy_Moves";
 			duty = 0.1;
@@ -2437,6 +2437,7 @@ class CfgMoves_MAR_ANT_Guppy: CfgMovesMaleSdr
             speed = -3;
             relSpeedMin = 1;
             relSpeedMax = 1;
+            looped = true;
             canPullTrigger = 1;
             canReload = 1;
             limitGunMovement = 0.5;
@@ -2921,7 +2922,7 @@ class CfgMoves_MAR_ANT_Wasp: CfgMovesMaleSdr
     {
         actions = "MAR_ANTWasp_Moves";
 		file = "\Bugs_life\Ants\animations\antwasp\antwaspgroundidle.rtm";
-		collisionShape = "A3\anims_f\Data\Geom\Sdr\perc_idlelarge.p3d";
+		collisionShape = "A3\anims_f\Data\Geom\Sdr\Perc_Wrfl.p3d";
 		collisionShapeSafe = "A3\anims_f\Data\Geom\Sdr\perc_idlelarge.p3d";
     };
 	class StandBase: StandBase
@@ -2929,7 +2930,7 @@ class CfgMoves_MAR_ANT_Wasp: CfgMovesMaleSdr
         actions = "MAR_ANTWasp_Moves";
         //ragdoll=0;
 		file = "\Bugs_life\Ants\animations\antwasp\antwaspgroundidle.rtm";
-		collisionShape = "A3\anims_f\Data\Geom\Sdr\perc_idlelarge.p3d";
+		collisionShape = "A3\anims_f\Data\Geom\Sdr\Perc_Wrfl.p3d";
 		collisionShapeSafe = "A3\anims_f\Data\Geom\Sdr\perc_idlelarge.p3d";
     };
 	class DefaultDie: Default
@@ -3015,9 +3016,9 @@ class CfgMoves_MAR_ANT_Wasp: CfgMovesMaleSdr
                     0.01,
                     "ANT_Wasp_FlyR",
                     0.01,
-                    "ANT_Wasp_attackScythes",
+                    "ANT_Attack_1",
                     0.01,
-                    "ANT_Wasp_attackStinger",
+                    "ANT_Attack_Ranged",
                     0.01,
                     "ANT_Death",
                     0.01,

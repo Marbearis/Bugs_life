@@ -247,7 +247,7 @@ _loopPathfind = [{
     _array = _this select 0;
     _unit = _array select 0;
 	_nearEnemy = _unit findNearestEnemy _unit; 
-
+	if ((velocity _unit)#2 > 3) then {_unit setVelocity [(velocity _unit) select 0, (velocity _unit) select 1, 0]};
 	switch true do {
 		case (lifeState _unit == "INCAPACITATED"): {_unit setDamage 1};
 		case (!(simulationEnabled _unit) || !(isNull (remoteControlled _unit)) || (isNull _nearEnemy) or !(alive _nearEnemy) or !(alive _unit) or !(isNull attachedTo _unit) or (lifeState _unit == "INCAPACITATED") or (_unit distance _nearEnemy >= 900)): {

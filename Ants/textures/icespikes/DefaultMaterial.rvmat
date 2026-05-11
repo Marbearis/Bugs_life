@@ -5,7 +5,7 @@ forcedDiffuse[] = { 0, 0, 0, 1 };
 emmisive[] = { 0, 0, 10.15, 1 };
 specular[] = { 1, 1, 1.15, 1 };
 specularPower = 800;
-renderFlags[] = {NoZWrite,NoAlphaWrite};
+renderFlags[] = {NoAlphaWrite};
 PixelShaderID = "Super";
 VertexShaderID = "Super";
 class Stage1 {
